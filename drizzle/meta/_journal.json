@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1717782302465,
+      "tag": "0000_magical_leopardon",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1717786297606,
+      "tag": "0001_spicy_jetstream",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1717846264208,
+      "tag": "0002_sudden_paper_doll",
+      "breakpoints": true
+    }
+  ]
+}
