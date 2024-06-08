@@ -6,6 +6,7 @@ import { validateRequest } from "./lib/auth/validate-request";
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   // const { user } = await validateRequest();
+  console.log(request.ip);
   if (request.method === "GET") {
     return NextResponse.next();
   }
@@ -20,5 +21,5 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-  matcher: ["/((?!api|static|.*\\..*|_next|favicon.ico|sitemap.xml|robots.txt).*)"],
+  matcher: ["/((?!api|static|.*\\..*|_next|favicon.ico|sitemap.xml|robots.txt).*)", "/api/:path*"],
 };
