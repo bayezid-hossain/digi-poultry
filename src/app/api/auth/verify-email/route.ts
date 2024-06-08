@@ -11,7 +11,7 @@ type RequestData = {
 export async function POST(req: Request, res: NextResponse<ResponseData>) {
   try {
     const { user, session } = await validateRequest();
-    if (user?.emailVerified) throw new Error("Already Logged In");
+    if (session?.isUserVerified) throw new Error("Already Logged In");
     const { code } = (await req.json()) as RequestData;
     const formData = new FormData();
     formData.append("code", code);

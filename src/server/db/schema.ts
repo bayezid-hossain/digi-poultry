@@ -47,6 +47,7 @@ export const sessions = pgTable(
     id: varchar("id", { length: 255 }).primaryKey(),
     userId: varchar("user_id", { length: 21 }).notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
+    isUserVerified: boolean("isUserVerified").default(false).notNull(),
   },
   (t) => ({
     userIdx: index("session_user_idx").on(t.userId),

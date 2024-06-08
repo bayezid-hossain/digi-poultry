@@ -6,9 +6,9 @@ import { redirect } from "next/navigation";
 import { Paths } from "@/lib/constants";
 
 const MainLayout = async ({ children }: { children: ReactNode }) => {
-  const { user } = await validateRequest();
+  const { user, session } = await validateRequest();
   if (!user) redirect(Paths.Login);
-  if (user && !user.emailVerified) redirect(Paths.VerifyEmail);
+  if (user && !session.isUserVerified) redirect(Paths.VerifyEmail);
   return (
     <>
       <Header />

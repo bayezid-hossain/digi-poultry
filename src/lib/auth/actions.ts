@@ -82,7 +82,7 @@ export async function login(
   const verificationCode = await generateEmailVerificationCode(existingUser.id, email);
   await sendMail(email, EmailTemplate.EmailVerification, { code: verificationCode });
 
-  const session = await lucia.createSession(existingUser.id, {});
+  const session = await lucia.createSession(existingUser.id, { isUserVerified: false });
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
   if (apiCall) return { success: true };
@@ -139,7 +139,7 @@ export async function signup(
   const verificationCode = await generateEmailVerificationCode(userId, email);
   await sendMail(email, EmailTemplate.EmailVerification, { code: verificationCode });
 
-  const session = await lucia.createSession(userId, {});
+  const session = await lucia.createSession(userId, { isUserVerified: false });
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
   if (apiCall) return { success: true };
@@ -152,6 +152,7 @@ export async function logout(
   apiCall?: boolean,
 ): Promise<{ error?: string } & { success?: boolean }> {
   const { user, session } = await validateRequest();
+  session;
   if (!session) {
     return {
       error: "No session found",
@@ -201,6 +202,7 @@ export async function verifyEmail(
     return { error: "Invalid code" };
   }
   const { user, session: currentSession } = await validateRequest();
+
   if (!user) {
     if (apiCall) return { error: "No session" };
     return redirect(Paths.Login);
@@ -224,7 +226,7 @@ export async function verifyEmail(
 
   await lucia.invalidateUserSessions(user.id);
   await db.update(users).set({ emailVerified: true }).where(eq(users.id, user.id));
-  const session = await lucia.createSession(user.id, {});
+  const session = await lucia.createSession(user.id, { isUserVerified: true });
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
   if (apiCall) return { success: true };
@@ -292,7 +294,7 @@ export async function resetPassword(
   await lucia.invalidateUserSessions(dbToken.userId);
   const hashedPassword = await new Scrypt().hash(password);
   await db.update(users).set({ hashedPassword }).where(eq(users.id, dbToken.userId));
-  const session = await lucia.createSession(dbToken.userId, {});
+  const session = await lucia.createSession(dbToken.userId, { isUserVerified: false });
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
   redirect(Paths.Dashboard);

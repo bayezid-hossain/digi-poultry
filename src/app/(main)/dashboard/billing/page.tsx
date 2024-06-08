@@ -20,7 +20,7 @@ export default async function BillingPage() {
   const { user } = await validateRequest();
 
   if (!user) {
-    redirect("/signin");
+    redirect("/login");
   }
 
   return (

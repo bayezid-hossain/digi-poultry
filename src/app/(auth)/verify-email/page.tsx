@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { redirect } from "next/navigation";
 import { validateRequest } from "@/lib/auth/validate-request";
 import { VerifyCode } from "./verify-code";
@@ -16,18 +10,18 @@ export const metadata = {
 };
 
 export default async function VerifyEmailPage() {
-  const { user } = await validateRequest();
+  const { user, session } = await validateRequest();
 
   if (!user) redirect(Paths.Login);
-  if (user.emailVerified) redirect(Paths.Dashboard);
+  if (user.emailVerified && session.isUserVerified) redirect(Paths.Dashboard);
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>Verify Email</CardTitle>
         <CardDescription>
-          Verification code was sent to <strong>{user.email}</strong>. Check
-          your spam folder if you can't find the email.
+          Verification code was sent to <strong>{user.email}</strong>. Check your spam folder if you
+          can't find the email.
         </CardDescription>
       </CardHeader>
       <CardContent>

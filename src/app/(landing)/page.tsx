@@ -16,6 +16,7 @@ import {
   ReactEmail,
 } from "./_components/feature-icons";
 import CardSpotlight from "./_components/hover-card";
+import { Router } from "next/router";
 
 export const metadata: Metadata = {
   title: "Digital Poultry Solutions",
@@ -23,16 +24,11 @@ export const metadata: Metadata = {
 };
 
 const HomePage = () => {
-  return <></>;
+  return (
+    <>
+      <div className="grid h-full min-h-screen w-full place-items-start justify-center">hello</div>
+    </>
+  );
 };
 
 export default HomePage;
-
-function NextjsIcon({ className }: { className?: string }) {
-  return (
-    <>
-      <NextjsLight className={className + " dark:hidden"} />
-      <NextjsDark className={className + " hidden dark:block"} />
-    </>
-  );
-}

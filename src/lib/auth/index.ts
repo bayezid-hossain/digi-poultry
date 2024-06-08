@@ -12,8 +12,10 @@ import { absoluteUrl } from "@/lib/utils";
 const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
 
 export const lucia = new Lucia(adapter, {
-  getSessionAttributes: (/* attributes */) => {
-    return {};
+  getSessionAttributes: (attributes) => {
+    return {
+      isUserVerified: attributes.isUserVerified,
+    };
   },
   getUserAttributes: (attributes) => {
     return {
@@ -44,5 +46,7 @@ declare module "lucia" {
   }
 }
 
-interface DatabaseSessionAttributes {}
+interface DatabaseSessionAttributes {
+  isUserVerified: boolean;
+}
 interface DatabaseUserAttributes extends Omit<DbUser, "hashedPassword"> {}

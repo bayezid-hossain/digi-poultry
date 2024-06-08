@@ -16,6 +16,8 @@ import { validateRequest } from "@/lib/auth/validate-request";
 const routes = [
   { name: "Home", href: "/" },
   { name: "Dashboard", href: "/dashboard" },
+  { name: "Login", href: "/login" },
+  { name: "Sign up", href: "/signup" },
 ] as const;
 
 export const Header = async () => {
@@ -26,59 +28,53 @@ export const Header = async () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              className="focus:outline-none focus:ring-1 md:hidden"
+              className="ml-2 focus:outline-none focus:ring-1 sm:hidden"
               size="icon"
               variant="outline"
             >
               <HamburgerMenuIcon className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <div className="py-1">
-              {routes.map(({ name, href }) => (
-                <DropdownMenuItem key={name} asChild>
-                  <Link href={href}>{name}</Link>
-                </DropdownMenuItem>
-              ))}
+          <DropdownMenuContent align="end" className="mt-1 flex sm:hidden">
+            <div className="flex flex-col gap-y-2 py-1">
+              {routes.map(({ name, href }) => {
+                if (name === "Dashboard" && user) {
+                  return (
+                    <DropdownMenuItem key={name} asChild>
+                      <Button variant={"link"}>
+                        <Link href={href}>{name}</Link>
+                      </Button>
+                    </DropdownMenuItem>
+                  );
+                } else if (name !== "Dashboard") {
+                  return (
+                    <DropdownMenuItem key={name} asChild>
+                      <Button variant={"link"}>
+                        <Link href={href}>{name}</Link>
+                      </Button>
+                    </DropdownMenuItem>
+                  );
+                }
+              })}
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Link className="flex items-center justify-center text-xl font-medium" href="/">
-          <MagicWandIcon className="mr-2 h-5 w-5" /> <p className="hidden md:block">{APP_TITLE}</p>{" "}
+        <Link className="flex items-center justify-center pl-2 text-xl font-medium" href="/">
+          <MagicWandIcon className="mr-2 h-5 w-5" /> <p className="hidden sm:block">{APP_TITLE}</p>{" "}
         </Link>
-        <nav className="ml-10 hidden gap-4 sm:gap-6 md:flex">
-          {routes.map(({ name, href }) => {
-            if (name === "Dashboard" && user) {
-              return (
-                <Button key={name} asChild variant={"link"}>
-                  <Link key={name} href={href}>
-                    {name}
-                  </Link>
-                </Button>
-              );
-            } else if (name !== "Dashboard") {
-              return (
-                <Button key={name} asChild variant={"link"}>
-                  <Link key={name} href={href}>
-                    {name}
-                  </Link>
-                </Button>
-              );
-            }
-          })}
-        </nav>
+
         {!user && (
-          <div className="ml-auto flex gap-x-4">
+          <div className="ml-auto hidden gap-x-4 sm:flex">
             <Button asChild variant={"outlineLink"}>
               <Link href="/login">Login</Link>
             </Button>
-            <Button asChild variant={"outlineLink"}>
+            <Button asChild variant={"outlineLink"} className="mr-2">
               <Link href="/signup">Sign Up</Link>
             </Button>
           </div>
         )}
         {user && (
-          <form action={logout} className="ml-auto">
+          <form action={logout} className="ml-auto mr-2 hidden sm:flex">
             <SubmitButton variant="outline">Logout</SubmitButton>
           </form>
         )}

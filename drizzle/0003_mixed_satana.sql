@@ -1,0 +1,1 @@
+ALTER TABLE "dp_sessions" ADD COLUMN "isUserVerified" boolean DEFAULT false NOT NULL;
