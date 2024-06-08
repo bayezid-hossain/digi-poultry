@@ -23,7 +23,6 @@ import { sendMail, EmailTemplate } from "@/lib/email";
 import { validateRequest } from "@/lib/auth/validate-request";
 import { Paths } from "../constants";
 import { env } from "@/env";
-import { rateLimitMiddleware } from "../rate-limit.middleware";
 import { processFieldErrors } from "../utils";
 
 export interface ActionResponse<T> {
@@ -192,13 +191,18 @@ export async function resendVerificationEmail(): Promise<{
   return { success: true };
 }
 
-export async function verifyEmail(_: any, formData: FormData): Promise<{ error: string } | void> {
+export async function verifyEmail(
+  _: any,
+  formData: FormData,
+  apiCall?: boolean,
+): Promise<{ error?: string } & { success?: boolean }> {
   const code = formData.get("code");
   if (typeof code !== "string" || code.length !== 6) {
     return { error: "Invalid code" };
   }
   const { user, session: currentSession } = await validateRequest();
   if (!user) {
+    if (apiCall) return { error: "No session" };
     return redirect(Paths.Login);
   }
 
@@ -223,6 +227,7 @@ export async function verifyEmail(_: any, formData: FormData): Promise<{ error: 
   const session = await lucia.createSession(user.id, {});
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  if (apiCall) return { success: true };
   redirect(Paths.Dashboard);
 }
 
