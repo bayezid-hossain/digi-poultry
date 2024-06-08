@@ -57,7 +57,7 @@ export function processFieldErrors(error: ZodError): string {
   const flattenedErrors = error.flatten().fieldErrors;
   for (const key in flattenedErrors) {
     console.log(flattenedErrors[key.toString()]);
-    return flattenedErrors[key.toString()]?.toString() || "";
+    return flattenedErrors[key.toString()]?.toString() ?? "";
   }
 
   return "";

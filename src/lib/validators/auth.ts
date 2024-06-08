@@ -1,11 +1,10 @@
-import { userType } from "@/server/db/schema";
 import { z } from "zod";
 
 export const signupSchema = z.object({
   firstName: z.string().min(3, "Please enter minimum 3 letters for First Name").max(20),
   lastName: z.string().min(3, "Please enter minimum 3 letters for Last Name").max(20),
   email: z.string().email("Please enter a valid email"),
-  password: z.string().min(1, "Please provide your password.").max(255),
+  password: z.string().min(8, "Password has to be of atleast 8 characters").max(255),
   userType: z.enum(["company", "farmer", "investor"], {
     errorMap: (issue, ctx) => ({
       message: 'Invalid user type, valid types are "farmer", "company", "investor"',

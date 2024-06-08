@@ -159,6 +159,8 @@ export async function logout(
     };
   }
   await db.update(users).set({ emailVerified: false }).where(eq(users.id, user.id));
+  await db.delete(sessions).where(eq(sessions.id, session.id));
+  await db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.email, user.email));
   await lucia.invalidateSession(session.id);
   const sessionCookie = lucia.createBlankSessionCookie();
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
@@ -218,7 +220,6 @@ export async function verifyEmail(_: any, formData: FormData): Promise<{ error: 
 
   await lucia.invalidateUserSessions(user.id);
   await db.update(users).set({ emailVerified: true }).where(eq(users.id, user.id));
-  await db.delete(sessions).where(eq(sessions.id, currentSession.id));
   const session = await lucia.createSession(user.id, {});
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
