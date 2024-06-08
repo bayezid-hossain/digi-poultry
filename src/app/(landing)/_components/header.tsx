@@ -45,7 +45,6 @@ export const Header = async () => {
         </DropdownMenu>
         <Link className="flex items-center justify-center text-xl font-medium" href="/">
           <MagicWandIcon className="mr-2 h-5 w-5" /> <p className="hidden md:block">{APP_TITLE}</p>{" "}
-          Dashboard
         </Link>
         <nav className="ml-10 hidden gap-4 sm:gap-6 md:flex">
           {routes.map(({ name, href }) => {
