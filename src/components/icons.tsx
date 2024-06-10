@@ -78,3 +78,5 @@ export {
   ArrowLeftIcon,
   MagicWandIcon,
 } from "@radix-ui/react-icons";
+
+export { HistoryIcon, PlusCircle } from "lucide-react";

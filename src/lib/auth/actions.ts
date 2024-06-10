@@ -208,24 +208,22 @@ export async function verifyEmail(
     return redirect(Paths.Login);
   }
 
-  const dbCode = await db.transaction(async (tx) => {
-    const item = await tx.query.emailVerificationCodes.findFirst({
-      where: (table, { eq }) => eq(table.userId, user.id),
-    });
-    if (item) {
-      await tx.delete(emailVerificationCodes).where(eq(emailVerificationCodes.id, item.id));
-    }
-    return item;
+  const item = await db.query.emailVerificationCodes.findFirst({
+    where: (table, { eq }) => eq(table.userId, user.id),
   });
 
-  if (!dbCode || dbCode.code !== code) return { error: "Invalid verification code" };
+  if (!item || item.code !== code) return { error: "Invalid verification code" };
 
-  if (!isWithinExpirationDate(dbCode.expiresAt)) return { error: "Verification code expired" };
+  if (!isWithinExpirationDate(item.expiresAt)) return { error: "Verification code expired" };
 
-  if (dbCode.email !== user.email) return { error: "Email does not match" };
+  if (item.email !== user.email) return { error: "Email does not match" };
 
-  await lucia.invalidateUserSessions(user.id);
+  // await lucia.invalidateUserSessions(user.id); //single session method
+  await lucia.invalidateSession(currentSession.id); //multi session method
   await db.update(users).set({ emailVerified: true }).where(eq(users.id, user.id));
+  if (item) {
+    await db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.id, item.id));
+  }
   const session = await lucia.createSession(user.id, { isUserVerified: true });
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
@@ -310,12 +308,12 @@ const timeFromNow = (time: Date) => {
 
 async function generateEmailVerificationCode(userId: string, email: string): Promise<string> {
   await db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, userId));
-  const code = generateRandomString(6, alphabet("0-9")); // 8 digit code
+  const code = generateRandomString(6, alphabet("0-9")); // 6 digit code
   await db.insert(emailVerificationCodes).values({
     userId,
     email,
     code,
-    expiresAt: createDate(new TimeSpan(5, "m")), // 10 minutes
+    expiresAt: createDate(new TimeSpan(5, "m")), // 5 minutes
   });
   return code;
 }

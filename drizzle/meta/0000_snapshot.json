@@ -1,10 +1,201 @@
 {
-  "id": "3a736840-645c-46c5-82e6-1a4459d5b9a1",
+  "id": "9e478274-9bfa-4cbf-a312-dc445b896dff",
   "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "dp_company_record": {
+    "public.dp_fcrStandards": {
+      "name": "dp_fcrStandards",
+      "schema": "",
+      "columns": {
+        "age": {
+          "name": "age",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "stdWeight": {
+          "name": "stdWeight",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stdFcr": {
+          "name": "stdFcr",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "dp_fcrStandards_age_unique": {
+          "name": "dp_fcrStandards_age_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "age"
+          ]
+        }
+      }
+    },
+    "public.dp_fcrRecord": {
+      "name": "dp_fcrRecord",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(21)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "farmer_name": {
+          "name": "farmer_name",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Bhaluka'"
+        },
+        "total_doc": {
+          "name": "total_doc",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "strain": {
+          "name": "strain",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Ross A'"
+        },
+        "fcr": {
+          "name": "fcr",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "std_fcr": {
+          "name": "std_fcr",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "std_weight": {
+          "name": "std_weight",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 500
+        },
+        "avg_weight": {
+          "name": "avg_weight",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "age": {
+          "name": "age",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 22
+        },
+        "today_mortality": {
+          "name": "today_mortality",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 22
+        },
+        "total_mortality": {
+          "name": "total_mortality",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 22
+        },
+        "disease": {
+          "name": "disease",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'none'"
+        },
+        "medicine": {
+          "name": "medicine",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'none'"
+        },
+        "total_feed": {
+          "name": "total_feed",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{\"510\":0,\"511\":0}'::jsonb"
+        },
+        "farm_stock": {
+          "name": "farm_stock",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'{\"510\":0,\"511\":0}'::jsonb"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(21)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "fcr_user_idx": {
+          "name": "fcr_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.dp_company_record": {
       "name": "dp_company_record",
       "schema": "",
       "columns": {
@@ -44,23 +235,39 @@
         "post_user_idx": {
           "name": "post_user_idx",
           "columns": [
-            "user_id"
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         },
         "post_created_at_idx": {
           "name": "post_created_at_idx",
           "columns": [
-            "created_at"
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "dp_email_verification_codes": {
+    "public.dp_email_verification_codes": {
       "name": "dp_email_verification_codes",
       "schema": "",
       "columns": {
@@ -99,16 +306,32 @@
         "verification_code_user_idx": {
           "name": "verification_code_user_idx",
           "columns": [
-            "user_id"
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         },
         "verification_code_email_idx": {
           "name": "verification_code_email_idx",
           "columns": [
-            "email"
+            {
+              "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {},
@@ -123,7 +346,7 @@
         }
       }
     },
-    "dp_farmerRecord": {
+    "public.dp_farmerRecord": {
       "name": "dp_farmerRecord",
       "schema": "",
       "columns": {
@@ -164,7 +387,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "dp_password_reset_tokens": {
+    "public.dp_password_reset_tokens": {
       "name": "dp_password_reset_tokens",
       "schema": "",
       "columns": {
@@ -191,16 +414,24 @@
         "password_token_user_idx": {
           "name": "password_token_user_idx",
           "columns": [
-            "user_id"
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "dp_sessions": {
+    "public.dp_sessions": {
       "name": "dp_sessions",
       "schema": "",
       "columns": {
@@ -221,22 +452,37 @@
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true
+        },
+        "isUserVerified": {
+          "name": "isUserVerified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {
         "session_user_idx": {
           "name": "session_user_idx",
           "columns": [
-            "user_id"
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "dp_users": {
+    "public.dp_users": {
       "name": "dp_users",
       "schema": "",
       "columns": {
@@ -244,6 +490,18 @@
           "name": "id",
           "type": "varchar(21)",
           "primaryKey": true,
+          "notNull": true
+        },
+        "firstName": {
+          "name": "firstName",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lastName": {
+          "name": "lastName",
+          "type": "varchar(255)",
+          "primaryKey": false,
           "notNull": true
         },
         "email": {
@@ -271,11 +529,13 @@
           "primaryKey": false,
           "notNull": false
         },
-        "type": {
-          "name": "type",
+        "userType": {
+          "name": "userType",
           "type": "type",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "'farmer'"
         },
         "created_at": {
           "name": "created_at",
@@ -295,9 +555,17 @@
         "user_email_idx": {
           "name": "user_email_idx",
           "columns": [
-            "email"
+            {
+              "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {},
@@ -314,13 +582,14 @@
     }
   },
   "enums": {
-    "type": {
+    "public.type": {
       "name": "type",
-      "values": {
-        "company": "company",
-        "farmer": "farmer",
-        "investor": "investor"
-      }
+      "schema": "public",
+      "values": [
+        "company",
+        "farmer",
+        "investor"
+      ]
     }
   },
   "schemas": {},

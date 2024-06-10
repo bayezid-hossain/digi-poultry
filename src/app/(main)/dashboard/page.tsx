@@ -5,6 +5,8 @@ import { type Metadata } from "next";
 import * as React from "react";
 import { validateRequest } from "@/lib/auth/validate-request";
 import { Paths } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -19,14 +21,7 @@ interface Props {
 const Page = async ({ searchParams }: Props) => {
   const { user } = await validateRequest();
   if (!user) redirect(Paths.Login);
-
-  return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold md:text-4xl">Daily FCR</h1>
-        <p className="text-sm text-muted-foreground">Manage your FCRs here</p>
-      </div>
-    </div>
-  );
+  redirect("/dashboard/fcr");
+  return <div></div>;
 };
 export default Page;

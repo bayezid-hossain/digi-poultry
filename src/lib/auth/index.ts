@@ -25,9 +25,11 @@ export const lucia = new Lucia(adapter, {
       avatar: attributes.avatar,
       createdAt: attributes.createdAt,
       updatedAt: attributes.updatedAt,
+      firstName: attributes.firstName,
+      lastName: attributes.lastName,
     };
   },
-  sessionExpiresIn: new TimeSpan(1, "d"),
+  sessionExpiresIn: new TimeSpan(4, "w"),
   sessionCookie: {
     name: "session",
 

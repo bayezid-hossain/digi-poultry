@@ -13,7 +13,9 @@ export const Header = async () => {
         <Link className="flex items-center justify-center text-xl font-medium" href="/">
           <MagicWandIcon className="mr-2 h-5 w-5" /> <p className="hidden md:block">{APP_TITLE}</p>
         </Link>
-        {user ? <UserDropdown email={user.email} avatar={user.avatar} className="ml-auto" /> : null}
+        {user ? (
+          <UserDropdown firstName={user.firstName} avatar={user.avatar} className="ml-auto" />
+        ) : null}
       </div>
     </header>
   );
