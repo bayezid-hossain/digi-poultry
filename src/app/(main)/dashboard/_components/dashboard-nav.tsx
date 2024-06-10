@@ -36,6 +36,14 @@ const items: MenuItemProps[] = [
     title: "Billing",
     href: "/dashboard/billing",
     icon: CreditCard,
+    subs: [
+      {
+        title: "Company",
+        href: "/dashboard/billing/company",
+      },
+      { title: "Farmer", href: "/dashboard/billing/farmer", icon: HistoryIcon },
+      { title: "Standards", href: "/dashboard/fcr/standards" },
+    ],
   },
   {
     title: "Settings",
