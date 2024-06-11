@@ -158,7 +158,7 @@ export async function logout(
       error: "No session found",
     };
   }
-  await db.update(users).set({ emailVerified: false }).where(eq(users.id, user.id));
+
   await db.delete(sessions).where(eq(sessions.id, session.id));
   await db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.email, user.email));
   await lucia.invalidateSession(session.id);

@@ -29,7 +29,7 @@ const items: MenuItemProps[] = [
         href: "/dashboard/fcr/new",
       },
       { title: "History", href: "/dashboard/fcr/history", icon: HistoryIcon },
-      { title: "Standards", href: "/dashboard/fcr/standards" },
+      { title: "Standards", href: "/dashboard/fcr/standards", icon: HistoryIcon },
     ],
   },
   {
@@ -42,7 +42,6 @@ const items: MenuItemProps[] = [
         href: "/dashboard/billing/company",
       },
       { title: "Farmer", href: "/dashboard/billing/farmer", icon: HistoryIcon },
-      { title: "Standards", href: "/dashboard/fcr/standards" },
     ],
   },
   {
@@ -65,7 +64,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, title, icon, subs }) => {
   const hasSubs = subs && subs.length > 0;
   const isCurrentPath = path === href;
   const [itemStates, setItemStates] = useState<ItemStates>({});
-
+  console.log(path);
   // Function to toggle the state of an item
   const toggleItem = (itemName: string) => {
     setItemStates((prevState) => ({
@@ -82,14 +81,16 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, title, icon, subs }) => {
               value={title}
               className={cn(
                 "w-full rounded-t-md border-b-2 border-primary px-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                isCurrentPath ? "border-destructive-foreground bg-accent" : "transparent open",
+                path.includes(href)
+                  ? "border-destructive-foreground bg-accent"
+                  : "transparent open",
                 !itemStates[title] ? "border-0" : "",
               )}
             >
-              <AccordionTrigger onClick={() => toggleItem(title)} className="gap-x-2 ">
+              <AccordionTrigger onClick={() => toggleItem(title)} className="gap-y-2 ">
                 <Link href={href}>{title}</Link>
               </AccordionTrigger>
-              <AccordionContent className="pl-2">
+              <AccordionContent key={href} className="mt-2 flex flex-col gap-y-2 pl-2">
                 {subs?.map((subItem) => (
                   <MenuItem
                     key={subItem?.href}
@@ -102,26 +103,41 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, title, icon, subs }) => {
             </AccordionItem>
           </Accordion>
           <div className="flex md:hidden">
-            <DropdownMenu>
+            <DropdownMenu key={`${href}key`}>
               <DropdownMenuTrigger>
                 {/* eslint @next/next/no-img-element:off */}
                 <div
                   className={cn(
                     "flex flex-row gap-x-2 rounded-t-md border-b-2 border-primary px-2 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                    isCurrentPath ? "border-destructive-foreground bg-accent" : "transparent",
-                    !itemStates[title] ? "border-red-500" : "",
+                    path.includes(href) ? "border-destructive-foreground bg-accent" : "transparent",
                   )}
                 >
                   {title} <ChevronDown />
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="flex w-full md:hidden">
+              <DropdownMenuContent align="start" className="flex w-full gap-y-2 md:hidden">
                 <DropdownMenuGroup>
-                  <DropdownMenuItem className="cursor-pointer text-muted-foreground" asChild>
+                  <DropdownMenuItem
+                    key={href}
+                    className={cn(
+                      "cursor-pointer border-b-2 text-muted-foreground",
+                      path === href ? "border-destructive-foreground bg-accent" : "transparent",
+                    )}
+                    asChild
+                  >
                     <Link href={href}>{title} Dashboard</Link>
                   </DropdownMenuItem>
                   {subs?.map((subItem) => (
-                    <DropdownMenuItem className="cursor-pointer text-muted-foreground" asChild>
+                    <DropdownMenuItem
+                      className={cn(
+                        "cursor-pointer border-b-2 text-muted-foreground",
+                        path === subItem.href
+                          ? "border-destructive-foreground bg-accent"
+                          : "transparent",
+                      )}
+                      key={subItem.href}
+                      asChild
+                    >
                       <Link href={subItem.href}>{subItem.title}</Link>
                     </DropdownMenuItem>
                   ))}
