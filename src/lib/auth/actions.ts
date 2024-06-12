@@ -79,12 +79,12 @@ export async function login(
       error: "Incorrect email or password",
     };
   }
-  const verificationCode = await generateEmailVerificationCode(existingUser.id, email);
-  await sendMail(email, EmailTemplate.EmailVerification, { code: verificationCode });
-
   const session = await lucia.createSession(existingUser.id, { isUserVerified: false });
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  const verificationCode = await generateEmailVerificationCode(existingUser.id, email);
+  await sendMail(email, EmailTemplate.EmailVerification, { code: verificationCode });
+
   if (apiCall) return { success: true };
   return redirect(Paths.VerifyEmail);
 }
@@ -136,12 +136,12 @@ export async function signup(
     lastName,
   });
 
-  const verificationCode = await generateEmailVerificationCode(userId, email);
-  await sendMail(email, EmailTemplate.EmailVerification, { code: verificationCode });
-
   const session = await lucia.createSession(userId, { isUserVerified: false });
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  const verificationCode = await generateEmailVerificationCode(userId, email);
+  await sendMail(email, EmailTemplate.EmailVerification, { code: verificationCode });
+
   if (apiCall) return { success: true };
   return redirect(Paths.VerifyEmail);
 }

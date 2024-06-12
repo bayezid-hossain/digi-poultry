@@ -64,7 +64,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, title, icon, subs }) => {
   const hasSubs = subs && subs.length > 0;
   const isCurrentPath = path === href;
   const [itemStates, setItemStates] = useState<ItemStates>({});
-  console.log(path);
+  // console.log(path);
   // Function to toggle the state of an item
   const toggleItem = (itemName: string) => {
     setItemStates((prevState) => ({
@@ -80,7 +80,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, title, icon, subs }) => {
             <AccordionItem
               value={title}
               className={cn(
-                "w-full rounded-t-md border-b-2 border-primary px-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                "w-full rounded-t-md border-b-2 border-primary px-2 text-xs font-medium hover:bg-accent hover:text-accent-foreground sm:text-sm",
                 path.includes(href)
                   ? "border-destructive-foreground bg-accent"
                   : "transparent open",
@@ -108,11 +108,11 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, title, icon, subs }) => {
                 {/* eslint @next/next/no-img-element:off */}
                 <div
                   className={cn(
-                    "flex flex-row gap-x-2 rounded-t-md border-b-2 border-primary px-2 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+                    "flex min-h-12 flex-row items-center justify-center gap-x-2 rounded-t-md border-b-2 border-primary px-2 py-2 text-xs font-medium hover:bg-accent hover:text-accent-foreground sm:text-sm",
                     path.includes(href) ? "border-destructive-foreground bg-accent" : "transparent",
                   )}
                 >
-                  {title} <ChevronDown />
+                  {title} <ChevronDown className="h-4 w-4 sm:h-6 sm:w-6" />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="flex w-full gap-y-2 md:hidden">
@@ -150,7 +150,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, title, icon, subs }) => {
         <Link href={href}>
           <span
             className={cn(
-              "group flex items-center rounded-t-md border-b-2 border-primary px-2 py-2.5 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+              "group flex min-h-12 items-center rounded-t-md border-b-2 border-primary px-2 py-2 text-xs font-medium hover:bg-accent hover:text-accent-foreground sm:text-sm md:min-h-0",
               isCurrentPath ? "border-destructive-foreground bg-accent" : "transparent",
             )}
           >
@@ -170,7 +170,7 @@ export function DashboardNav({ className }: Props) {
   const path = usePathname();
 
   return (
-    <nav className={cn(className, "border-r-2 border-primary-foreground sm:pr-12")}>
+    <nav className={cn(className, " border-primary-foreground md:border-r-2  md:pr-8 lg:pr-10")}>
       {items.map((item) => (
         <MenuItem key={item.href} subs={item.subs} title={item.title} href={item.href} />
       ))}

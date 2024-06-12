@@ -12,6 +12,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -20,21 +21,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { api } from "@/trpc/react";
+import { Ghost, RefreshCcw } from "lucide-react";
 import React from "react";
-import { Input } from "@/components/ui/input";
+import AddDialog from "./AddDialog";
 import { DataTablePagination } from "./DataTablePagination";
+import { StandardData } from "./columns";
+import { Button } from "@/components/ui/button";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  data: StandardData[];
 }
 
 export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const {
+    data: newData,
+    refetch,
+    isRefetching,
+  } = api.user.getFcrStandards.useQuery(undefined, {
+    initialData: data,
+    refetchOnWindowFocus: true,
+    refetchInterval: 1000 * 60,
+  });
   const table = useReactTable({
-    data,
+    data: newData as TData[],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -51,12 +64,28 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
   return (
     <div>
       {" "}
-      <div className="flex items-center py-4">
+      <div className="flex flex-row items-center justify-start pb-4">
         <Input
           placeholder="Search by Age"
           value={(table.getColumn("age")?.getFilterValue() as string) ?? ""}
           onChange={(event) => table.getColumn("age")?.setFilterValue(event.target.value)}
-          className="max-w-sm px-2"
+          className="mr-4 max-w-sm px-2"
+        />
+        <Button
+          variant={"link"}
+          onClick={() => {
+            refetch();
+          }}
+        >
+          {" "}
+          <RefreshCcw size={18} className={`${isRefetching ? "animate-spin" : ""}`} />
+        </Button>
+        <AddDialog
+          newRequest={true}
+          refetch={refetch}
+          defaultAge={(newData.length + 1).toString()}
+          defaultFcr="1.3"
+          defaultWeight="900"
         />
       </div>{" "}
       <div className="rounded-md border">
@@ -90,7 +119,11 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  <div className="my-8 flex flex-col items-center gap-2">
+                    <Ghost className="h-8 w-8 text-zinc-800" />
+                    <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
+                    <p>Let&apos;s create your first standard data.</p>
+                  </div>
                 </TableCell>
               </TableRow>
             )}

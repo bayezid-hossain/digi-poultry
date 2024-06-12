@@ -4,8 +4,8 @@ import { SubmitButton } from "@/components/submit-button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createFCR } from "@/lib/fcr/actions";
 import { useFormState } from "react-dom";
-import { createFCR } from "./_actions";
 
 const FCR = () => {
   const [state, formAction] = useFormState(createFCR, null);

@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import DeleteDialog from "./DeleteDialog";
+import EditDialog from "./EditDialog";
 export type StandardData = {
   age: number;
   stdFcr: number;
@@ -17,6 +20,33 @@ export type StandardData = {
 };
 
 export const columns: ColumnDef<StandardData>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <div className="flex w-full items-center justify-center">
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value: boolean) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      </div>
+    ),
+    cell: ({ row }) => (
+      <div className="flex w-full items-center justify-center">
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value: boolean) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+          className="self-center"
+        />
+      </div>
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     accessorKey: "age",
     header: ({ column }) => {
@@ -42,8 +72,8 @@ export const columns: ColumnDef<StandardData>[] = [
     },
     enableColumnFilter: true,
     filterFn: (row, id, value: string) => {
-      console.log(value);
-      console.log(row.getValue(id));
+      // console.log(value);
+      // console.log(row.getValue(id));
       return value == row.getValue(id) || row.getValue(id)?.toString().includes(value)
         ? true
         : false;
@@ -112,7 +142,7 @@ export const columns: ColumnDef<StandardData>[] = [
 
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild className="px-0 py-0">
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
@@ -120,15 +150,16 @@ export const columns: ColumnDef<StandardData>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="center" className="mt-2.5">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(standard.stdFcr.toString())}
-            >
-              Edit
+            <DropdownMenuItem className="py-0.5">
+              <EditDialog
+                newRequest={true}
+                defaultAge={standard.age}
+                defaultFcr={standard.stdFcr}
+                defaultWeight={standard.stdWeight}
+              />
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(standard.stdWeight.toString())}
-            >
-              Delete
+            <DropdownMenuItem className="py-0.5">
+              <DeleteDialog newRequest={true} defaultAge={standard.age} />
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
