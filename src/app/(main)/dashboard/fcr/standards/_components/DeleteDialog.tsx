@@ -20,7 +20,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 const DeleteDialog = ({ defaultAge, newRequest }: { newRequest: boolean; defaultAge: number }) => {
   const ref = useRef<HTMLFormElement>(null);
   ref.current?.reset();
-  let [state, formAction] = useFormState(deleteSingleRowFCRStandard, null);
+  const [state, formAction] = useFormState(deleteSingleRowFCRStandard, null);
   const { pending } = useFormStatus();
   const [open, setOpen] = useState<boolean>(false);
   useEffect(() => {

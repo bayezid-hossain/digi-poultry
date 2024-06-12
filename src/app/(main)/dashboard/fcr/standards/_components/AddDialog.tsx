@@ -26,12 +26,12 @@ const AddDialog = ({
   defaultAge: string;
   defaultWeight: string;
   defaultFcr: string;
-  refetch: Function;
+  refetch: () => void;
   newRequest: boolean;
 }) => {
   const ref = useRef<HTMLFormElement>(null);
   ref?.current?.reset();
-  let [state, formAction] = useFormState(addSingleStandardRow, null);
+  const [state, formAction] = useFormState(addSingleStandardRow, null);
   const [open, setOpen] = useState<boolean>(false);
   useEffect(() => {
     if (state) {

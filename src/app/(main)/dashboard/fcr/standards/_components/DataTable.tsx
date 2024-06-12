@@ -73,8 +73,8 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         />
         <Button
           variant={"link"}
-          onClick={() => {
-            refetch();
+          onClick={async () => {
+            await refetch();
           }}
         >
           {" "}

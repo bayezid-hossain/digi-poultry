@@ -29,7 +29,7 @@ const EditDialog = ({
 }) => {
   const ref = useRef<HTMLFormElement>(null);
   ref.current?.reset();
-  let [state, formAction] = useFormState(updateSingleStandardRow, null);
+  const [state, formAction] = useFormState(updateSingleStandardRow, null);
   const { pending } = useFormStatus();
   const [open, setOpen] = useState<boolean>(false);
   useEffect(() => {
