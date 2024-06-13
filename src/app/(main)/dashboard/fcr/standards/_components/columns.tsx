@@ -18,8 +18,16 @@ export type StandardData = {
   stdFcr: number;
   stdWeight: number;
 };
-
-export const columns: ColumnDef<StandardData>[] = [
+interface columnProps {
+  onEdit: (age: number) => Promise<void>;
+  onDelete: (age: number) => Promise<void>;
+  previousData: StandardData[];
+}
+export const columns = ({
+  onEdit,
+  onDelete,
+  previousData,
+}: columnProps): ColumnDef<StandardData>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -94,7 +102,7 @@ export const columns: ColumnDef<StandardData>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       // const amount = parseFloat(row.getValue("amount"));
       // const formatted = new Intl.NumberFormat("en-US", {
       //   style: "currency",
@@ -137,9 +145,9 @@ export const columns: ColumnDef<StandardData>[] = [
   },
   {
     id: "actions",
+
     cell: ({ row }) => {
       const standard = row.original;
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="px-0 py-0">
@@ -152,6 +160,7 @@ export const columns: ColumnDef<StandardData>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem className="py-0.5">
               <EditDialog
+                onEdit={onEdit}
                 newRequest={true}
                 defaultAge={standard.age}
                 defaultFcr={standard.stdFcr}
@@ -159,7 +168,7 @@ export const columns: ColumnDef<StandardData>[] = [
               />
             </DropdownMenuItem>
             <DropdownMenuItem className="py-0.5">
-              <DeleteDialog newRequest={true} defaultAge={standard.age} />
+              <DeleteDialog newRequest={true} onDelete={onDelete} defaultAge={standard.age} />
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem

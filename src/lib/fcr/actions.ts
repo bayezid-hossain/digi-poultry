@@ -5,8 +5,10 @@ import { processFieldErrors } from "@/lib/utils";
 import {
   AddSingleStandardRow,
   CreateFCRInput,
+  DeleteMultipleRowFCR,
   DeleteSingleRowFCR,
   UpdateSingleRowFCR,
+  deleteMultipleRowFCR,
   deleteSingleRowFCR,
   fcrSchema,
   singleStandardSchema,
@@ -23,7 +25,7 @@ export interface ActionResponse<T> {
   fieldError?: Partial<Record<keyof T, string | undefined>>;
   formError?: string;
   error?: string;
-  success?: boolean;
+  success?: boolean | string;
 }
 export async function updateSingleStandardRow(
   _: any,
@@ -242,4 +244,38 @@ export async function deleteSingleRowFCRStandard(
   const { age } = newObj;
   const result = await db.delete(FCRStandards).where(eq(FCRStandards.age, Number(age)));
   return { success: true };
+}
+
+export async function deleteMultipleRecords(
+  _: any,
+  formData: FormData,
+  apiCall?: boolean,
+): Promise<ActionResponse<DeleteMultipleRowFCR>> {
+  const { user } = await validateRequest();
+  console.log(user);
+  const obj = Object.fromEntries(formData.entries());
+
+  try {
+    const ages = obj.ages ? obj.ages.toString().split(",").map(Number) : [];
+
+    if (apiCall && !user) return { error: "No session found" };
+
+    const parsed = await deleteMultipleRowFCR.safeParseAsync(ages);
+    if (!parsed.success) {
+      console.log(parsed);
+      if (apiCall) return { error: processFieldErrors(parsed.error) };
+      const err = parsed.error.flatten();
+      return {
+        formError: "No rows selected",
+      };
+    }
+    await Promise.all(
+      ages.map(async (age) => {
+        await db.delete(FCRStandards).where(eq(FCRStandards.age, age));
+      }),
+    );
+    return { success: Date.now().toString() };
+  } catch (error: any) {
+    return { error: (error as Error)?.message };
+  }
 }

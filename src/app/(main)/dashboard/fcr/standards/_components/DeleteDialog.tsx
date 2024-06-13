@@ -16,8 +16,17 @@ import { Button } from "@/components/ui/button";
 import { useFormState, useFormStatus } from "react-dom";
 import { deleteSingleRowFCRStandard, updateSingleStandardRow } from "@/lib/fcr/actions";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { StandardData } from "./columns";
 
-const DeleteDialog = ({ defaultAge, newRequest }: { newRequest: boolean; defaultAge: number }) => {
+const DeleteDialog = ({
+  defaultAge,
+  onDelete,
+  newRequest,
+}: {
+  newRequest: boolean;
+  defaultAge: number;
+  onDelete: (age: number) => Promise<void>;
+}) => {
   const ref = useRef<HTMLFormElement>(null);
   ref.current?.reset();
   const [state, formAction] = useFormState(deleteSingleRowFCRStandard, null);
@@ -29,6 +38,13 @@ const DeleteDialog = ({ defaultAge, newRequest }: { newRequest: boolean; default
         console.log("should close");
         setOpen(false);
         state.success = false;
+        onDelete(defaultAge)
+          .then(() => {
+            console.log("Successfully Deleted");
+          })
+          .catch((error: any) => {
+            console.log(error);
+          });
         return;
       }
     }
@@ -56,7 +72,7 @@ const DeleteDialog = ({ defaultAge, newRequest }: { newRequest: boolean; default
           <div className="flex flex-row justify-center gap-x-8">
             <DialogClose className="flex flex-col items-center justify-center">No</DialogClose>
             <form ref={ref} action={formAction}>
-              <Input name="age" defaultValue={defaultAge} value={defaultAge} className="hidden" />
+              <Input name="age" defaultValue={defaultAge} type="string" className="hidden" />
               <SubmitButton
                 className="m-0 w-full bg-destructive text-destructive-foreground"
                 disabled={pending}

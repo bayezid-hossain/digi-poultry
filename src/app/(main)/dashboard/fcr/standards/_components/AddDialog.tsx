@@ -92,9 +92,9 @@ const AddDialog = ({
                 <Input
                   id="stdFcr"
                   name="stdFcr"
-                  type="number"
+                  type="float"
                   required
-                  defaultValue={defaultFcr}
+                  placeholder={defaultFcr}
                   className="col-span-3"
                 />
               </div>

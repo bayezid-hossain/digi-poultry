@@ -21,11 +21,13 @@ const EditDialog = ({
   defaultWeight,
   defaultFcr,
   newRequest,
+  onEdit,
 }: {
   defaultAge: number;
   defaultWeight: number;
   defaultFcr: number;
   newRequest: boolean;
+  onEdit: (age: number) => Promise<void>;
 }) => {
   const ref = useRef<HTMLFormElement>(null);
   ref.current?.reset();
@@ -38,6 +40,13 @@ const EditDialog = ({
         console.log("should close");
         setOpen(false);
         state.success = false;
+        onEdit(defaultAge)
+          .then(() => {
+            console.log("Successfully edited");
+          })
+          .catch((error: any) => {
+            console.log(error);
+          });
         return;
       }
     }

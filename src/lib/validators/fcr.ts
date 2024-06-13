@@ -125,6 +125,10 @@ export const deleteSingleRowFCR = z.object({
 });
 export type DeleteSingleRowFCR = z.infer<typeof deleteSingleRowFCR>;
 
+export const deleteMultipleRowFCR = z.number().array();
+
+export type DeleteMultipleRowFCR = z.infer<typeof deleteMultipleRowFCR>;
+
 export const updateSingleRowSchema = z.object({
   age: z
     .number({ required_error: "Age is required", invalid_type_error: "Age must be a number" })

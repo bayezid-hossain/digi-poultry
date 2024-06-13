@@ -80,7 +80,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, title, icon, subs }) => {
             <AccordionItem
               value={title}
               className={cn(
-                "w-full rounded-t-md border-b-2 border-primary px-2 text-xs font-medium hover:bg-accent hover:text-accent-foreground sm:text-sm",
+                "hover:text-accent- w-full rounded-t-md border-b-2 border-primary px-2 text-xs font-medium hover:bg-accent sm:text-sm",
                 path.includes(href)
                   ? "border-destructive-foreground bg-accent"
                   : "transparent open",
@@ -150,7 +150,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, title, icon, subs }) => {
         <Link href={href}>
           <span
             className={cn(
-              "group flex min-h-12 items-center rounded-t-md border-b-2 border-primary px-2 py-2 text-xs font-medium hover:bg-accent hover:text-accent-foreground sm:text-sm md:min-h-0",
+              "group flex min-h-12 items-center rounded-t-md border-b-2 border-primary px-2 py-2 text-xs font-medium hover:bg-accent hover:text-red-500 sm:text-sm md:min-h-0",
               isCurrentPath ? "border-destructive-foreground bg-accent" : "transparent",
             )}
           >
