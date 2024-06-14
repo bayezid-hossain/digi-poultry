@@ -17,18 +17,19 @@ import {
 } from "./_components/feature-icons";
 import CardSpotlight from "./_components/hover-card";
 import { Router } from "next/router";
+import { validateRequest } from "@/lib/auth/validate-request";
+import { Paths } from "@/lib/constants";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Digital Poultry Solutions",
   description: "Solve all your needs and calculation here",
 };
 
-const HomePage = () => {
-  return (
-    <>
-      <div className="grid h-full min-h-screen w-full place-items-start justify-center">hello</div>
-    </>
-  );
+const Page = async () => {
+  const { user } = await validateRequest();
+  if (!user) redirect(Paths.Login);
+  redirect("/dashboard/fcr");
+  return <div></div>;
 };
-
-export default HomePage;
+export default Page;

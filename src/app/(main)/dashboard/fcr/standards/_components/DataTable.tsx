@@ -34,11 +34,6 @@ import { SubmitButton } from "@/components/submit-button";
 import { deleteMultipleRecords } from "@/lib/fcr/actions";
 import { useFormState } from "react-dom";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: StandardData[];
-}
-
 export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [ages, setAges] = useState<number[]>([0]);
