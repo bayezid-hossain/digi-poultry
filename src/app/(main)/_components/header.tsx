@@ -2,9 +2,11 @@ import Link from "next/link";
 import { MagicWandIcon, RocketIcon } from "@/components/icons";
 import { APP_TITLE } from "@/lib/constants";
 import { UserDropdown } from "@/app/(main)/_components/user-dropdown";
-import { validateRequest } from "@/lib/auth/validate-request";
+import { validateRequest } from "@/lib/actions/auth/validate-request";
+import OrganizationDropdown from "./organization-dropdown";
+import { OrganizationsType } from "../_types";
 
-export const Header = async () => {
+export const Header = async ({ organizations, currentOrg }: OrganizationsType) => {
   const { user } = await validateRequest();
 
   return (
@@ -14,7 +16,14 @@ export const Header = async () => {
           <MagicWandIcon className="mr-2 h-5 w-5" /> <p className="hidden md:block">{APP_TITLE}</p>
         </Link>
         {user ? (
-          <UserDropdown firstName={user.firstName} avatar={user.avatar} className="ml-auto" />
+          <div className=" ml-auto flex items-center justify-center gap-x-3">
+            {organizations && currentOrg ? (
+              <div>
+                <OrganizationDropdown organizations={organizations} currentOrg={currentOrg} />
+              </div>
+            ) : null}
+            <UserDropdown firstName={user.firstName} avatar={user.avatar} />
+          </div>
         ) : null}
       </div>
     </header>

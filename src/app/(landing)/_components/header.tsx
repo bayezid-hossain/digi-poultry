@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { HamburgerMenuIcon, MagicWandIcon } from "@radix-ui/react-icons";
 import { SubmitButton } from "@/components/submit-button";
-import { logout } from "@/lib/auth/actions";
-import { validateRequest } from "@/lib/auth/validate-request";
+import { logout } from "@/lib/actions/auth/actions";
+import { validateRequest } from "@/lib/actions/auth/validate-request";
 import { UserDropdown } from "@/app/(main)/_components/user-dropdown";
 
 const routes = [

@@ -1,13 +1,7 @@
 import { redirect } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SendResetEmail } from "./send-reset-email";
-import { validateRequest } from "@/lib/auth/validate-request";
+import { validateRequest } from "@/lib/actions/auth/validate-request";
 import { Paths } from "@/lib/constants";
 
 export const metadata = {
@@ -24,9 +18,7 @@ export default async function ForgotPasswordPage() {
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>Forgot password?</CardTitle>
-        <CardDescription>
-          Password reset link will be sent to your email.
-        </CardDescription>
+        <CardDescription>Password reset link will be sent to your email.</CardDescription>
       </CardHeader>
       <CardContent>
         <SendResetEmail />

@@ -2,8 +2,6 @@ import { DATABASE_PREFIX as prefix } from "@/lib/constants";
 import { relations } from "drizzle-orm";
 import {
   boolean,
-  date,
-  decimal,
   index,
   doublePrecision,
   jsonb,
@@ -14,6 +12,8 @@ import {
   timestamp,
   varchar,
   integer,
+  uuid,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 export const userType = pgEnum("type", ["company", "farmer", "investor"]);
 
@@ -39,8 +39,8 @@ export const users = pgTable(
 );
 
 export const usersRelations = relations(users, ({ one, many }) => ({
-  companyRecord: many(companyRecord),
-  farmerRecord: many(farmerRecord),
+  organizations: many(userOrganizations),
+  // organizations: many(farmerRecord),
   sessions: many(sessions),
   fcrs: many(FCRTable),
 }));
@@ -55,6 +55,7 @@ export const sessions = pgTable(
     userId: varchar("user_id", { length: 21 }).notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
     isUserVerified: boolean("isUserVerified").default(false).notNull(),
+    organization: uuid("organization_id"),
   },
   (t) => ({
     userIdx: index("session_user_idx").on(t.userId),
@@ -93,48 +94,23 @@ export const passwordResetTokens = pgTable(
   }),
 );
 
-export const companyRecord = pgTable(
-  "company_record",
-  {
-    id: varchar("id").primaryKey(),
-    text: text("text"),
-    userId: varchar("user_id", { length: 255 }).notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
-  },
-  (t) => ({
-    userIdx: index("post_user_idx").on(t.userId),
-    createdAtIdx: index("post_created_at_idx").on(t.createdAt),
-  }),
-);
+// export const farmerRecord = pgTable("farmerRecord", {
+//   id: varchar("id").primaryKey(),
+//   text: text("text"),
+//   userId: varchar("user_id", { length: 255 }).notNull(),
+//   createdAt: timestamp("created_at").defaultNow().notNull(),
+//   updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
+// });
 
-export const companyRelation = relations(companyRecord, ({ one }) => ({
-  user: one(users, {
-    fields: [companyRecord.userId],
-    references: [users.id],
-  }),
-}));
+// export const farmerRecordRelation = relations(farmerRecord, ({ one }) => ({
+//   user: one(users, {
+//     fields: [farmerRecord.userId],
+//     references: [users.id],
+//   }),
+// }));
 
-export type Company = typeof companyRecord.$inferSelect;
-export type NewcompanyRecord = typeof companyRecord.$inferInsert;
-
-export const farmerRecord = pgTable("farmerRecord", {
-  id: varchar("id").primaryKey(),
-  text: text("text"),
-  userId: varchar("user_id", { length: 255 }).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
-});
-
-export const farmerRecordRelation = relations(farmerRecord, ({ one }) => ({
-  user: one(users, {
-    fields: [farmerRecord.userId],
-    references: [users.id],
-  }),
-}));
-
-export type Farmer = typeof farmerRecord.$inferSelect;
-export type NewFarmerRecord = typeof farmerRecord.$inferInsert;
+// export type Farmer = typeof farmerRecord.$inferSelect;
+// export type NewFarmerRecord = typeof farmerRecord.$inferInsert;
 
 export const FCRTable = pgTable(
   "fcrRecord",
@@ -155,7 +131,7 @@ export const FCRTable = pgTable(
     totalMortality: doublePrecision("total_mortality").default(22).notNull(),
     disease: varchar("disease", { length: 50 }).default("none"),
     medicine: varchar("medicine", { length: 50 }).default("none"),
-
+    //farmerID
     totalFeed: jsonb("total_feed").default({ 510: 0, 511: 0 }),
     farmStock: jsonb("farm_stock").default({ 510: 0, 511: 0 }),
     userId: varchar("user_id", { length: 21 }).notNull(),
@@ -174,10 +150,51 @@ export const fcrRelations = relations(FCRTable, ({ one, many }) => ({
 export type FCR = typeof FCRTable.$inferSelect;
 export type NewFCR = typeof FCRTable.$inferInsert;
 
-export const FCRStandards = pgTable("fcrStandards", {
-  age: integer("age").notNull().primaryKey().unique(),
-  stdWeight: integer("stdWeight").notNull(),
-  stdFcr: doublePrecision("stdFcr").notNull(),
-});
+export const FCRStandards = pgTable(
+  "fcrStandards",
+  {
+    age: integer("age").notNull(),
+    stdWeight: integer("stdWeight").notNull(),
+    stdFcr: doublePrecision("stdFcr").notNull(),
+    organization: uuid("organization_id").notNull(),
+  },
+  (t) => ({
+    fcrStdOrgIdx: index("fcr_std_org_idx").on(t.organization),
+    pk: primaryKey({ columns: [t.age, t.organization] }),
+  }),
+);
+
+export const fcrStdRelations = relations(FCRStandards, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [FCRStandards.organization],
+    references: [organizations.id],
+  }),
+}));
+
 export type FCRStandard = typeof FCRStandards.$inferSelect;
 export type NewFCRStandard = typeof FCRStandards.$inferInsert;
+
+export const organizations = pgTable("organizations", {
+  id: uuid("id").defaultRandom().primaryKey().unique(),
+  name: varchar("name").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
+  createdBy: varchar("created_by").notNull(),
+});
+export type Organization = typeof organizations.$inferSelect;
+export type NewOrganization = typeof organizations.$inferInsert;
+
+export const userOrganizations = pgTable("userOrganizations", {
+  userId: varchar("user_id").notNull(),
+  organizationId: uuid("organization_id").notNull(),
+});
+
+export type UserOrganizations = typeof userOrganizations.$inferSelect;
+export type NewUserOrganizations = typeof userOrganizations.$inferInsert;
+
+export const organizationRelations = relations(users, ({ one, many }) => ({
+  FCRStandards: many(FCRStandards),
+  // organizations: many(farmerRecord),
+  users: many(userOrganizations),
+  sessions: many(sessions),
+}));

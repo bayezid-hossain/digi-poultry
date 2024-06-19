@@ -7,7 +7,7 @@
  * need to use are documented accordingly near the end.
  */
 
-import { uncachedValidateRequest } from "@/lib/auth/validate-request";
+import { uncachedValidateRequest } from "@/lib/actions/auth/validate-request";
 import { db } from "@/server/db";
 import { initTRPC, TRPCError, type inferAsyncReturnType } from "@trpc/server";
 import superjson from "superjson";

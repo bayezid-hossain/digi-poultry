@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { redirect } from "next/navigation";
-import { validateRequest } from "@/lib/auth/validate-request";
+import { validateRequest } from "@/lib/actions/auth/validate-request";
 import { VerifyCode } from "./verify-code";
 import { Paths } from "@/lib/constants";
 

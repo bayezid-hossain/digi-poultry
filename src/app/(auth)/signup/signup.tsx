@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signup } from "@/lib/auth/actions";
+import { signup } from "@/lib/actions/auth/actions";
 import { APP_TITLE } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";

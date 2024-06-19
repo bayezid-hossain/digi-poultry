@@ -5,7 +5,11 @@ import { useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
 import { toast } from "sonner";
 import { ExclamationTriangleIcon } from "@/components/icons";
-import { logout, verifyEmail, resendVerificationEmail as resendEmail } from "@/lib/auth/actions";
+import {
+  logout,
+  verifyEmail,
+  resendVerificationEmail as resendEmail,
+} from "@/lib/actions/auth/actions";
 import { SubmitButton } from "@/components/submit-button";
 
 export const VerifyCode = () => {

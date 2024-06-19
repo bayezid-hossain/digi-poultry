@@ -17,7 +17,7 @@ import {
 } from "./_components/feature-icons";
 import CardSpotlight from "./_components/hover-card";
 import { Router } from "next/router";
-import { validateRequest } from "@/lib/auth/validate-request";
+import { validateRequest } from "@/lib/actions/auth/validate-request";
 import { Paths } from "@/lib/constants";
 import { redirect } from "next/navigation";
 

@@ -1,4 +1,4 @@
-import { login, logout, signup } from "@/lib/auth/actions";
+import { login, logout, signup } from "@/lib/actions/auth/actions";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 type ResponseData = {

@@ -164,16 +164,17 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, title, icon, subs }) => {
 
 interface Props {
   className?: string;
+  organization?: string;
 }
 
-export function DashboardNav({ className }: Props) {
+export function DashboardNav({ className, organization }: Props) {
   const path = usePathname();
 
-  return (
+  return organization ? (
     <nav className={cn(className, " border-primary-foreground md:border-r-2  md:pr-8 lg:pr-10")}>
       {items.map((item) => (
         <MenuItem key={item.href} subs={item.subs} title={item.title} href={item.href} />
       ))}
     </nav>
-  );
+  ) : null;
 }

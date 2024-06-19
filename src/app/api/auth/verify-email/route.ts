@@ -1,5 +1,5 @@
-import { login, signup, verifyEmail } from "@/lib/auth/actions";
-import { validateRequest } from "@/lib/auth/validate-request";
+import { login, signup, verifyEmail } from "@/lib/actions/auth/actions";
+import { validateRequest } from "@/lib/actions/auth/validate-request";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 type ResponseData = {

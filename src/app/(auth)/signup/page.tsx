@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { Signup } from "./signup";
-import { validateRequest } from "@/lib/auth/validate-request";
+import { validateRequest } from "@/lib/actions/auth/validate-request";
 import { Paths } from "@/lib/constants";
 
 export const metadata = {
