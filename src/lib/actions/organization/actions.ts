@@ -1,18 +1,17 @@
 "use server";
 
+import { processFieldErrors } from "@/lib/utils";
 import {
   ChangeCurrentOrg,
   CreateOrgInput,
   changeCurrentOrgSchema,
   createOrgSchema,
 } from "@/lib/validators/organization";
-import { validateRequest } from "../auth/validate-request";
-import { processFieldErrors } from "@/lib/utils";
 import { db } from "@/server/db";
 import { organizations, sessions, userOrganizations } from "@/server/db/schema";
-import { object } from "zod";
-import { lucia } from "../auth";
 import { eq } from "drizzle-orm";
+import { lucia } from "../auth";
+import { validateRequest } from "../auth/validate-request";
 
 export interface ActionResponse<T> {
   fieldError?: Partial<Record<keyof T, string | undefined>>;

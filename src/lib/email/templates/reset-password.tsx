@@ -1,4 +1,4 @@
-import { render } from "@react-email/render";
+import { APP_TITLE } from "@/lib/constants";
 import {
   Body,
   Button,
@@ -9,7 +9,6 @@ import {
   Section,
   Text,
 } from "@react-email/components";
-import { APP_TITLE } from "@/lib/constants";
 
 export interface ResetPasswordTemplateProps {
   link: string;

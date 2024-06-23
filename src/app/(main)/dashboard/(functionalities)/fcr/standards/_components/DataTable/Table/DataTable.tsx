@@ -31,7 +31,7 @@ import AddDialog from "../../AddDialog";
 import { DataTablePagination } from "./DataTablePagination";
 import { StandardData, columns } from "./columns";
 import { SubmitButton } from "@/components/submit-button";
-import { deleteMultipleRecords } from "@/lib/actions/fcr/actions";
+import { deleteMultipleRecords, importStandardTable } from "@/lib/actions/fcr/actions";
 import { useFormState, useFormStatus } from "react-dom";
 import MultiAddDialog from "../_MultiAddDialog/MultiAddDialog";
 import {
@@ -54,6 +54,7 @@ export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
   const [state, formAction] = useFormState(deleteMultipleRecords, null);
   const [open, setOpen] = useState<boolean>(false);
   const ref = useRef<HTMLFormElement>(null);
+  const [_, importStandardAction] = useFormState(importStandardTable, null);
   console.log(initialData);
   const {
     data: newData,
@@ -82,7 +83,7 @@ export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
       .catch((error: any) => {
         console.log(error);
       });
-  }, [state?.success]);
+  }, [state?.success, _?.success]);
 
   useEffect(() => {
     console.log("data changed");
@@ -192,6 +193,11 @@ export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
                     <Ghost className="h-8 w-8 text-zinc-800" />
                     <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
                     <p>Let&apos;s create your first standard data.</p>
+                    <p className="text-xs font-semibold">Or</p>
+                    <form action={importStandardAction}>
+                      {" "}
+                      <SubmitButton> Import our standard values!</SubmitButton>
+                    </form>
                   </div>
                 </TableCell>
               </TableRow>
@@ -203,7 +209,14 @@ export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
         </div>
         <div className="m-2 flex flex-col gap-y-4">
           <div>
-            <MultiAddDialog />
+            <MultiAddDialog
+              refetch={async () => {
+                const data = await refetch();
+                if (data.data) {
+                  setData(data.data);
+                }
+              }}
+            />
           </div>
           <Dialog modal open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild className="w-fit">

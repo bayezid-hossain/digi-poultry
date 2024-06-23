@@ -1,10 +1,9 @@
 // middleware.ts
 
-import { NextResponse, userAgent } from "next/server";
-import type { NextRequest } from "next/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import path from "path";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 const redis = new Redis({
   url: process.env.REDIS_URL_ONLY,
@@ -22,7 +21,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // console.log(device, os, browser, engine, cpu, request.geo);
   if (request.url.includes("/api/auth/verify-email")) {
     const ip = request.ip ?? "127.0.0.1";
-    const { success, pending, limit, reset, remaining } = await ratelimit.limit(ip);
+    const { success } = await ratelimit.limit(ip);
     return success
       ? NextResponse.next()
       : NextResponse.json({ error: "too many requests", code: 420 });

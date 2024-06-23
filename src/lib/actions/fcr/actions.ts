@@ -1,7 +1,8 @@
 "use server";
 const UNDEFINED_NUMBER = -99999;
+import { StandardData } from "@/app/(main)/dashboard/(functionalities)/fcr/standards/_components/DataTable/Table/columns";
 import { validateRequest } from "@/lib/actions/auth/validate-request";
-import { processFieldErrors } from "@/lib/utils";
+import { processFieldErrors, standardData } from "@/lib/utils";
 import {
   AddSingleStandardRow,
   CreateFCRInput,
@@ -11,6 +12,7 @@ import {
   deleteMultipleRowFCR,
   deleteSingleRowFCR,
   fcrSchema,
+  multiStandardSchema,
   singleStandardSchema,
   updateSingleRowSchema,
 } from "@/lib/validators/fcr";
@@ -20,6 +22,7 @@ import { and, eq } from "drizzle-orm";
 import { generateId } from "lucia";
 import { redirect } from "next/navigation";
 import { PostgresError } from "postgres";
+import { ZodError } from "zod";
 
 export interface ActionResponse<T> {
   fieldError?: Partial<Record<keyof T, string | undefined>>;
@@ -75,12 +78,38 @@ export async function updateSingleStandardRow(
     return { success: true };
   } catch (error: any) {
     const convertedError = error as PostgresError;
-
+    if (convertedError.code == "23505") {
+      const duplicateErrorMessage = `Age ${convertedError.detail?.substring(convertedError.detail.indexOf("=") + 2, convertedError.detail.lastIndexOf(","))} for your organization already exists.`;
+      return {
+        formError: duplicateErrorMessage,
+      };
+    }
     const message = convertedError.detail
       ?.replaceAll("=", " ")
       .replaceAll("(", "")
       .replaceAll(")", "");
     return { formError: message };
+  }
+}
+
+export async function importStandardTable(
+  _: any,
+  formData: FormData,
+  apiCall?: boolean,
+): Promise<ActionResponse<AddSingleStandardRow>> {
+  const { user, session } = await validateRequest();
+  if (apiCall && !user) return { error: "No session found" };
+  else if (apiCall && !session?.organization)
+    return { error: "You have to be a part of na organization, please join or create one" };
+
+  if (!session?.organization) return { formError: "You have to be a part of na organization" };
+  else {
+    const entriesWithOrgId = standardData.map((entry) => ({
+      ...entry,
+      organization: session?.organization ?? "",
+    }));
+    const result = await db.insert(FCRStandards).values(entriesWithOrgId);
+    return { success: "Imported" + Date.now() };
   }
 }
 export async function addSingleStandardRow(
@@ -129,7 +158,75 @@ export async function addSingleStandardRow(
     }
   } catch (error: any) {
     const convertedError = error as PostgresError;
+    if (convertedError.code == "23505") {
+      const duplicateErrorMessage = `Age ${convertedError.detail?.substring(convertedError.detail.indexOf("=") + 2, convertedError.detail.lastIndexOf(","))} for your organization already exists.`;
+      return {
+        formError: duplicateErrorMessage,
+      };
+    }
+    const message = convertedError.detail
+      ?.replaceAll("=", " ")
+      .replaceAll("(", "")
+      .replaceAll(")", "");
+    return { formError: message };
+  }
+}
+function extractFieldError(error: ZodError<any>, fieldName: string): string | undefined {
+  const fieldError = error.errors.find((err) => err.path[0] === fieldName);
+  return fieldError ? fieldError.message : undefined;
+}
+export async function addMultiStandardRow(
+  _: any,
+  formData: FormData,
+  apiCall?: boolean,
+): Promise<ActionResponse<AddSingleStandardRow>> {
+  try {
+    const { user, session } = await validateRequest();
+    if (apiCall && !user) return { error: "No session found" };
+    else if (apiCall && !session?.organization)
+      return { error: "You have to be a part of na organization, please join or create one" };
 
+    if (!session?.organization) return { formError: "You have to be a part of an organization" };
+    else {
+      const obj = Object.fromEntries(formData.entries());
+      const entries = JSON.parse(obj?.datas?.toString() ?? "[]") as StandardData[];
+
+      // console.log(newObj);
+      const parsed = await multiStandardSchema.safeParseAsync(entries);
+      if (!parsed.success) {
+        // console.log(parsed);
+        if (apiCall) return { error: processFieldErrors(parsed.error) };
+        const error = parsed.error.flatten();
+        if (error instanceof ZodError) {
+          // Extract error messages for specific fields
+          const ageError = extractFieldError(error, "age");
+          const stdFcrError = extractFieldError(error, "stdFcr");
+          const stdWeightError = extractFieldError(error, "stdWeight");
+
+          return {
+            fieldError: {
+              age: ageError,
+              stdFcr: stdFcrError,
+              stdWeight: stdWeightError,
+            },
+          };
+        }
+      }
+      const entriesWithOrgId = entries.map((entry) => ({
+        ...entry,
+        organization: session?.organization ?? "",
+      }));
+      const result = await db.insert(FCRStandards).values(entriesWithOrgId);
+      return { success: true };
+    }
+  } catch (error: any) {
+    const convertedError = error as PostgresError;
+    if (convertedError.code == "23505") {
+      const duplicateErrorMessage = `Age ${convertedError.detail?.substring(convertedError.detail.indexOf("=") + 2, convertedError.detail.lastIndexOf(","))} for your organization already exists.`;
+      return {
+        formError: duplicateErrorMessage,
+      };
+    }
     const message = convertedError.detail
       ?.replaceAll("=", " ")
       .replaceAll("(", "")

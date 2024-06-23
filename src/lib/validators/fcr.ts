@@ -45,7 +45,7 @@ export const fcrSchema = z
       .min(3, "Please enter minimum 3 letters for Disease name")
       .max(20, "Disease name cannot have more than 20 letters")
       .default("None")
-      .refine(async (i) => {
+      .refine(async () => {
         return true;
       }),
     medicine: z
@@ -101,54 +101,41 @@ export type CreateFCRInput = z.infer<typeof fcrSchema>;
 export const singleStandardSchema = z.object({
   age: z
     .number({ required_error: "Age is required", invalid_type_error: "Age must be a number" })
-    .gt(0)
-    .default(1),
+    .gt(0, { message: "Age must be greater than 0" }),
   stdFcr: z
     .number({
       required_error: "Standard FCR is required",
       invalid_type_error: "Standard FCR must be a number",
     })
-    .gt(0),
+    .gt(0, { message: "Standard FCR must be greater than 0" }),
   stdWeight: z
     .number({
       required_error: "Standard Weight is required",
       invalid_type_error: "standard Weight must be a number",
     })
-    .gt(0),
+    .gt(0, { message: "Standard Weight must be greater than 0" }),
 });
 
 export type AddSingleStandardRow = z.infer<typeof singleStandardSchema>;
+
+export const multiStandardSchema = z.array(singleStandardSchema);
+export type AddMultipleStandardRow = z.infer<typeof multiStandardSchema>;
 export const deleteSingleRowFCR = z.object({
   age: z
     .number({ required_error: "Age is required", invalid_type_error: "Age must be a number" })
-    .gt(0),
+    .gt(0, { message: "Age must be greater than 0" }),
 });
 export type DeleteSingleRowFCR = z.infer<typeof deleteSingleRowFCR>;
 
 export const deleteMultipleRowFCR = z.number().array();
 
 export type DeleteMultipleRowFCR = z.infer<typeof deleteMultipleRowFCR>;
-
-export const updateSingleRowSchema = z.object({
-  age: z
-    .number({ required_error: "Age is required", invalid_type_error: "Age must be a number" })
-    .gt(0)
-    .default(1),
+export const updateSingleRowSchema = singleStandardSchema.extend({
   previousAge: z
-    .number({ required_error: "Age is required", invalid_type_error: "Age must be a number" })
-    .gt(0)
-    .default(1),
-  stdFcr: z
     .number({
-      required_error: "Standard FCR is required",
-      invalid_type_error: "Standard FCR must be a number",
+      required_error: "Previous Age is required",
+      invalid_type_error: "Previous Age must be a number",
     })
-    .gt(0),
-  stdWeight: z
-    .number({
-      required_error: "Standard Weight is required",
-      invalid_type_error: "standard Weight must be a number",
-    })
-    .gt(0),
+    .gt(0, { message: "Previous Age must be greater than 0" }),
 });
 export type UpdateSingleRowFCR = z.infer<typeof updateSingleRowSchema>;

@@ -2,18 +2,17 @@ import { DATABASE_PREFIX as prefix } from "@/lib/constants";
 import { relations } from "drizzle-orm";
 import {
   boolean,
-  index,
   doublePrecision,
+  index,
+  integer,
   jsonb,
   pgEnum,
   pgTableCreator,
-  serial,
-  text,
-  timestamp,
-  varchar,
-  integer,
-  uuid,
   primaryKey,
+  serial,
+  timestamp,
+  uuid,
+  varchar,
 } from "drizzle-orm/pg-core";
 export const userType = pgEnum("type", ["company", "farmer", "investor"]);
 
@@ -38,7 +37,7 @@ export const users = pgTable(
   }),
 );
 
-export const usersRelations = relations(users, ({ one, many }) => ({
+export const usersRelations = relations(users, ({ many }) => ({
   organizations: many(userOrganizations),
   // organizations: many(farmerRecord),
   sessions: many(sessions),
@@ -61,7 +60,7 @@ export const sessions = pgTable(
     userIdx: index("session_user_idx").on(t.userId),
   }),
 );
-export const sessionRelations = relations(sessions, ({ one, many }) => ({
+export const sessionRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.userId],
     references: [users.id],
@@ -141,7 +140,7 @@ export const FCRTable = pgTable(
   }),
 );
 
-export const fcrRelations = relations(FCRTable, ({ one, many }) => ({
+export const fcrRelations = relations(FCRTable, ({ one }) => ({
   userId: one(users, {
     fields: [FCRTable.userId],
     references: [users.id],
@@ -164,7 +163,7 @@ export const FCRStandards = pgTable(
   }),
 );
 
-export const fcrStdRelations = relations(FCRStandards, ({ one, many }) => ({
+export const fcrStdRelations = relations(FCRStandards, ({ one }) => ({
   organization: one(organizations, {
     fields: [FCRStandards.organization],
     references: [organizations.id],
@@ -192,7 +191,7 @@ export const userOrganizations = pgTable("userOrganizations", {
 export type UserOrganizations = typeof userOrganizations.$inferSelect;
 export type NewUserOrganizations = typeof userOrganizations.$inferInsert;
 
-export const organizationRelations = relations(users, ({ one, many }) => ({
+export const organizationRelations = relations(users, ({ many }) => ({
   FCRStandards: many(FCRStandards),
   // organizations: many(farmerRecord),
   users: many(userOrganizations),

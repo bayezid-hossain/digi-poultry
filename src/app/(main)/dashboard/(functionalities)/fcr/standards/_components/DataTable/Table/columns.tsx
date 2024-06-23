@@ -159,7 +159,12 @@ export const columns = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="center" className="mt-2.5">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem className="py-0.5">
+            <DropdownMenuItem
+              className="py-0.5"
+              onSelect={(e) => {
+                e.preventDefault();
+              }}
+            >
               <EditDialog
                 onEdit={onEdit}
                 newRequest={true}

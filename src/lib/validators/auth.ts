@@ -6,7 +6,7 @@ export const signupSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   password: z.string().min(8, "Password has to be of atleast 8 characters").max(255),
   userType: z.enum(["company", "farmer", "investor"], {
-    errorMap: (issue, ctx) => ({
+    errorMap: () => ({
       message: 'Invalid user type, valid types are "farmer", "company", "investor"',
     }),
   }),

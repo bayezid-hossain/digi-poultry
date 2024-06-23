@@ -55,11 +55,11 @@ const EditDialog = ({
     <div className=" flex flex-row items-center justify-start">
       <Dialog open={open} onOpenChange={setOpen} modal>
         <DialogTrigger asChild className=" w-full ">
-          <Button onClick={(e) => e.stopPropagation()} variant="link" className="p-0">
+          <Button variant="link" className="p-0">
             Edit Row
           </Button>
         </DialogTrigger>
-        <DialogContent onClick={(e) => e.stopPropagation()} className="mb-auto sm:max-w-[425px] ">
+        <DialogContent className="mb-auto sm:max-w-[425px] ">
           <DialogHeader>
             <DialogTitle>Edit this FCR Row</DialogTitle>
             <DialogDescription>
@@ -128,10 +128,19 @@ const EditDialog = ({
                 {state?.formError}
               </p>
             ) : null}
-            <SubmitButton className="w-full" disabled={pending}>
-              {" "}
-              Update
-            </SubmitButton>
+            <DialogFooter>
+              <SubmitButton
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key == " ") {
+                    e.currentTarget.click();
+                  }
+                }}
+                className="w-full"
+              >
+                {" "}
+                Update
+              </SubmitButton>
+            </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
