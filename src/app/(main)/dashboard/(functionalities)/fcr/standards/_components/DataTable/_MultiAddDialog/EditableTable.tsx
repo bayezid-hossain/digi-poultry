@@ -160,7 +160,7 @@ const EditableTable = ({ setOpen }: { setOpen: Dispatch<SetStateAction<boolean>>
             {state?.formError}
           </p>
         ) : null}
-        <Input defaultValue={JSON.stringify(data)} className="hidden" name="datas" />
+        <Input value={JSON.stringify(data)} className="hidden" name="datas" />
         <div className="mt-4 flex justify-between">
           <Button
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
