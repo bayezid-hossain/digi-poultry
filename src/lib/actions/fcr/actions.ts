@@ -313,6 +313,8 @@ export async function createFCR(
         avgWeight,
         disease,
         fcr: 0.3,
+        stdFcr: standards[0]?.stdFcr,
+        stdWeight: standards[0]?.stdWeight,
         location,
         medicine,
         strain,
@@ -325,7 +327,7 @@ export async function createFCR(
       .returning();
   });
   if (apiCall) return { success: true };
-  return redirect("/dashboard/fcr");
+  return redirect("/dashboard/fcr/history");
 }
 export async function deleteSingleRowFCRStandard(
   _: any,

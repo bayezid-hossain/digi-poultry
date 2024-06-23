@@ -43,6 +43,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -171,38 +172,65 @@ export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  className="w-full"
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell className="w-full" key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length + 3} className="h-24 text-center">
-                  <div className="my-8 flex flex-col items-center gap-2">
-                    <Ghost className="h-8 w-8 text-zinc-800" />
-                    <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
-                    <p>Let&apos;s create your first standard data.</p>
-                    <p className="text-xs font-semibold">Or</p>
-                    <form action={importStandardAction}>
-                      {" "}
-                      <SubmitButton> Import our standard values!</SubmitButton>
-                    </form>
+          {isRefetching ? (
+            <TableRow>
+              <TableCell colSpan={columns.length + 4} className="h-24 text-center">
+                <div className="my-8 flex flex-col items-center gap-2">
+                  <div className="flex w-full items-center space-x-4">
+                    <div className="flex w-full flex-col items-center justify-center space-y-2">
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-5/6" />
+                    </div>
                   </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : (
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    className="w-full"
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell className="w-full" key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length + 4} className="h-24 text-center">
+                    <div className="my-8 flex flex-col items-center gap-2">
+                      <Ghost className="h-8 w-8 text-zinc-800" />
+                      <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
+                      <p>Let&apos;s create your first standard data.</p>
+                      <p className="text-xs font-semibold">Or</p>
+                      <form action={importStandardAction}>
+                        {" "}
+                        <SubmitButton> Import our standard values!</SubmitButton>
+                      </form>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          )}
         </Table>{" "}
         <div className="flex flex-col gap-2.5 p-4">
           <DataTablePagination table={table} />
