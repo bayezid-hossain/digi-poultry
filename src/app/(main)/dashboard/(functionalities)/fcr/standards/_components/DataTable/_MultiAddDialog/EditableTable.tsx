@@ -21,26 +21,37 @@ import {
 } from "@/components/ui/table";
 import { addMultiStandardRow } from "@/lib/actions/fcr/actions";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Trash2 } from "lucide-react";
 import { useFormState } from "react-dom";
 import { EditableColumns, StandardData } from "./EditableColumns";
 
-const EditableTable = ({ setOpen }: { setOpen: Dispatch<SetStateAction<boolean>> }) => {
-  const initialData: StandardData = { age: 1, stdWeight: 0, stdFcr: 0 };
+const EditableTable = ({
+  setOpen,
+  refetch,
+}: {
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  refetch: () => void;
+}) => {
+  const initialData: StandardData = { age: 0, stdWeight: 0, stdFcr: 0 };
   const [data, setData] = useState<StandardData[]>([initialData]);
   const lastRowAgeInputRef = useRef<HTMLInputElement>(null);
   const [state, formAction] = useFormState(addMultiStandardRow, null);
-
+  const [isDeleting, setDeleting] = useState<boolean>(false);
   useEffect(() => {
-    if (lastRowAgeInputRef.current) {
-      lastRowAgeInputRef.current.focus();
-      lastRowAgeInputRef.current.scrollIntoView();
+    if (!isDeleting) {
+      if (lastRowAgeInputRef.current) {
+        lastRowAgeInputRef.current.focus();
+        lastRowAgeInputRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      setDeleting(false);
     }
   }, [data.length]);
 
   useEffect(() => {
     if (state?.success) {
       setOpen(false);
+      refetch();
     }
   }, [state?.success]);
   const onPaste = (event: ClipboardEvent) => {
@@ -70,12 +81,19 @@ const EditableTable = ({ setOpen }: { setOpen: Dispatch<SetStateAction<boolean>>
     setData(result);
   };
   const handleInputChange = (index: number, field: keyof StandardData, value: string) => {
+    console.log(Number.isNaN(Number(value)));
+    console.log();
     const updatedData = data.map((item, i) =>
-      i === index ? { ...item, [field]: Number(value) } : item,
+      i === index ? { ...item, [field]: Number.isNaN(Number(value)) ? 0 : Number(value) } : item,
     );
     setData(updatedData);
   };
-
+  const removeRow = (index: number) => {
+    const updatedData = [...data];
+    updatedData.splice(index, 1);
+    setData(updatedData);
+    setDeleting(true);
+  };
   const handleSubmit = () => {
     console.log(data);
   };
@@ -88,8 +106,8 @@ const EditableTable = ({ setOpen }: { setOpen: Dispatch<SetStateAction<boolean>>
     state: {},
   });
   return (
-    <div className="h-full max-h-[70vh] overflow-y-auto p-4">
-      <Table className="max-h-[50vh] overflow-y-auto">
+    <div className="scroll-hidden h-full max-h-[70vh] overflow-y-auto p-4">
+      <Table className="scroll-style max-h-[50vh] overflow-y-auto">
         <TableHeader className="" tabIndex={-1}>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} tabIndex={-1}>
@@ -107,40 +125,48 @@ const EditableTable = ({ setOpen }: { setOpen: Dispatch<SetStateAction<boolean>>
         </TableHeader>
         <TableBody>
           {data.map((item, index) => (
-            <TableRow key={index}>
-              <TableCell>
+            <TableRow key={index} className="gap-x-2">
+              <TableCell className="max-w-16 p-2">
                 <Input
-                  type="number"
+                  type="text"
                   value={item.age}
                   onPaste={onPaste}
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     handleInputChange(index, "age", e.target.value)
                   }
-                  className="w-full rounded border p-2 text-center"
+                  className="m-2 w-full rounded border p-0 text-center sm:p-2"
                   ref={index === data.length - 1 ? lastRowAgeInputRef : null}
                 />
               </TableCell>
-              <TableCell>
+              <TableCell className="max-w-16 p-2">
                 <Input
-                  type="number"
+                  type="text"
                   value={item.stdWeight}
                   onPaste={onPaste}
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     handleInputChange(index, "stdWeight", e.target.value)
                   }
-                  className="w-full rounded border p-2 text-center"
+                  className="m-2 w-full rounded border p-0 text-center sm:p-2"
                 />
               </TableCell>
-              <TableCell>
+              <TableCell className="max-w-16 p-2">
                 <Input
-                  type="number"
+                  type="text"
                   value={item.stdFcr}
                   onPaste={onPaste}
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     handleInputChange(index, "stdFcr", e.target.value)
                   }
-                  className="w-full rounded border p-2 text-center"
+                  className="m-2 w-full rounded border p-0 text-center sm:p-2"
                 />
+              </TableCell>{" "}
+              <TableCell className="max-w-16 p-2">
+                <Button
+                  onClick={() => removeRow(index)}
+                  className="w-auto bg-transparent hover:bg-transparent"
+                >
+                  <Trash2 className="text-destructive hover:scale-110 hover:shadow-xl" />
+                </Button>
               </TableCell>
             </TableRow>
           ))}

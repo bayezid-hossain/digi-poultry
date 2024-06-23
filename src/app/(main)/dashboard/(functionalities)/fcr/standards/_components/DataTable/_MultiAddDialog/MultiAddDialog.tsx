@@ -7,17 +7,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { addMultiStandardRow } from "@/lib/actions/fcr/actions";
 import { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
-import { StandardData } from "./EditableColumns";
 import EditableTable from "./EditableTable";
 
 const MultiAddDialog = ({ refetch }: { refetch: () => void }) => {
   const [open, setOpen] = useState<boolean>(false);
-  useEffect(() => {
-    if (!open) refetch();
-  }, [open]);
+
   return (
     <div tabIndex={-1}>
       <Dialog modal open={open} onOpenChange={setOpen}>
@@ -36,7 +31,7 @@ const MultiAddDialog = ({ refetch }: { refetch: () => void }) => {
               </div>
             </DialogDescription>
           </DialogHeader>
-          <EditableTable setOpen={setOpen} />
+          <EditableTable setOpen={setOpen} refetch={refetch} />
         </DialogContent>
       </Dialog>
     </div>
