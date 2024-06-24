@@ -81,10 +81,22 @@ const EditableTable = ({
     setData(result);
   };
   const handleInputChange = (index: number, field: keyof StandardData, value: string) => {
-    console.log(Number.isNaN(Number(value)));
-    console.log();
     const updatedData = data.map((item, i) =>
-      i === index ? { ...item, [field]: Number.isNaN(Number(value)) ? 0 : Number(value) } : item,
+      i === index
+        ? {
+            ...item,
+            [field]:
+              field != "age" && field != "stdWeight"
+                ? value.endsWith(".")
+                  ? value
+                  : Number.isNaN(Number(value))
+                    ? 0
+                    : Number(value)
+                : Number.isNaN(Number(value))
+                  ? 0
+                  : Number(value),
+          }
+        : item,
     );
     setData(updatedData);
   };

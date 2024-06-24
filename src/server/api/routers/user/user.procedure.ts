@@ -1,6 +1,12 @@
 import { db } from "@/server/db";
 import { protectedProcedure, createTRPCRouter } from "../../trpc";
-import { FCRStandards, organizations, userOrganizations, users } from "@/server/db/schema";
+import {
+  FCRStandards,
+  FCRTable,
+  organizations,
+  userOrganizations,
+  users,
+} from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 
 export const userRouter = createTRPCRouter({
@@ -32,6 +38,24 @@ export const userRouter = createTRPCRouter({
 
       console.log(result);
       return result;
+    }
+  }),
+  getFCRHistory: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.session && ctx.user) {
+      try {
+        const result = await db
+          .select()
+          .from(FCRTable)
+
+          .where(eq(FCRTable.userId, ctx.user.id)) // Correctly reference the users table
+
+          .execute();
+
+        console.log(result);
+        return result;
+      } catch (error) {
+        console.log(error);
+      }
     }
   }),
 });

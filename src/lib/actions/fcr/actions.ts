@@ -250,17 +250,10 @@ export async function createFCR(
       obj.todayMortality !== undefined ? parseFloat(obj.todayMortality.toString()) : 0,
     totalMortality:
       obj.totalMortality !== undefined ? parseFloat(obj.totalMortality.toString()) : 0,
-    totalDOC: obj.totalDOC !== undefined ? parseFloat(obj.totalDOC.toString()) : 0,
-    totalFeed: {
-      510: obj.feed510 !== undefined ? parseFloat(obj.feed510.toString()) : 0,
-      511: obj.feed511 !== undefined ? parseFloat(obj.feed511.toString()) : 0,
-    },
-    farmStock: {
-      510: obj.stock510 !== undefined ? parseFloat(obj.stock510.toString()) : 0,
-      511: obj.stock511 !== undefined ? parseFloat(obj.stock511.toString()) : 0,
-    },
+    totalDoc: obj.totalDoc !== undefined ? Number(obj.totalDoc.toString()) : 0,
+    totalFeed: JSON.parse(obj?.totalFeed?.toString() ?? "") as [],
+    farmStock: JSON.parse(obj?.farmStock?.toString() ?? "") as [],
   };
-  console.log(newObj);
   const parsed = await fcrSchema.safeParseAsync(newObj);
   if (!parsed.success) {
     console.log(parsed);
@@ -278,6 +271,8 @@ export async function createFCR(
         totalDoc: err.fieldErrors.totalDoc?.[0],
         strain: err.fieldErrors.strain?.[0],
         medicine: err.fieldErrors.medicine?.[0],
+        totalFeed: err.fieldErrors.totalFeed?.[0],
+        farmStock: err.fieldErrors.farmStock?.[0],
       },
     };
   }
@@ -296,13 +291,19 @@ export async function createFCR(
     totalMortality,
   } = parsed.data;
   const id = generateId(21);
-
-  await db.transaction(async (tx) => {
-    const standards = await tx
+  let feedCalc = 0;
+  totalFeed.map((feed) => {
+    feedCalc += feed.quantity;
+  });
+  const fcr = Number(((feedCalc * 50) / (totalDoc * (avgWeight / 1000))).toFixed(4));
+  try {
+    const standards = await db
       .select({ stdFcr: FCRStandards.stdFcr, stdWeight: FCRStandards.stdWeight })
       .from(FCRStandards)
       .where(eq(FCRStandards.age, age));
-    console.log(standards);
+    if (standards.length === 0) {
+      return { formError: "Standard FCR and Weight data not found for given age" };
+    }
     const result = await db
       .insert(FCRTable)
       .values({
@@ -312,7 +313,7 @@ export async function createFCR(
         age,
         avgWeight,
         disease,
-        fcr: 0.3,
+        fcr,
         stdFcr: standards[0]?.stdFcr,
         stdWeight: standards[0]?.stdWeight,
         location,
@@ -324,10 +325,29 @@ export async function createFCR(
         farmStock,
         totalFeed,
       })
-      .returning();
-  });
-  if (apiCall) return { success: true };
-  return redirect("/dashboard/fcr/history");
+      .returning({
+        farmer: FCRTable.farmerName,
+        age: FCRTable.age,
+        avgWeight: FCRTable.avgWeight,
+        disease: FCRTable.disease,
+        fcr: FCRTable.fcr,
+        stdFcr: FCRTable.stdFcr,
+        stdWeight: FCRTable.stdWeight,
+        location: FCRTable.location,
+        medicine: FCRTable.medicine,
+        strain: FCRTable.strain,
+        todayMortality: FCRTable.todayMortality,
+        totalMortality: FCRTable.totalMortality,
+        totalDoc: FCRTable.totalDoc,
+        farmStock: FCRTable.farmStock,
+        totalFeed: FCRTable.totalFeed,
+        date: FCRTable.createdAt,
+        totalFeedQuantity: FCRTable.age,
+      });
+    return { success: JSON.stringify(result[0]) };
+  } catch (error) {
+    return { formError: "Couldn't Calculate" };
+  }
 }
 export async function deleteSingleRowFCRStandard(
   _: any,

@@ -73,10 +73,19 @@ export default {
           },
           to: { height: "-10%", opacity: "0%" },
         },
+        "color-change": {
+          "0%": {
+            backgroundColor: "#FBEC50",
+          },
+          "100%": {
+            backgroundColor: "#DAA520",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down .3s ease-in",
         "accordion-up": "accordion-up .3s ease-out",
+        "color-change": " color-change 1s infinite alternate",
       },
     },
   },

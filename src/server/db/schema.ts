@@ -131,8 +131,14 @@ export const FCRTable = pgTable(
     disease: varchar("disease", { length: 50 }).default("none"),
     medicine: varchar("medicine", { length: 50 }).default("none"),
     //farmerID
-    totalFeed: jsonb("total_feed").default({ 510: 0, 511: 0 }),
-    farmStock: jsonb("farm_stock").default({ 510: 0, 511: 0 }),
+    totalFeed: jsonb("total_feed").default([
+      { name: "510", quantity: 0 },
+      { name: "511", quantity: 0 },
+    ]),
+    farmStock: jsonb("farm_stock").default([
+      { name: "510", quantity: 0 },
+      { name: "511", quantity: 0 },
+    ]),
     userId: varchar("user_id", { length: 21 }).notNull(),
   },
   (t) => ({

@@ -56,7 +56,7 @@ export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
   const [open, setOpen] = useState<boolean>(false);
   const ref = useRef<HTMLFormElement>(null);
   const [_, importStandardAction] = useFormState(importStandardTable, null);
-  console.log(initialData);
+
   const {
     data: newData,
     refetch,
@@ -87,7 +87,6 @@ export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
   }, [state?.success, _?.success]);
 
   useEffect(() => {
-    console.log("data changed");
     setData(initialData);
   }, [initialData]);
   const table = useReactTable({
@@ -265,7 +264,7 @@ export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
                   className="flex flex-row justify-center gap-x-8"
                 >
                   <Input name="ages" className="hidden" defaultValue={ages?.toString()} required />
-                  <DialogClose className="flex flex-row items-center justify-center rounded-md bg-primary px-4 font-semibold text-primary-foreground hover:text-white">
+                  <DialogClose className="flex flex-row items-center justify-center rounded-md bg-primary px-2 font-semibold text-primary-foreground hover:text-white">
                     No
                   </DialogClose>
                   <SubmitButton className="m-0 bg-destructive text-destructive-foreground">
