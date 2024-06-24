@@ -6,7 +6,7 @@ export interface OrganizationsType {
   organizations?: OrganizationType[];
   currentOrg?: string;
 }
-export type sample = {
+export type feed = {
   name: string;
   quantity: number;
 };
@@ -24,7 +24,7 @@ export interface FCRRecord {
   todayMortality: number;
   totalMortality: number;
   totalDoc: number;
-  farmStock: sample[];
-  totalFeed: sample[];
+  farmStock: feed[];
+  totalFeed: feed[];
   date: string;
 }
