@@ -35,12 +35,12 @@ export const CreateOrganization = () => {
     <div>
       {" "}
       <Dialog open={open} onOpenChange={setOpen}>
-        {changing ? (
+        {/* {changing ? (
           <div className="fixed left-0 top-0 z-[100] flex h-screen w-full flex-col items-center justify-center gap-y-8 bg-slate-800">
             <Loader2 className="z-20 animate-spin" />
             <p className="z-20 animate-pulse">Changing Workspace</p>
           </div>
-        ) : null}
+        ) : null} */}
         <DialogTrigger asChild>
           <Button variant="default" className="">
             Create Organization
