@@ -28,3 +28,9 @@ export interface FCRRecord {
   totalFeed: feed[];
   date: string;
 }
+export type StandardData = {
+  age: number;
+  stdWeight: number;
+  stdFcr: number;
+  organization?: string;
+};

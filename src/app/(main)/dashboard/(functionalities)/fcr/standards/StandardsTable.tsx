@@ -1,6 +1,6 @@
 import { api } from "@/trpc/server";
 import { DataTable } from "./_components/DataTable/Table/DataTable";
-import { StandardData } from "./_components/DataTable/Table/columns";
+import { StandardData } from "@/app/(main)/_types";
 const StandardsTable = async () => {
   const data: StandardData[] = await api.user.getFcrStandards.query();
 

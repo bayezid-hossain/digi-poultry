@@ -1,6 +1,6 @@
 {
-  "id": "c8657811-c7b1-4439-86eb-25daee29fa08",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "40934c37-bf7b-4a66-93c1-152f9503e89e",
+  "prevId": "e8ca5c3a-5bc5-4591-a1f9-192b934a4671",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -294,8 +294,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
+        "created_by": {
+          "name": "created_by",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
@@ -360,12 +360,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "dp_cycles_user_id_dp_users_id_fk": {
-          "name": "dp_cycles_user_id_dp_users_id_fk",
+        "dp_cycles_created_by_dp_users_id_fk": {
+          "name": "dp_cycles_created_by_dp_users_id_fk",
           "tableFrom": "dp_cycles",
           "tableTo": "dp_users",
           "columnsFrom": [
-            "user_id"
+            "created_by"
           ],
           "columnsTo": [
             "id"
@@ -477,6 +477,12 @@
         },
         "name": {
           "name": "name",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location": {
+          "name": "location",
           "type": "varchar(30)",
           "primaryKey": false,
           "notNull": true

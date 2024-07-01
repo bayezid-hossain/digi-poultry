@@ -3,6 +3,7 @@ import { protectedProcedure, createTRPCRouter } from "../../trpc";
 import {
   FCRStandards,
   FCRTable,
+  farmer,
   organizations,
   userOrganizations,
   users,
@@ -13,7 +14,11 @@ export const userRouter = createTRPCRouter({
   get: protectedProcedure.query(({ ctx }) => ctx.user),
   getFcrStandards: protectedProcedure.query(async ({ ctx }) => {
     const result = await db
-      .select()
+      .select({
+        age: FCRStandards.age,
+        stdWeight: FCRStandards.stdWeight,
+        stdFcr: FCRStandards.stdFcr,
+      })
       .from(FCRStandards)
       .where(
         eq(FCRStandards.organization, ctx.session.organization ? ctx.session.organization : ""),
@@ -49,6 +54,23 @@ export const userRouter = createTRPCRouter({
 
           .where(eq(FCRTable.userId, ctx.user.id)) // Correctly reference the users table
 
+          .execute();
+
+        console.log(result);
+        return result;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }),
+  getFarmers: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.session.organization && ctx.user) {
+      try {
+        const result = await db
+          .select({ name: farmer.name, location: farmer.location, id: farmer.id })
+          .from(farmer)
+          // Correctly reference the users table
+          .where(eq(farmer.organizationId, ctx.session.organization))
           .execute();
 
         console.log(result);

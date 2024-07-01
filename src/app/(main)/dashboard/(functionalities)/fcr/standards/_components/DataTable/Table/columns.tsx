@@ -13,12 +13,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import DeleteDialog from "../../DeleteDialog";
 import EditDialog from "../../EditDialog";
-export type StandardData = {
-  age: number;
-  organization: string;
-  stdFcr: number;
-  stdWeight: number;
-};
+import { StandardData } from "@/app/(main)/_types";
+
 interface columnProps {
   onEdit: (age: number) => Promise<void>;
   onDelete: (age: number) => Promise<void>;

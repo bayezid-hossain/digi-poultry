@@ -5,15 +5,43 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1718515390762,
-      "tag": "0000_mixed_echo",
+      "when": 1719306403438,
+      "tag": "0000_fantastic_katie_power",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1718540320090,
-      "tag": "0001_blue_roxanne_simpson",
+      "when": 1719306542472,
+      "tag": "0001_magenta_redwing",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1719306759311,
+      "tag": "0002_loving_goliath",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1719307008066,
+      "tag": "0003_late_jamie_braddock",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1719484941132,
+      "tag": "0004_thin_norman_osborn",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1719725456763,
+      "tag": "0005_strange_alex_wilder",
       "breakpoints": true
     }
   ]

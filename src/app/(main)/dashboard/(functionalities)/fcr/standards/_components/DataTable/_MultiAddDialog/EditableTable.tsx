@@ -23,7 +23,8 @@ import { addMultiStandardRow } from "@/lib/actions/fcr/actions";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { useFormState } from "react-dom";
-import { EditableColumns, StandardData } from "./EditableColumns";
+import { EditableColumns } from "./EditableColumns";
+import { StandardData } from "@/app/(main)/_types";
 
 const EditableTable = ({
   setOpen,

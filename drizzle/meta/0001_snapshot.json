@@ -1,6 +1,6 @@
 {
-  "id": "839e8399-82b7-4c21-a0f6-3a1e33fddac7",
-  "prevId": "947c5c38-481b-49dc-8da6-0879ec481da3",
+  "id": "e8ca5c3a-5bc5-4591-a1f9-192b934a4671",
+  "prevId": "c8657811-c7b1-4439-86eb-25daee29fa08",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -180,14 +180,14 @@
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
-          "default": "'{\"510\":0,\"511\":0}'::jsonb"
+          "default": "'[{\"name\":\"510\",\"quantity\":0},{\"name\":\"511\",\"quantity\":0}]'::jsonb"
         },
         "farm_stock": {
           "name": "farm_stock",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
-          "default": "'{\"510\":0,\"511\":0}'::jsonb"
+          "default": "'[{\"name\":\"510\",\"quantity\":0},{\"name\":\"511\",\"quantity\":0}]'::jsonb"
         },
         "user_id": {
           "name": "user_id",
@@ -216,6 +216,174 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
+    },
+    "public.dp_cycles": {
+      "name": "dp_cycles",
+      "schema": "",
+      "columns": {
+        "cycleId": {
+          "name": "cycleId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "total_doc": {
+          "name": "total_doc",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "strain": {
+          "name": "strain",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Ross A'"
+        },
+        "total_feed": {
+          "name": "total_feed",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[{\"name\":\"510\",\"quantity\":0},{\"name\":\"511\",\"quantity\":0}]'::jsonb"
+        },
+        "farm_stock": {
+          "name": "farm_stock",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'[{\"name\":\"510\",\"quantity\":0},{\"name\":\"511\",\"quantity\":0}]'::jsonb"
+        },
+        "farmer_id": {
+          "name": "farmer_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "end": {
+          "name": "end",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "cycle_farmer_index": {
+          "name": "cycle_farmer_index",
+          "columns": [
+            {
+              "expression": "farmer_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "cycle_org_index": {
+          "name": "cycle_org_index",
+          "columns": [
+            {
+              "expression": "organization_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "dp_cycles_farmer_id_dp_farmer_id_fk": {
+          "name": "dp_cycles_farmer_id_dp_farmer_id_fk",
+          "tableFrom": "dp_cycles",
+          "tableTo": "dp_farmer",
+          "columnsFrom": [
+            "farmer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "dp_cycles_organization_id_dp_organizations_id_fk": {
+          "name": "dp_cycles_organization_id_dp_organizations_id_fk",
+          "tableFrom": "dp_cycles",
+          "tableTo": "dp_organizations",
+          "columnsFrom": [
+            "organization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "dp_cycles_created_by_dp_users_id_fk": {
+          "name": "dp_cycles_created_by_dp_users_id_fk",
+          "tableFrom": "dp_cycles",
+          "tableTo": "dp_users",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "dp_cycles_cycleId_unique": {
+          "name": "dp_cycles_cycleId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "cycleId"
+          ]
+        }
+      }
     },
     "public.dp_email_verification_codes": {
       "name": "dp_email_verification_codes",
@@ -292,6 +460,50 @@
           "nullsNotDistinct": false,
           "columns": [
             "user_id"
+          ]
+        }
+      }
+    },
+    "public.dp_farmer": {
+      "name": "dp_farmer",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "dp_farmer_id_unique": {
+          "name": "dp_farmer_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
           ]
         }
       }

@@ -16,46 +16,38 @@ import { Button } from "@/components/ui/button";
 import { useFormState, useFormStatus } from "react-dom";
 import { deleteSingleRowFCRStandard, updateSingleStandardRow } from "@/lib/actions/fcr/actions";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { deleteSingleFarmer } from "@/lib/actions/farmer/actions";
 
 const DeleteDialog = ({
-  defaultAge,
-  onDelete,
-  newRequest,
+  refetch,
+  id,
+  setOpenDropdown,
 }: {
-  newRequest: boolean;
-  defaultAge: number;
-  onDelete: (age: number) => Promise<void>;
+  refetch: () => void;
+  id: string;
+  setOpenDropdown: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const ref = useRef<HTMLFormElement>(null);
   ref.current?.reset();
-  const [state, formAction] = useFormState(deleteSingleRowFCRStandard, null);
   const { pending } = useFormStatus();
-  const [open, setOpen] = useState<boolean>(false);
+  const [deleteFarmerState, deleteFormAction] = useFormState(deleteSingleFarmer, null);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+
   useEffect(() => {
-    if (state) {
-      if (newRequest && state?.success) {
-        console.log("should close");
-        setOpen(false);
-        state.success = false;
-        onDelete(defaultAge)
-          .then(() => {
-            console.log("Successfully Deleted");
-          })
-          .catch((error: any) => {
-            console.log(error);
-          });
-        return;
-      }
+    if (deleteFarmerState?.success) {
+      setOpenDialog(false);
+      setOpenDropdown(false);
+      refetch();
     }
-  });
+  }, [deleteFarmerState?.success]);
   return (
-    <div className=" flex flex-row items-center justify-start">
-      <Dialog open={open} onOpenChange={setOpen} modal>
+    <div className="flex w-full flex-row items-center justify-start">
+      <Dialog open={openDialog} onOpenChange={setOpenDialog} modal>
         <DialogTrigger asChild className=" w-full ">
           <Button
             onClick={(e) => e.stopPropagation()}
             variant="link"
-            className="w-full p-0 text-destructive"
+            className="h-6 w-full justify-start p-0 text-start text-destructive"
           >
             Delete
           </Button>
@@ -70,12 +62,9 @@ const DeleteDialog = ({
           </DialogHeader>
           <div className="flex flex-row justify-center gap-x-8">
             <DialogClose className="flex flex-col items-center justify-center">No</DialogClose>
-            <form ref={ref} action={formAction}>
-              <Input name="age" defaultValue={defaultAge} type="string" className="hidden" />
-              <SubmitButton
-                className="m-0 w-full bg-destructive text-destructive-foreground"
-                disabled={pending}
-              >
+            <form action={deleteFormAction}>
+              <Input name="id" defaultValue={id} type="string" className="hidden" />
+              <SubmitButton className="m-0 w-full bg-destructive text-destructive-foreground">
                 Yes
               </SubmitButton>
             </form>

@@ -29,7 +29,7 @@ import { Ghost, RefreshCcw } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import AddDialog from "../../AddDialog";
 import { DataTablePagination } from "./DataTablePagination";
-import { StandardData, columns } from "./columns";
+import { columns } from "./columns";
 import { SubmitButton } from "@/components/submit-button";
 import { deleteMultipleRecords, importStandardTable } from "@/lib/actions/fcr/actions";
 import { useFormState, useFormStatus } from "react-dom";
@@ -44,6 +44,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StandardData } from "@/app/(main)/_types";
 
 export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);

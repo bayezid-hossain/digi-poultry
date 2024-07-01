@@ -1,6 +1,7 @@
-import type { StandardData } from "@/app/(main)/dashboard/(functionalities)/fcr/standards/_components/DataTable/_MultiAddDialog/EditableColumns";
+import { FCRRecord, StandardData, feed } from "@/app/(main)/_types";
 import { env } from "@/env";
 import { clsx, type ClassValue } from "clsx";
+import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
 import type { ZodError } from "zod";
 
@@ -97,3 +98,48 @@ export const standardData: StandardData[] = [
   { age: 31, stdWeight: 1895, stdFcr: 1.341 },
   { age: 32, stdWeight: 1992, stdFcr: 1.36 },
 ];
+
+export const generateFCRMessage = (fcrObj: FCRRecord) => {
+  const formattedDate = format(new Date(fcrObj.date), "dd-MM-yyyy");
+  const formattedObj = { ...fcrObj, date: formattedDate };
+  console.log(formattedDate);
+  console.log(formattedObj.date);
+  let feedCount = 0;
+  let stockCount = 0;
+  formattedObj.totalFeed.map((feed) => {
+    feedCount += feed.quantity;
+  });
+  formattedObj.farmStock.map((stock) => {
+    stockCount += stock.quantity;
+  });
+  const msg = `\n
+    Date: ${formattedObj.date}\n
+    Farmer: ${formattedObj.farmer}\n
+    Location: ${formattedObj.location}\n
+    Total DOC Input: ${formattedObj.totalDoc}\n
+    Strain: ${formattedObj.strain}\n
+    Age: ${formattedObj.age} days \n\n
+    Today Mortality: ${formattedObj.todayMortality} pcs\n
+    Total Mortality: ${formattedObj.totalMortality} pcs\n
+    Avg. Wt: ${formattedObj.avgWeight} gm \n
+    Std. Wt: ${formattedObj.stdWeight} gm\n
+    FCR: ${formattedObj.fcr}\n
+    Std FCR: ${formattedObj.stdFcr}\n
+    \n
+    Total Feed: ${feedCount + 1 > 1 ? feedCount + 1 + " bags" : feedCount + 1 + " bag"} running\n
+    ${formattedObj.totalFeed
+      .map((feed: feed) => {
+        return `${feed.name}: ${feed.quantity} bags\n\n`;
+      })
+      .join("    ")} 
+    Total Stock: ${stockCount} bags \n
+    ${formattedObj.farmStock
+      .map((stock: feed) => {
+        return `${stock.name}: ${stock.quantity} bags\n\n`;
+      })
+      .join("    ")}
+    Disease: ${formattedObj.disease}\n
+    Medicine: ${formattedObj.medicine}
+    `;
+  return msg;
+};

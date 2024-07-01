@@ -1,4 +1,5 @@
 "use client";
+import { StandardData } from "@/app/(main)/_types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ActionResponse } from "@/lib/actions/fcr/actions";
@@ -11,12 +12,6 @@ import {
   MutableRefObject,
   SetStateAction,
 } from "react";
-export type StandardData = {
-  age: number;
-  stdFcr: number;
-  stdWeight: number;
-  organization?: string;
-};
 
 export const EditableColumns = ({
   handleInputChange,

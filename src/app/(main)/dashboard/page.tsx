@@ -17,9 +17,7 @@ interface Props {
 
 const Page = async ({ searchParams }: Props) => {
   const { user, session } = await validateRequest();
-  if (!user) redirect(Paths.Login);
 
-  if (session.organization) redirect("/dashboard/fcr");
   return <div></div>;
 };
 export default Page;

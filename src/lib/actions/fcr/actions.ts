@@ -1,6 +1,7 @@
 "use server";
 const UNDEFINED_NUMBER = -99999;
-import { StandardData } from "@/app/(main)/dashboard/(functionalities)/fcr/standards/_components/DataTable/Table/columns";
+
+import { StandardData } from "@/app/(main)/_types";
 import { validateRequest } from "@/lib/actions/auth/validate-request";
 import { processFieldErrors, standardData } from "@/lib/utils";
 import {
@@ -291,11 +292,13 @@ export async function createFCR(
     totalMortality,
   } = parsed.data;
   const id = generateId(21);
-  let feedCalc = 0;
+  let feedCalc = 1;
   totalFeed.map((feed) => {
     feedCalc += feed.quantity;
   });
-  const fcr = Number(((feedCalc * 50) / (totalDoc * (avgWeight / 1000))).toFixed(4));
+  const fcr = Number(
+    ((feedCalc * 50) / ((totalDoc - totalMortality) * (avgWeight / 1000))).toFixed(4),
+  );
   try {
     const standards = await db
       .select({ stdFcr: FCRStandards.stdFcr, stdWeight: FCRStandards.stdWeight })

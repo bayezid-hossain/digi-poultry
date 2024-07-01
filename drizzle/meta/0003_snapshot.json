@@ -1,6 +1,6 @@
 {
-  "id": "c8657811-c7b1-4439-86eb-25daee29fa08",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "80abc843-4a2b-45ac-bcb5-2c004bf121fa",
+  "prevId": "40934c37-bf7b-4a66-93c1-152f9503e89e",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -294,8 +294,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
+        "created_by": {
+          "name": "created_by",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
@@ -333,47 +333,7 @@
           "with": {}
         }
       },
-      "foreignKeys": {
-        "dp_cycles_farmer_id_dp_farmer_id_fk": {
-          "name": "dp_cycles_farmer_id_dp_farmer_id_fk",
-          "tableFrom": "dp_cycles",
-          "tableTo": "dp_farmer",
-          "columnsFrom": [
-            "farmer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "dp_cycles_organization_id_dp_organizations_id_fk": {
-          "name": "dp_cycles_organization_id_dp_organizations_id_fk",
-          "tableFrom": "dp_cycles",
-          "tableTo": "dp_organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "dp_cycles_user_id_dp_users_id_fk": {
-          "name": "dp_cycles_user_id_dp_users_id_fk",
-          "tableFrom": "dp_cycles",
-          "tableTo": "dp_users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "dp_cycles_cycleId_unique": {
@@ -477,6 +437,12 @@
         },
         "name": {
           "name": "name",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location": {
+          "name": "location",
           "type": "varchar(30)",
           "primaryKey": false,
           "notNull": true

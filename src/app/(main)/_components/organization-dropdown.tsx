@@ -3,7 +3,6 @@ import * as React from "react";
 
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -14,11 +13,11 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useFormState } from "react-dom";
 import { ChangeOrganization } from "@/lib/actions/organization/actions";
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { CreateOrganization } from "../dashboard/_components/create-organization";
 import { OrganizationsType } from "../_types";
+import { CreateOrganization } from "../dashboard/_components/create-organization";
 
 const OrganizationDropdown = ({ organizations, currentOrg }: OrganizationsType) => {
   if (!organizations || !currentOrg) return <div>Nothing to show</div>;
@@ -62,13 +61,18 @@ const OrganizationDropdown = ({ organizations, currentOrg }: OrganizationsType) 
                 {organizations.map((organization) => (
                   <CommandItem
                     key={organization.id}
-                    value={organization.id}
+                    value={organization.name + organization.id}
                     onSelect={async (currentValue: string) => {
-                      setValue(currentValue === value ? "" : currentValue);
+                      const orgId = currentValue.replace(organization.name, "");
+                      if (value === orgId) {
+                        setOpen(false);
+                        return;
+                      }
+                      setValue(orgId);
                       setOpen(false);
                       setChanging(true);
                       const formData = new FormData();
-                      formData.append("orgId", currentValue);
+                      formData.append("orgId", orgId);
                       const result = await ChangeOrganization(null, formData, false);
                       router.refresh();
                     }}

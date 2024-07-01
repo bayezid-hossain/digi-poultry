@@ -1,6 +1,6 @@
 {
-  "id": "c8657811-c7b1-4439-86eb-25daee29fa08",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "abbb106d-d9c3-41ed-8a1f-4e9fe397dbec",
+  "prevId": "71948438-229d-4026-b5e6-11ba1b578c33",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -294,8 +294,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
+        "created_by": {
+          "name": "created_by",
           "type": "varchar",
           "primaryKey": false,
           "notNull": true
@@ -333,47 +333,7 @@
           "with": {}
         }
       },
-      "foreignKeys": {
-        "dp_cycles_farmer_id_dp_farmer_id_fk": {
-          "name": "dp_cycles_farmer_id_dp_farmer_id_fk",
-          "tableFrom": "dp_cycles",
-          "tableTo": "dp_farmer",
-          "columnsFrom": [
-            "farmer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "dp_cycles_organization_id_dp_organizations_id_fk": {
-          "name": "dp_cycles_organization_id_dp_organizations_id_fk",
-          "tableFrom": "dp_cycles",
-          "tableTo": "dp_organizations",
-          "columnsFrom": [
-            "organization_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "dp_cycles_user_id_dp_users_id_fk": {
-          "name": "dp_cycles_user_id_dp_users_id_fk",
-          "tableFrom": "dp_cycles",
-          "tableTo": "dp_users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "dp_cycles_cycleId_unique": {
@@ -481,6 +441,18 @@
           "primaryKey": false,
           "notNull": true
         },
+        "location": {
+          "name": "location",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -507,6 +479,28 @@
           ]
         }
       }
+    },
+    "public.dp_farmerCycles": {
+      "name": "dp_farmerCycles",
+      "schema": "",
+      "columns": {
+        "farmer_id": {
+          "name": "farmer_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cycle_id": {
+          "name": "cycle_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
     "public.dp_organizations": {
       "name": "dp_organizations",
@@ -659,6 +653,28 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.dp_userCycles": {
+      "name": "dp_userCycles",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cycle_id": {
+          "name": "cycle_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.dp_userOrganizations": {
       "name": "dp_userOrganizations",
       "schema": "",
@@ -678,7 +694,15 @@
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "dp_userOrganizations_user_id_organization_id_pk": {
+          "name": "dp_userOrganizations_user_id_organization_id_pk",
+          "columns": [
+            "user_id",
+            "organization_id"
+          ]
+        }
+      },
       "uniqueConstraints": {}
     },
     "public.dp_users": {

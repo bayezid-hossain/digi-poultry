@@ -189,17 +189,90 @@ export const organizations = pgTable("organizations", {
 export type Organization = typeof organizations.$inferSelect;
 export type NewOrganization = typeof organizations.$inferInsert;
 
-export const userOrganizations = pgTable("userOrganizations", {
-  userId: varchar("user_id").notNull(),
-  organizationId: uuid("organization_id").notNull(),
-});
-
-export type UserOrganizations = typeof userOrganizations.$inferSelect;
-export type NewUserOrganizations = typeof userOrganizations.$inferInsert;
-
 export const organizationRelations = relations(users, ({ many }) => ({
   FCRStandards: many(FCRStandards),
   // organizations: many(farmerRecord),
   users: many(userOrganizations),
   sessions: many(sessions),
+  farmers: many(farmer),
+}));
+
+export const userOrganizations = pgTable(
+  "userOrganizations",
+  {
+    userId: varchar("user_id").notNull(),
+    organizationId: uuid("organization_id").notNull(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.userId, t.organizationId] }),
+  }),
+);
+
+export type UserOrganizations = typeof userOrganizations.$inferSelect;
+export type NewUserOrganizations = typeof userOrganizations.$inferInsert;
+
+export const userCycle = pgTable("userCycles", {
+  userId: varchar("user_id").notNull(),
+  cycleId: uuid("cycle_id").notNull(),
+});
+
+export type UserCycles = typeof userCycle.$inferSelect;
+export type NewUserCycle = typeof userCycle.$inferInsert;
+
+export const farmer = pgTable("farmer", {
+  id: uuid("id").defaultRandom().primaryKey().unique(),
+  name: varchar("name", { length: 30 }).notNull(),
+  location: varchar("location", { length: 30 }).notNull(),
+  organizationId: uuid("organization_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
+});
+export type Farmer = typeof farmer.$inferSelect;
+export type NewFarmer = typeof farmer.$inferInsert;
+
+export const farmerRelations = relations(farmer, ({ many, one }) => ({
+  FCRs: many(FCRTable),
+  organizations: one(organizations),
+  cycles: many(cycles),
+}));
+
+export const farmerCycle = pgTable("farmerCycles", {
+  farmerId: uuid("farmer_id").notNull(),
+  cycleId: uuid("cycle_id").notNull(),
+});
+
+export type FarmerCycle = typeof farmerCycle.$inferSelect;
+export type NewFamerCycle = typeof farmerCycle.$inferInsert;
+
+export const cycles = pgTable(
+  "cycles",
+  {
+    id: uuid("cycleId").defaultRandom().primaryKey().unique(),
+    totalDoc: doublePrecision("total_doc").default(0).notNull(),
+    strain: varchar("strain", { length: 50 }).default("Ross A"),
+    totalFeed: jsonb("total_feed").default([
+      { name: "510", quantity: 0 },
+      { name: "511", quantity: 0 },
+    ]),
+    farmStock: jsonb("farm_stock").default([
+      { name: "510", quantity: 0 },
+      { name: "511", quantity: 0 },
+    ]),
+    farmerId: uuid("farmer_id").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
+    ended: boolean("end").default(false),
+    endDate: timestamp("end_date"),
+    organizationId: uuid("organization_id").notNull(),
+    createdBy: varchar("created_by").notNull(),
+  },
+  (t) => ({
+    cycleFarmerIdx: index("cycle_farmer_index").on(t.farmerId),
+    cycleOrganizationIdx: index("cycle_org_index").on(t.organizationId),
+  }),
+);
+export const cycleRelations = relations(cycles, ({ many, one }) => ({
+  FCRStandards: many(FCRStandards),
+
+  farmers: one(farmer),
 }));

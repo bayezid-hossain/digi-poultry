@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const items: MenuItemProps[] = [
   {
     title: "Daily FCR",
@@ -31,6 +31,14 @@ const items: MenuItemProps[] = [
       { title: "History", href: "/dashboard/fcr/history", icon: HistoryIcon },
       { title: "Standards", href: "/dashboard/fcr/standards", icon: HistoryIcon },
     ],
+  },
+  {
+    title: "Cycles",
+    href: "/dashboard/cycles",
+  },
+  {
+    title: "Farmers",
+    href: "/dashboard/farmers",
   },
   {
     title: "Billing",
@@ -66,6 +74,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, title, icon, subs }) => {
   const [itemStates, setItemStates] = useState<ItemStates>({});
   // console.log(path);
   // Function to toggle the state of an item
+
   const toggleItem = (itemName: string) => {
     setItemStates((prevState) => ({
       ...prevState,
@@ -169,7 +178,20 @@ interface Props {
 
 export function DashboardNav({ className, organization }: Props) {
   const path = usePathname();
+  const [firstTime, setFirstTime] = useState<boolean>(true);
 
+  useEffect(() => {
+    if (firstTime) {
+      const data = localStorage.getItem("data");
+      if (!data) {
+        console.log("no data");
+        localStorage.setItem("data", JSON.stringify({ name: "i" }));
+      } else {
+        console.log(data);
+      }
+      setFirstTime(false);
+    }
+  }, []);
   return organization ? (
     <nav className={cn(className, " border-primary-foreground md:border-r-2  md:pr-8 lg:pr-10")}>
       {items.map((item) => (
