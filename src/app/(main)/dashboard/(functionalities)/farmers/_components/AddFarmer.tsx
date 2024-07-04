@@ -16,15 +16,19 @@ import { Button } from "@/components/ui/button";
 import { useFormState } from "react-dom";
 
 import { CreateFarmer } from "@/lib/actions/farmer/actions";
+import useFarmerDataStore from "../../../stores/farmerStore";
+import { FarmerData } from "../Farmers";
 
-const AddDialog = ({ refetch }: { refetch: () => void }) => {
+const AddFarmerDialog = () => {
   const [state, formAction] = useFormState(CreateFarmer, null);
+  const { addData } = useFarmerDataStore();
   const [open, setOpen] = useState<boolean>(false);
   useEffect(() => {
-    console.log("should close");
-    setOpen(false);
-    refetch();
-    return;
+    if (state?.success) {
+      setOpen(false);
+      addData(JSON.parse(state.success.toString()) as FarmerData);
+      return;
+    }
   }, [state?.success]);
   return (
     <div className="flex flex-row items-center justify-start">
@@ -91,4 +95,4 @@ const AddDialog = ({ refetch }: { refetch: () => void }) => {
   );
 };
 
-export default AddDialog;
+export default AddFarmerDialog;

@@ -45,58 +45,47 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StandardData } from "@/app/(main)/_types";
+import useStandardDataStore from "@/app/(main)/dashboard/stores/standardsStore";
 
-export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
+export const DataTable = () => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [ages, setAges] = useState<number[]>([0]);
-  const [data, setData] = useState<StandardData[]>(initialData);
+  const {
+    setData: setStandardsInStore,
+    data: standardsData,
+    removeData,
+    isFetching,
+  } = useStandardDataStore();
+  const [data, setData] = useState<StandardData[]>(standardsData);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({}); //manage your own row selection state
-
   const [state, formAction] = useFormState(deleteMultipleRecords, null);
   const [open, setOpen] = useState<boolean>(false);
   const ref = useRef<HTMLFormElement>(null);
-  const [_, importStandardAction] = useFormState(importStandardTable, null);
-
+  const [loading, setLoading] = useState<boolean>(true);
+  const [importState, importStandardAction] = useFormState(importStandardTable, null);
   const {
     data: newData,
     refetch,
     isRefetching,
     isSuccess,
   } = api.user.getFcrStandards.useQuery(undefined, {
-    initialData,
+    initialData: standardsData,
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     refetchInterval: 50 * 60 * 1000,
     refetchOnMount: false,
   });
-  const updateTable = async () => {
-    const { data } = await refetch();
-    if (data) {
-      setData(data);
-    }
-  };
-  useEffect(() => {
-    setRowSelection({});
-
-    updateTable()
-      .then(() => {
-        console.log("Updating table");
-      })
-      .catch((error: any) => {
-        console.log(error);
-      });
-  }, [state?.success, _?.success]);
 
   useEffect(() => {
-    setData(initialData);
-  }, [initialData]);
+    if (!isFetching) setLoading(false);
+  }, [isFetching]);
+  useEffect(() => {
+    setData(standardsData);
+  }, [standardsData]);
   const table = useReactTable({
     data: data,
-    columns: columns({
-      onEdit: updateTable,
-      onDelete: updateTable,
-      previousData: newData,
-    }),
+    columns: columns(),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -111,7 +100,16 @@ export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
       rowSelection,
     },
   });
-
+  useEffect(() => {
+    if (importState?.success) {
+      if (data.length < 1)
+        setStandardsInStore(
+          JSON.parse(
+            importState?.success?.toString() ? importState?.success?.toString() : "[]",
+          ) as StandardData[],
+        );
+    }
+  }, [importState?.success]);
   useEffect(() => {
     const ages: number[] = [];
     table.getFilteredSelectedRowModel().rows.map((row) => {
@@ -175,24 +173,54 @@ export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
           {isRefetching ? (
             <TableRow>
               <TableCell colSpan={columns.length + 4} className="h-24 text-center">
-                <div className="my-8 flex flex-col items-center gap-2">
-                  <div className="flex w-full items-center space-x-4">
-                    <div className="flex w-full flex-col items-center justify-center space-y-2">
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                      <Skeleton className="h-4 w-5/6" />
-                    </div>
+                <div className="my-8 flex flex-col items-center gap-8">
+                  <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                    <Skeleton className="h-4 w-6" />
+                    <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                    <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                    <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                  </div>{" "}
+                  <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                    <Skeleton className="h-4 w-6" />
+                    <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                    <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                    <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                  </div>{" "}
+                  <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                    <Skeleton className="h-4 w-6" />
+                    <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                    <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                    <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                  </div>{" "}
+                  <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                    <Skeleton className="h-4 w-6" />
+                    <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                    <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                    <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                  </div>{" "}
+                  <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                    <Skeleton className="h-4 w-6" />
+                    <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                    <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                    <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                  </div>{" "}
+                  <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                    <Skeleton className="h-4 w-6" />
+                    <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                    <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                    <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                  </div>{" "}
+                  <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                    <Skeleton className="h-4 w-6" />
+                    <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                    <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                    <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                  </div>{" "}
+                  <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                    <Skeleton className="h-4 w-6" />
+                    <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                    <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                    <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
                   </div>
                 </div>
               </TableCell>
@@ -215,18 +243,73 @@ export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length + 4} className="h-24 text-center">
-                    <div className="my-8 flex flex-col items-center gap-2">
-                      <Ghost className="h-8 w-8 text-zinc-800" />
-                      <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
-                      <p>Let&apos;s create your first standard data.</p>
-                      <p className="text-xs font-semibold">Or</p>
-                      <form action={importStandardAction}>
-                        {" "}
-                        <SubmitButton> Import our standard values!</SubmitButton>
-                      </form>
-                    </div>
-                  </TableCell>
+                  {loading ? (
+                    <TableCell colSpan={columns.length + 4} className="h-24 text-center">
+                      <div className="my-8 flex flex-col items-center gap-8">
+                        <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                          <Skeleton className="h-4 w-6" />
+                          <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                          <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                          <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                        </div>{" "}
+                        <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                          <Skeleton className="h-4 w-6" />
+                          <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                          <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                          <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                        </div>{" "}
+                        <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                          <Skeleton className="h-4 w-6" />
+                          <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                          <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                          <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                        </div>{" "}
+                        <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                          <Skeleton className="h-4 w-6" />
+                          <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                          <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                          <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                        </div>{" "}
+                        <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                          <Skeleton className="h-4 w-6" />
+                          <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                          <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                          <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                        </div>{" "}
+                        <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                          <Skeleton className="h-4 w-6" />
+                          <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                          <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                          <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                        </div>{" "}
+                        <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                          <Skeleton className="h-4 w-6" />
+                          <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                          <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                          <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                        </div>{" "}
+                        <div className="flex w-full items-start justify-start gap-x-10 px-2 ">
+                          <Skeleton className="h-4 w-6" />
+                          <Skeleton className=" -ml-4 h-4 w-10 md:-ml-3 lg:ml-0 lg:w-14" />
+                          <Skeleton className="ml-4 h-4 w-16 sm:ml-16 md:ml-12 lg:ml-16" />
+                          <Skeleton className="ml-8 h-4 w-16 sm:ml-16 md:ml-24  lg:ml-28" />
+                        </div>
+                      </div>
+                    </TableCell>
+                  ) : (
+                    <TableCell colSpan={columns.length + 4} className="h-24 text-center">
+                      <div className="my-8 flex flex-col items-center gap-2">
+                        <Ghost className="h-8 w-8 text-zinc-800" />
+                        <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
+                        <p>Let&apos;s create your first standard data.</p>
+                        <p className="text-xs font-semibold">Or</p>
+                        <form action={importStandardAction}>
+                          {" "}
+                          <SubmitButton> Import our standard values!</SubmitButton>
+                        </form>
+                      </div>
+                    </TableCell>
+                  )}
                 </TableRow>
               )}
             </TableBody>
@@ -263,8 +346,18 @@ export const DataTable = ({ initialData }: { initialData: StandardData[] }) => {
                   ref={ref}
                   action={formAction}
                   className="flex flex-row justify-center gap-x-8"
+                  onSubmit={() => {
+                    setRowSelection({});
+
+                    {
+                      ages.map((age) => {
+                        removeData(age);
+                      });
+                    }
+                  }}
                 >
                   <Input name="ages" className="hidden" defaultValue={ages?.toString()} required />
+
                   <DialogClose className="flex flex-row items-center justify-center rounded-md bg-primary px-2 font-semibold text-primary-foreground hover:text-white">
                     No
                   </DialogClose>

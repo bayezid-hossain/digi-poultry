@@ -249,15 +249,9 @@ export const cycles = pgTable(
   {
     id: uuid("cycleId").defaultRandom().primaryKey().unique(),
     totalDoc: doublePrecision("total_doc").default(0).notNull(),
+    age: doublePrecision("age").default(0).notNull(),
     strain: varchar("strain", { length: 50 }).default("Ross A"),
-    totalFeed: jsonb("total_feed").default([
-      { name: "510", quantity: 0 },
-      { name: "511", quantity: 0 },
-    ]),
-    farmStock: jsonb("farm_stock").default([
-      { name: "510", quantity: 0 },
-      { name: "511", quantity: 0 },
-    ]),
+
     farmerId: uuid("farmer_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),

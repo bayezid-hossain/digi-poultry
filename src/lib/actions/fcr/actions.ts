@@ -66,8 +66,8 @@ export async function updateSingleStandardRow(
       };
     }
     const { age, stdFcr, stdWeight, previousAge } = newObj;
-    session?.organization &&
-      (await db
+    if (session?.organization) {
+      const result = await db
         .update(FCRStandards)
         .set({ age, stdFcr, stdWeight })
         .where(
@@ -75,8 +75,12 @@ export async function updateSingleStandardRow(
             eq(FCRStandards.age, previousAge),
             eq(FCRStandards.organization, session.organization),
           ),
-        ));
-    return { success: true };
+        )
+        .returning();
+      return { success: JSON.stringify(result[0]) };
+    } else {
+      return { error: "Could not update" };
+    }
   } catch (error: any) {
     const convertedError = error as PostgresError;
     if (convertedError.code == "23505") {
@@ -110,7 +114,7 @@ export async function importStandardTable(
       organization: session?.organization ?? "",
     }));
     const result = await db.insert(FCRStandards).values(entriesWithOrgId);
-    return { success: "Imported" + Date.now() };
+    return { success: JSON.stringify(standardData) };
   }
 }
 export async function addSingleStandardRow(
@@ -149,13 +153,16 @@ export async function addSingleStandardRow(
         };
       }
       const { age, stdFcr, stdWeight } = newObj;
-      const result = await db.insert(FCRStandards).values({
-        age,
-        stdFcr,
-        stdWeight,
-        organization: session?.organization || "",
-      });
-      return { success: true };
+      const result = await db
+        .insert(FCRStandards)
+        .values({
+          age,
+          stdFcr,
+          stdWeight,
+          organization: session?.organization || "",
+        })
+        .returning();
+      return { success: JSON.stringify(result[0]) };
     }
   } catch (error: any) {
     const convertedError = error as PostgresError;
@@ -242,7 +249,6 @@ export async function createFCR(
 ): Promise<ActionResponse<CreateFCRInput>> {
   const { user } = await validateRequest();
   const obj = Object.fromEntries(formData.entries());
-  console.log(typeof obj.age);
   const newObj = {
     ...obj,
     age: obj.age !== undefined ? parseFloat(obj.age.toString()) : 0,
@@ -257,7 +263,6 @@ export async function createFCR(
   };
   const parsed = await fcrSchema.safeParseAsync(newObj);
   if (!parsed.success) {
-    console.log(parsed);
     if (apiCall) return { error: processFieldErrors(parsed.error) };
     const err = parsed.error.flatten();
     return {
@@ -358,17 +363,14 @@ export async function deleteSingleRowFCRStandard(
   apiCall?: boolean,
 ): Promise<ActionResponse<DeleteSingleRowFCR>> {
   const { user } = await validateRequest();
-  console.log(user);
   if (apiCall && !user) return { error: "No session found" };
   const obj = Object.fromEntries(formData.entries());
   const newObj = {
     ...obj,
     age: obj.age !== undefined ? parseFloat(obj.age.toString()) : UNDEFINED_NUMBER,
   };
-  console.log(newObj);
   const parsed = await deleteSingleRowFCR.safeParseAsync(newObj);
   if (!parsed.success) {
-    console.log(parsed);
     if (apiCall) return { error: processFieldErrors(parsed.error) };
     const err = parsed.error.flatten();
     return {
@@ -379,7 +381,7 @@ export async function deleteSingleRowFCRStandard(
   }
   const { age } = newObj;
   const result = await db.delete(FCRStandards).where(eq(FCRStandards.age, Number(age)));
-  return { success: true };
+  return { success: "Deleted entry for age: " + age + " at" + Date.now() };
 }
 
 export async function deleteMultipleRecords(
@@ -388,7 +390,6 @@ export async function deleteMultipleRecords(
   apiCall?: boolean,
 ): Promise<ActionResponse<DeleteMultipleRowFCR>> {
   const { user } = await validateRequest();
-  console.log(user);
   const obj = Object.fromEntries(formData.entries());
 
   try {
@@ -398,7 +399,6 @@ export async function deleteMultipleRecords(
 
     const parsed = await deleteMultipleRowFCR.safeParseAsync(ages);
     if (!parsed.success) {
-      console.log(parsed);
       if (apiCall) return { error: processFieldErrors(parsed.error) };
       const err = parsed.error.flatten();
       return {

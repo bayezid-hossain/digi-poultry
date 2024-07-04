@@ -15,6 +15,8 @@ import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { useFormState } from "react-dom";
 import { addSingleStandardRow } from "@/lib/actions/fcr/actions";
+import useStandardDataStore from "@/app/(main)/dashboard/stores/standardsStore";
+import { StandardData } from "@/app/(main)/_types";
 
 const AddDialog = ({
   defaultAge,
@@ -31,19 +33,20 @@ const AddDialog = ({
 }) => {
   const ref = useRef<HTMLFormElement>(null);
   ref?.current?.reset();
+  const { addData, data, setData } = useStandardDataStore();
   const [state, formAction] = useFormState(addSingleStandardRow, null);
   const [open, setOpen] = useState<boolean>(false);
   useEffect(() => {
-    if (state) {
-      if (newRequest && state?.success) {
-        console.log("should close");
-        setOpen(false);
-        state.success = false;
-        refetch();
-        return;
-      }
+    if (state?.success) {
+      setOpen(false);
+      addData(JSON.parse(state?.success?.toString() ?? "{}") as StandardData);
     }
-  });
+  }, [state?.success]);
+
+  useEffect(() => {
+    if (data.length > 0) setData(data.sort((a, b) => a.age - b.age));
+  }, [data]);
+
   return (
     <div className="ml-auto flex flex-row items-center justify-start">
       <Dialog open={open} onOpenChange={setOpen} modal>

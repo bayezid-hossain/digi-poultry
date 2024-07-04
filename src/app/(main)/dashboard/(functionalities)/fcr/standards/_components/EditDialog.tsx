@@ -15,42 +15,29 @@ import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { useFormState, useFormStatus } from "react-dom";
 import { updateSingleStandardRow } from "@/lib/actions/fcr/actions";
+import useStandardDataStore from "@/app/(main)/dashboard/stores/standardsStore";
+import { StandardData } from "@/app/(main)/_types";
 
 const EditDialog = ({
   defaultAge,
   defaultWeight,
   defaultFcr,
-  newRequest,
-  onEdit,
 }: {
   defaultAge: number;
   defaultWeight: number;
   defaultFcr: number;
-  newRequest: boolean;
-  onEdit: (age: number) => Promise<void>;
 }) => {
   const ref = useRef<HTMLFormElement>(null);
   ref.current?.reset();
   const [state, formAction] = useFormState(updateSingleStandardRow, null);
-  const { pending } = useFormStatus();
+  const { updateData } = useStandardDataStore();
   const [open, setOpen] = useState<boolean>(false);
   useEffect(() => {
     if (state) {
-      if (newRequest && state?.success) {
-        console.log("should close");
-        setOpen(false);
-        state.success = false;
-        onEdit(defaultAge)
-          .then(() => {
-            console.log("Successfully edited");
-          })
-          .catch((error: any) => {
-            console.log(error);
-          });
-        return;
-      }
+      setOpen(false);
+      updateData(defaultAge, JSON.parse(state.success?.toString() ?? "{}") as StandardData);
     }
-  });
+  }, [state?.success]);
   return (
     <div className=" flex flex-row items-center justify-start">
       <Dialog open={open} onOpenChange={setOpen} modal>

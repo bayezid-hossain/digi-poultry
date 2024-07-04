@@ -1,20 +1,26 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Ghost, PlusCircleIcon, RefreshCcw, SearchIcon } from "lucide-react";
+import { Ghost, Loader2, PlusCircleIcon, RefreshCcw, SearchIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import FarmerCard from "./_components/FarmerCard";
 import { api } from "@/trpc/react";
 import AddDialog from "./_components/AddFarmer";
-type FarmerData = {
+import useFarmerDataStore from "../../stores/farmerStore";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+export type FarmerData = {
   name: string;
   location: string;
   id: string;
 };
-const Farmers = ({ farmers }: { farmers: FarmerData[] }) => {
+const Farmers = ({ serverFarmers }: { serverFarmers: FarmerData[] }) => {
+  const { isFetching, data: farmers, setData: setFarmers } = useFarmerDataStore();
+
   const [localFarmers, setLocalFarmers] = useState<FarmerData[]>(farmers);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearch, setIsSearch] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const {
     data: newData,
     refetch,
@@ -26,11 +32,20 @@ const Farmers = ({ farmers }: { farmers: FarmerData[] }) => {
     refetchOnMount: false,
   });
   useEffect(() => {
-    newData && setLocalFarmers(newData);
+    if (!isFetching) setLoading(false);
+  }, [isFetching]);
+  useEffect(() => {
+    if (newData) {
+      setLocalFarmers(newData);
+      setFarmers(newData);
+    }
   }, [newData]);
   useEffect(() => {
     setLocalFarmers(farmers);
   }, [farmers]);
+  useEffect(() => {
+    setFarmers(serverFarmers);
+  }, [serverFarmers]);
   const filteredFarmers = localFarmers.filter((farmer) =>
     farmer.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
@@ -66,7 +81,7 @@ const Farmers = ({ farmers }: { farmers: FarmerData[] }) => {
             {" "}
             <RefreshCcw size={18} className={`${isRefetching ? "animate-spin" : ""}`} />
           </Button>
-          <AddDialog refetch={refetch} />
+          <AddDialog />
         </div>
       </div>
       {filteredFarmers?.length ? (
@@ -87,17 +102,28 @@ const Farmers = ({ farmers }: { farmers: FarmerData[] }) => {
         </div>
       ) : (
         <div className="flex w-full items-center justify-center">
-          <div className="my-8 flex flex-col items-center gap-2">
-            <Ghost className="h-8 w-8 text-zinc-800" />
-            <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
-            {!isSearch && (
-              <div className="flex w-full flex-col items-center justify-center">
-                <div className="flex items-center justify-center gap-x-2">
-                  Let&apos;s <AddDialog refetch={refetch} /> and add to your organization.
+          {loading ? (
+            <>
+              <section>
+                <Card className="space-y-2 p-8">
+                  <Skeleton className="h-7 w-24" />
+                  <Skeleton className="h-5 w-36" />
+                </Card>
+              </section>
+            </>
+          ) : (
+            <div className="my-8 flex flex-col items-center gap-2">
+              <Ghost className="h-8 w-8 text-zinc-800" />
+              <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
+              {!isSearch && (
+                <div className="flex w-full flex-col items-center justify-center">
+                  <div className="flex items-center justify-center gap-x-2">
+                    Let&apos;s <AddDialog /> and add to your organization.
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

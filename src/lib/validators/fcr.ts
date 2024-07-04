@@ -16,17 +16,6 @@ export const feedSchema = z.object({
 export const fcrSchema = z.object({
   farmerName: z.string().min(3, "Please enter minimum 3 letters for Farmer Name").max(20),
   location: z.string().min(3, "Please enter minimum 3 letters for Location").max(20),
-  totalDoc: z
-    .number({
-      required_error: "Total DOC is required",
-      invalid_type_error: "Total DOC must be a number",
-    })
-    .gt(-1, { message: "DOC Should be greater than 0" }),
-  strain: z
-    .string()
-    .min(3, "Please enter minimum 3 letters for Strain name")
-    .max(20, "Strain name cannot have more than 20 letters")
-    .default("Ross A"),
 
   avgWeight: z
     .number({
@@ -65,6 +54,18 @@ export const fcrSchema = z.object({
     .min(3, "Please enter minimum 3 letters for Medicine name")
     .max(20, "Medicine name cannot have more than 20 letters")
     .default("None"),
+  totalDoc: z
+    .number({
+      required_error: "Total DOC is required",
+      invalid_type_error: "Total DOC must be a number",
+    })
+    .gt(-1, { message: "DOC Should be greater than 0" }),
+  strain: z
+    .string()
+    .min(3, "Please enter minimum 3 letters for Strain name")
+    .max(20, "Strain name cannot have more than 20 letters")
+    .default("Ross A"),
+
   totalFeed: z.array(feedSchema, {
     required_error: "Total Feed Required",
     invalid_type_error: "Invalid Total Feed Data",

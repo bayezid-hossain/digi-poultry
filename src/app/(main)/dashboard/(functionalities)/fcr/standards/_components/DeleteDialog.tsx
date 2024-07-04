@@ -16,38 +16,21 @@ import { Button } from "@/components/ui/button";
 import { useFormState, useFormStatus } from "react-dom";
 import { deleteSingleRowFCRStandard, updateSingleStandardRow } from "@/lib/actions/fcr/actions";
 import { DialogClose } from "@radix-ui/react-dialog";
+import useStandardDataStore from "@/app/(main)/dashboard/stores/standardsStore";
 
-const DeleteDialog = ({
-  defaultAge,
-  onDelete,
-  newRequest,
-}: {
-  newRequest: boolean;
-  defaultAge: number;
-  onDelete: (age: number) => Promise<void>;
-}) => {
+const DeleteDialog = ({ defaultAge }: { defaultAge: number }) => {
   const ref = useRef<HTMLFormElement>(null);
   ref.current?.reset();
   const [state, formAction] = useFormState(deleteSingleRowFCRStandard, null);
   const { pending } = useFormStatus();
+  const { removeData } = useStandardDataStore();
   const [open, setOpen] = useState<boolean>(false);
   useEffect(() => {
-    if (state) {
-      if (newRequest && state?.success) {
-        console.log("should close");
-        setOpen(false);
-        state.success = false;
-        onDelete(defaultAge)
-          .then(() => {
-            console.log("Successfully Deleted");
-          })
-          .catch((error: any) => {
-            console.log(error);
-          });
-        return;
-      }
+    if (state?.success) {
+      removeData(defaultAge);
+      setOpen(false);
     }
-  });
+  }, [state?.success]);
   return (
     <div className=" flex flex-row items-center justify-start">
       <Dialog open={open} onOpenChange={setOpen} modal>

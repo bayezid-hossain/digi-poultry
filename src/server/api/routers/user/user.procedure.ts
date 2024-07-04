@@ -3,12 +3,13 @@ import { protectedProcedure, createTRPCRouter } from "../../trpc";
 import {
   FCRStandards,
   FCRTable,
+  cycles,
   farmer,
   organizations,
   userOrganizations,
   users,
 } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export const userRouter = createTRPCRouter({
   get: protectedProcedure.query(({ ctx }) => ctx.user),
@@ -71,6 +72,34 @@ export const userRouter = createTRPCRouter({
           .from(farmer)
           // Correctly reference the users table
           .where(eq(farmer.organizationId, ctx.session.organization))
+          .execute();
+
+        console.log(result);
+        return result;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }),
+  getCycles: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.session.organization && ctx.user) {
+      try {
+        const result = await db
+          .select({
+            farmerName: farmer.name,
+            farmerLocation: farmer.location,
+            id: cycles.id,
+            totalDoc: cycles.totalDoc,
+            strain: cycles.strain,
+            age: cycles.age,
+            ended: cycles.ended,
+            endDate: cycles.endDate,
+            createdBy: cycles.createdBy,
+          })
+          .from(cycles)
+          .innerJoin(farmer, eq(cycles.farmerId, farmer.id))
+          // Correctly reference the users table
+          .where(and(eq(cycles.organizationId, ctx.session.organization), eq(cycles.ended, false)))
           .execute();
 
         console.log(result);

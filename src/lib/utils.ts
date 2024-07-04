@@ -58,7 +58,7 @@ export function absoluteUrl(path: string) {
 export function processFieldErrors(error: ZodError): string {
   const flattenedErrors = error.flatten().fieldErrors;
   for (const key in flattenedErrors) {
-    console.log(flattenedErrors[key.toString()]);
+    // console.log(flattenedErrors[key.toString()]);
     return flattenedErrors[key.toString()]?.toString() ?? "";
   }
 
@@ -102,8 +102,6 @@ export const standardData: StandardData[] = [
 export const generateFCRMessage = (fcrObj: FCRRecord) => {
   const formattedDate = format(new Date(fcrObj.date), "dd-MM-yyyy");
   const formattedObj = { ...fcrObj, date: formattedDate };
-  console.log(formattedDate);
-  console.log(formattedObj.date);
   let feedCount = 0;
   let stockCount = 0;
   formattedObj.totalFeed.map((feed) => {

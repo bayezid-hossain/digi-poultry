@@ -19,6 +19,12 @@ import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import useStandardDataStore from "../stores/standardsStore";
+import { api } from "@/trpc/react";
+import { CyclesData, StandardData } from "../../_types";
+import useFarmerDataStore from "../stores/farmerStore";
+import { FarmerData } from "../(functionalities)/farmers/Farmers";
+import useCycleDataStore from "../stores/cycleStore";
 const items: MenuItemProps[] = [
   {
     title: "Daily FCR",
@@ -174,24 +180,25 @@ const MenuItem: React.FC<MenuItemProps> = ({ href, title, icon, subs }) => {
 interface Props {
   className?: string;
   organization?: string;
+  standards: StandardData[];
+  farmers: FarmerData[];
+  cycles: CyclesData[];
 }
 
-export function DashboardNav({ className, organization }: Props) {
+export function DashboardNav({ className, organization, standards, farmers, cycles }: Props) {
   const path = usePathname();
   const [firstTime, setFirstTime] = useState<boolean>(true);
-
+  const { setData: setFCRStandardData } = useStandardDataStore();
+  const { setData: setFarmerData } = useFarmerDataStore();
+  const { setData: setCycleData } = useCycleDataStore();
   useEffect(() => {
     if (firstTime) {
-      const data = localStorage.getItem("data");
-      if (!data) {
-        console.log("no data");
-        localStorage.setItem("data", JSON.stringify({ name: "i" }));
-      } else {
-        console.log(data);
-      }
+      setFCRStandardData(standards);
+      setFarmerData(farmers);
+      setCycleData(cycles);
       setFirstTime(false);
     }
-  }, []);
+  }, [standards, farmers]);
   return organization ? (
     <nav className={cn(className, " border-primary-foreground md:border-r-2  md:pr-8 lg:pr-10")}>
       {items.map((item) => (

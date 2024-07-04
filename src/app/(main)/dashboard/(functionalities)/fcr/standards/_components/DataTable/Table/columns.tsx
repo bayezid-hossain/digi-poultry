@@ -15,16 +15,7 @@ import DeleteDialog from "../../DeleteDialog";
 import EditDialog from "../../EditDialog";
 import { StandardData } from "@/app/(main)/_types";
 
-interface columnProps {
-  onEdit: (age: number) => Promise<void>;
-  onDelete: (age: number) => Promise<void>;
-  previousData: StandardData[];
-}
-export const columns = ({
-  onEdit,
-  onDelete,
-  previousData,
-}: columnProps): ColumnDef<StandardData>[] => [
+export const columns = (): ColumnDef<StandardData>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -162,15 +153,13 @@ export const columns = ({
               }}
             >
               <EditDialog
-                onEdit={onEdit}
-                newRequest={true}
                 defaultAge={standard.age}
                 defaultFcr={standard.stdFcr}
                 defaultWeight={standard.stdWeight}
               />
             </DropdownMenuItem>
             <DropdownMenuItem className="py-0.5">
-              <DeleteDialog newRequest={true} onDelete={onDelete} defaultAge={standard.age} />
+              <DeleteDialog defaultAge={standard.age} />
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem

@@ -6,7 +6,7 @@ const StandardsTable = async () => {
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
-      <DataTable initialData={data} />
+      <DataTable />
     </div>
   );
 };

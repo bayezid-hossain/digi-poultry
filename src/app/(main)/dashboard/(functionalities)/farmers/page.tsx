@@ -6,7 +6,7 @@ const page = async () => {
   const farmers = await api.user.getFarmers.query();
   return (
     <div>
-      <Farmers farmers={farmers ?? []} />
+      <Farmers serverFarmers={farmers ?? []} />
     </div>
   );
 };

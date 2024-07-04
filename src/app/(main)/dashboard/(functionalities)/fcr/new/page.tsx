@@ -6,7 +6,7 @@ const Page = async () => {
   const standards = await api.user.getFcrStandards.query();
   return (
     <div className="flex h-full w-full items-center justify-center">
-      <FCR standardData={standards} />
+      <FCR />
     </div>
   );
 };

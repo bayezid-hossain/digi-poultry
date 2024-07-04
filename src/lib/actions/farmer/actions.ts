@@ -63,7 +63,7 @@ export async function CreateFarmer(
         .returning();
 
       const sessionResult = await lucia.validateSession(session.id);
-      return { success: "Farmer Created" + Date.now() };
+      return { success: JSON.stringify(newFarmer[0]) };
     } else return { error: "Something went wrong" };
   } catch (error: any) {
     return { error: (error as Error)?.message };
@@ -117,10 +117,8 @@ export async function deleteSingleFarmer(
   const newObj = {
     id: obj.id,
   };
-  console.log(newObj);
   const parsed = await deleteSingleFarmerValidator.safeParseAsync(newObj);
   if (!parsed.success) {
-    console.log(parsed);
     if (apiCall) return { error: processFieldErrors(parsed.error) };
     const err = parsed.error.flatten();
     return {
@@ -160,11 +158,8 @@ export async function updateSingleFarmer(
       };
     }
     const { name, location, id } = obj;
-    (name as string) &&
-      location &&
-      id &&
-      session?.organization &&
-      (await db
+    if (name && location && id && session?.organization) {
+      const updatedFarmer = await db
         .update(farmer)
         .set({ name: name?.toString(), location: location.toString() })
         .where(
@@ -172,8 +167,10 @@ export async function updateSingleFarmer(
             eq(farmer.id, id?.toString() ?? "none"),
             eq(farmer.organizationId, session.organization),
           ),
-        ));
-    return { success: Date.now().toString() };
+        )
+        .returning();
+      return { success: JSON.stringify(updatedFarmer[0]) };
+    } else return { error: "Could not update farmer " };
   } catch (error: any) {
     const convertedError = error as PostgresError;
     if (convertedError.code == "23505") {

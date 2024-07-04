@@ -1,38 +1,33 @@
 import React, { useEffect, useRef, useState } from "react";
 
+import { SubmitButton } from "@/components/submit-button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { SubmitButton } from "@/components/submit-button";
-import { Button } from "@/components/ui/button";
-import { useFormState, useFormStatus } from "react-dom";
-import { deleteSingleRowFCRStandard, updateSingleStandardRow } from "@/lib/actions/fcr/actions";
+import { deleteSingleCycle } from "@/lib/actions/cycle/actions";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { deleteSingleFarmer } from "@/lib/actions/farmer/actions";
-import useFarmerDataStore from "../../../stores/farmerStore";
+import { useFormState, useFormStatus } from "react-dom";
+import useCycleDataStore from "../../../stores/cycleStore";
 
 const DeleteDialog = ({
-  refetch,
   id,
   setOpenDropdown,
 }: {
-  refetch: () => void;
   id: string;
   setOpenDropdown: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const ref = useRef<HTMLFormElement>(null);
   ref.current?.reset();
   const { pending } = useFormStatus();
-  const [deleteFarmerState, deleteFormAction] = useFormState(deleteSingleFarmer, null);
-  const { removeData } = useFarmerDataStore();
+  const [deleteFarmerState, deleteFormAction] = useFormState(deleteSingleCycle, null);
+  const { removeData } = useCycleDataStore();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   useEffect(() => {

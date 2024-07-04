@@ -34,3 +34,15 @@ export type StandardData = {
   stdFcr: number;
   organization?: string;
 };
+
+export type CyclesData = {
+  farmerName: string;
+  farmerLocation: string;
+  id: string;
+  totalDoc: number;
+  strain: string | null;
+  age: number;
+  ended: boolean | null;
+  endDate: Date | null;
+  createdBy: string;
+};
