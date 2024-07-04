@@ -94,10 +94,16 @@ export const userRouter = createTRPCRouter({
             age: cycles.age,
             ended: cycles.ended,
             endDate: cycles.endDate,
-            createdBy: cycles.createdBy,
+            createdBy: {
+              firstName: users.firstName,
+              lastName: users.lastName,
+              id: users.id,
+              email: users.email,
+            },
           })
           .from(cycles)
           .innerJoin(farmer, eq(cycles.farmerId, farmer.id))
+          .innerJoin(users, eq(users.id, cycles.createdBy))
           // Correctly reference the users table
           .where(and(eq(cycles.organizationId, ctx.session.organization), eq(cycles.ended, false)))
           .execute();

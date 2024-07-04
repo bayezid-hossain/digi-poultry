@@ -44,5 +44,6 @@ export type CyclesData = {
   age: number;
   ended: boolean | null;
   endDate: Date | null;
-  createdBy: string;
+
+  createdBy: { firstName: string; lastName: string; email: string; id: string };
 };
