@@ -44,6 +44,19 @@ export type CyclesData = {
   age: number;
   ended: boolean | null;
   endDate: Date | null;
+  startDate: Date;
+  farmerId: string;
 
   createdBy: { firstName: string; lastName: string; email: string; id: string };
+  lastFCR: {
+    id: string;
+    createdAt: Date;
+    totalMortality: number;
+    stdFcr: number;
+    stdWeight: number;
+    lastDayMortality: number;
+    fcr: number;
+    avgWeight: number;
+    age: number;
+  } | null;
 };

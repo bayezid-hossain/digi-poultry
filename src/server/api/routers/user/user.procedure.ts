@@ -88,28 +88,46 @@ export const userRouter = createTRPCRouter({
           .select({
             farmerName: farmer.name,
             farmerLocation: farmer.location,
+            farmerId: farmer.id,
             id: cycles.id,
             totalDoc: cycles.totalDoc,
             strain: cycles.strain,
             age: cycles.age,
             ended: cycles.ended,
             endDate: cycles.endDate,
+            startDate: cycles.createdAt,
+
             createdBy: {
               firstName: users.firstName,
               lastName: users.lastName,
               id: users.id,
               email: users.email,
             },
+            lastFCR: {
+              id: FCRTable.id,
+              createdAt: FCRTable.createdAt,
+              totalMortality: FCRTable.totalMortality,
+              stdFcr: FCRTable.stdFcr,
+              stdWeight: FCRTable.stdWeight,
+              fcr: FCRTable.fcr,
+              avgWeight: FCRTable.avgWeight,
+              lastDayMortality: FCRTable.todayMortality,
+              age: FCRTable.age,
+            },
           })
           .from(cycles)
           .innerJoin(farmer, eq(cycles.farmerId, farmer.id))
           .innerJoin(users, eq(users.id, cycles.createdBy))
+          .leftJoin(FCRTable, eq(FCRTable.id, cycles.lastFcrId))
           // Correctly reference the users table
           .where(and(eq(cycles.organizationId, ctx.session.organization), eq(cycles.ended, false)))
           .execute();
 
         console.log(result);
-        return result;
+        return result.map((row) => ({
+          ...row,
+          lastFCR: row.lastFCR?.id ? row.lastFCR : null, // Ensure lastFCR is null if it has no id
+        }));
       } catch (error) {
         console.log(error);
       }

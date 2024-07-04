@@ -1,1 +1,0 @@
-ALTER TABLE "dp_cycles" ADD COLUMN "age" double precision DEFAULT 0 NOT NULL;

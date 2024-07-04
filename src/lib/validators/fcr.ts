@@ -16,7 +16,7 @@ export const feedSchema = z.object({
 export const fcrSchema = z.object({
   farmerName: z.string().min(3, "Please enter minimum 3 letters for Farmer Name").max(20),
   location: z.string().min(3, "Please enter minimum 3 letters for Location").max(20),
-
+  cycleId: z.string(),
   avgWeight: z
     .number({
       required_error: "Average Weight is required",

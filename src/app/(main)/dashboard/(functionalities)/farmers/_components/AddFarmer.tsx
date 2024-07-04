@@ -31,10 +31,12 @@ const AddFarmerDialog = () => {
     }
   }, [state?.success]);
   return (
-    <div className="flex flex-row items-center justify-start">
+    <div className="flex w-full flex-row items-center justify-start">
       <Dialog open={open} onOpenChange={setOpen} modal>
         <DialogTrigger asChild>
-          <Button variant="outline">Create Farmer</Button>
+          <Button variant="outlineLink" className="w-full">
+            Create Farmer
+          </Button>
         </DialogTrigger>
         <DialogContent className="mb-auto sm:max-w-[425px] ">
           <DialogHeader>

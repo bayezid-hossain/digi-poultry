@@ -9,7 +9,14 @@ import {
   createOrgSchema,
 } from "@/lib/validators/organization";
 import { db } from "@/server/db";
-import { cycles, farmer, organizations, sessions, userOrganizations } from "@/server/db/schema";
+import {
+  FCRTable,
+  cycles,
+  farmer,
+  organizations,
+  sessions,
+  userOrganizations,
+} from "@/server/db/schema";
 import { and, eq } from "drizzle-orm";
 import { lucia } from "../auth";
 import { validateRequest } from "../auth/validate-request";
@@ -77,51 +84,37 @@ export async function CreateCycle(
         })
         .returning();
       if (newCycle[0]) {
-        const withFarmerInfo = await db
-          .select({ farmerName: farmer.name, farmerLocation: farmer.location })
+        const withFarmerFCRInfo = await db
+          .select({
+            farmerName: farmer.name,
+            farmerLocation: farmer.location,
+            farmerId: farmer.id,
+
+            lastFCR: {
+              id: FCRTable.id,
+              createdAt: FCRTable.createdAt,
+              totalMortality: FCRTable.totalMortality,
+              stdFcr: FCRTable.stdFcr,
+              stdWeight: FCRTable.stdWeight,
+              fcr: FCRTable.fcr,
+              avgWeight: FCRTable.avgWeight,
+              lastDayMortality: FCRTable.todayMortality,
+            },
+          })
           .from(farmer)
+          .leftJoin(FCRTable, eq(FCRTable.id, ""))
           .where(eq(farmer.id, newCycle[0].farmerId))
           .execute();
-        return { success: JSON.stringify({ ...newCycle[0], ...withFarmerInfo[0] }) };
+        const newObj = {
+          ...newCycle[0],
+          startDate: newCycle[0].createdAt,
+          ...withFarmerFCRInfo[0],
+          createdBy: user,
+        };
+        return { success: JSON.stringify(newObj) };
       } else {
         return { error: "Something went wrong" };
       }
-    } else return { error: "Something went wrong" };
-  } catch (error: any) {
-    return { error: (error as Error)?.message };
-  }
-}
-
-export async function ChangeOrganization(
-  _: any,
-  formData: FormData,
-  apiCall?: boolean,
-): Promise<ActionResponse<ChangeCurrentOrg>> {
-  const { user, session } = await validateRequest();
-  const obj = Object.fromEntries(formData.entries());
-  if (!session) return { error: "No session found" };
-  try {
-    const parsed = await changeCurrentOrgSchema.safeParseAsync(obj);
-    if (!parsed.success) {
-      if (apiCall) {
-        return { error: processFieldErrors(parsed.error) };
-      }
-      const err = parsed.error.flatten();
-
-      return {
-        fieldError: {
-          orgId: err.fieldErrors.orgId?.[0],
-        },
-      };
-    }
-    const { orgId } = parsed.data;
-    if (orgId && user) {
-      const dbResult = await db
-        .update(sessions)
-        .set({ organization: orgId })
-        .where(eq(sessions.id, session.id));
-      const sessionResult = await lucia.validateSession(session.id);
-      return { success: "Current Organization Changed to " + session.organization };
     } else return { error: "Something went wrong" };
   } catch (error: any) {
     return { error: (error as Error)?.message };

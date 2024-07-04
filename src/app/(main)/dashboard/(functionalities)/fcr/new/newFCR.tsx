@@ -1,32 +1,46 @@
 "use client";
 
-import { FCRRecord, StandardData } from "@/app/(main)/_types";
+import { CyclesData, FCRRecord, StandardData } from "@/app/(main)/_types";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createFCR, importStandardTable } from "@/lib/actions/fcr/actions";
-import { generateFCRMessage } from "@/lib/utils";
-import { api } from "@/trpc/react";
+import { formatDate, generateFCRMessage } from "@/lib/utils";
 import copy from "clipboard-copy";
-import { format } from "date-fns";
-import { Ghost, Loader2 } from "lucide-react";
-import { redirect } from "next/navigation";
+import { ChevronsUpDown, Ghost, Loader2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { useFormState } from "react-dom";
 import { toast } from "sonner";
+import useCycleDataStore from "../../../stores/cycleStore";
 import useStandardDataStore from "../../../stores/standardsStore";
+import AddCycle from "../../cycles/_components/AddCycle";
 
-const FCR = ({ feeds }: { feeds?: string[] }) => {
+const FCR = () => {
   const {
     data: standardsFromStore,
     setData: setStandardsInStore,
     isFetching,
   } = useStandardDataStore();
   const [state, formAction] = useFormState(createFCR, null);
+  const searchParams = useSearchParams();
+  const cycleIdFromParams = searchParams.get("cycleId");
+  const [cycleId, setCycleId] = useState<string>(cycleIdFromParams ?? "");
   const [importState, importStandardAction] = useFormState(importStandardTable, null);
-  const [feedNames, setFeedNames] = useState<string[]>(feeds ?? ["B1", "B2"]);
+  const [cycle, setCycle] = useState<CyclesData>();
+  const { data: cycles, filterData: searchCycle } = useCycleDataStore();
+  const [feedNames, setFeedNames] = useState<string[]>(["B1", "B2"]);
   const initialFcrObj: FCRRecord = {
     date: new Date(Date.now()).toDateString(),
     age: 1,
@@ -55,6 +69,7 @@ const FCR = ({ feeds }: { feeds?: string[] }) => {
   const [fcrObj, setFcrObj] = useState<FCRRecord>(initialFcrObj);
   const ref = useRef<HTMLDivElement>(null);
   const fieldErrors = useRef<HTMLUListElement>(null);
+  const [popOpen, setPopOpen] = useState<boolean>(false);
   const formErrors = useRef<HTMLParagraphElement>(null);
   const [msg, setMsg] = useState<string>("");
   const [visible, setVisible] = useState<boolean>(false);
@@ -96,26 +111,49 @@ const FCR = ({ feeds }: { feeds?: string[] }) => {
     if (!isFetching) setLoading(false);
   }, [isFetching]);
   useEffect(() => {
-    try {
-      if (state?.success) {
-        const message = generateFCRMessage(JSON.parse(state?.success.toString()) as FCRRecord);
-        setMsg(message);
-        setVisible(true);
+    if (cycleId != "") {
+      const result = searchCycle(cycleId);
+      if (result[0]) setCycle(result[0]);
+    }
+  }, [cycleId]);
+  useEffect(() => {
+    if (cycle) {
+      setFcrObj({
+        ...fcrObj,
+        age: cycle.age + 1,
+        farmer: cycle.farmerName,
+        location: cycle.farmerLocation,
+        totalDoc: cycle.totalDoc,
+        strain: cycle.strain ?? "Ross A",
+        totalMortality: cycle.lastFCR?.totalMortality ?? 0,
+      });
+    }
+  }, [cycle]);
+  useEffect(() => {
+    if (state?.success) {
+      try {
+        if (state?.success) {
+          const message = generateFCRMessage(JSON.parse(state?.success.toString()) as FCRRecord);
+          setMsg(message);
+          setVisible(true);
+        }
+        setTimeout(() => {
+          ref.current?.scrollIntoView({ behavior: "smooth" });
+        }, 200);
+      } catch (error) {
+        console.log(error);
       }
-      setTimeout(() => {
-        ref.current?.scrollIntoView({ behavior: "smooth" });
-      }, 200);
-    } catch (error) {
-      console.log(error);
     }
   }, [state?.success]);
   useEffect(() => {
-    setVisible(false);
-    if (state?.fieldError) {
-      fieldErrors.current?.scrollIntoView({ behavior: "smooth" });
-    }
-    if (state?.formError) {
-      formErrors.current?.scrollIntoView({ behavior: "smooth" });
+    if (state) {
+      setVisible(false);
+      if (state?.fieldError) {
+        fieldErrors.current?.scrollIntoView({ behavior: "smooth" });
+      }
+      if (state?.formError) {
+        formErrors.current?.scrollIntoView({ behavior: "smooth" });
+      }
     }
   }, [state?.error, state?.fieldError, state?.formError]);
 
@@ -135,7 +173,65 @@ const FCR = ({ feeds }: { feeds?: string[] }) => {
         <div className="flex w-full flex-col items-start justify-center gap-y-8 md:gap-x-8 xl:flex-row">
           <Card className="w-full max-w-xl">
             <CardContent>
+              {" "}
+              <div className="flex w-full items-center justify-center gap-x-4 pt-4">
+                <p>Cycle: </p>{" "}
+                <Popover open={popOpen} onOpenChange={setPopOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" role="combobox" className="w-auto justify-between">
+                      {cycle ? (
+                        <div className="flex gap-x-2">
+                          <p>{cycle.farmerName} -</p>
+                          <p>{formatDate(cycle.startDate)}-</p>
+                          <p>{cycle.totalDoc}pcs</p>
+                        </div>
+                      ) : (
+                        "Select Cycle..."
+                      )}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search Cycle..." />
+                      <CommandList>
+                        <CommandEmpty>No Cycle found.</CommandEmpty>
+                        <CommandGroup>
+                          {cycles.map((cycle) => (
+                            <CommandItem
+                              key={cycle.id}
+                              value={
+                                cycle.farmerName + cycle.farmerLocation + cycle.totalDoc + cycle.id
+                              }
+                              onSelect={async () => {
+                                setCycle(cycle);
+                                setPopOpen(false);
+                              }}
+                            >
+                              <div
+                                className="grid w-full grid-cols-3 place-items-start 
+                          "
+                              >
+                                <span>{cycle.farmerName}</span>
+                                <span>{cycle.totalDoc}</span>
+                                <span>{cycle.farmerLocation}</span>
+                              </div>
+                            </CommandItem>
+                          ))}
+                          <CommandItem
+                            key={"create-new-farmer"}
+                            className="flex w-full items-center"
+                          >
+                            <AddCycle />
+                          </CommandItem>
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
               <form action={formAction} className="space-y-4">
+                <Input name={"cycleId"} defaultValue={cycleId} className="hidden" />
                 <div className="flex flex-col items-start justify-start space-y-4">
                   <div className="mb-2 mt-8 flex gap-x-8">
                     <div className="space-y-2">
@@ -392,42 +488,44 @@ const FCR = ({ feeds }: { feeds?: string[] }) => {
                   </p>
                 ) : null}
 
-                <SubmitButton
-                  className="w-full"
-                  onClick={() => {
-                    const stdFcrWt = standardsFromStore.find(
-                      (standard) => standard.age === fcrObj.age,
-                    );
-                    if (stdFcrWt?.stdFcr && stdFcrWt.stdWeight) {
-                      let feedCalc = 1;
-                      fcrObj.totalFeed.map((feed) => {
-                        feedCalc += feed.quantity;
-                      });
-                      const fcr = Number(
-                        (
-                          (feedCalc * 50) /
-                          ((fcrObj.totalDoc - fcrObj.totalMortality) * (fcrObj.avgWeight / 1000))
-                        ).toFixed(4),
+                {cycle ? (
+                  <SubmitButton
+                    className="w-full"
+                    onClick={() => {
+                      const stdFcrWt = standardsFromStore.find(
+                        (standard) => standard.age === fcrObj.age,
                       );
-                      const updatedData = {
-                        ...fcrObj,
-                        stdFcr: stdFcrWt.stdFcr,
-                        stdWeight: stdFcrWt.stdWeight,
-                        fcr: fcr,
-                      };
-                      const message = generateFCRMessage(updatedData);
-                      setMsg(message);
-                      setVisible(true);
-                      setFcrObj(updatedData);
-                      setTimeout(() => {
-                        ref.current?.scrollIntoView({ behavior: "smooth" });
-                      }, 200);
-                    }
-                  }}
-                >
-                  {" "}
-                  Calculate
-                </SubmitButton>
+                      if (stdFcrWt?.stdFcr && stdFcrWt.stdWeight) {
+                        let feedCalc = 1;
+                        fcrObj.totalFeed.map((feed) => {
+                          feedCalc += feed.quantity;
+                        });
+                        const fcr = Number(
+                          (
+                            (feedCalc * 50) /
+                            ((fcrObj.totalDoc - fcrObj.totalMortality) * (fcrObj.avgWeight / 1000))
+                          ).toFixed(4),
+                        );
+                        const updatedData = {
+                          ...fcrObj,
+                          stdFcr: stdFcrWt.stdFcr,
+                          stdWeight: stdFcrWt.stdWeight,
+                          fcr: fcr,
+                        };
+                        const message = generateFCRMessage(updatedData);
+                        setMsg(message);
+                        setVisible(true);
+                        setFcrObj(updatedData);
+                        setTimeout(() => {
+                          ref.current?.scrollIntoView({ behavior: "smooth" });
+                        }, 200);
+                      }
+                    }}
+                  >
+                    {" "}
+                    Calculate
+                  </SubmitButton>
+                ) : null}
               </form>
             </CardContent>
           </Card>
@@ -455,7 +553,17 @@ const FCR = ({ feeds }: { feeds?: string[] }) => {
                 className="w-full font-semibold"
                 onClick={() => {
                   setVisible(false);
-                  setFcrObj(initialFcrObj);
+                  if (cycle) {
+                    setFcrObj({
+                      ...initialFcrObj,
+                      age: cycle.age + 1,
+                      farmer: cycle.farmerName,
+                      location: cycle.farmerLocation,
+                      totalDoc: cycle.totalDoc,
+                      strain: cycle.strain ?? "Ross A",
+                      totalMortality: cycle.lastFCR?.totalMortality ?? 0,
+                    });
+                  } else setFcrObj(initialFcrObj);
                 }}
               >
                 Clear

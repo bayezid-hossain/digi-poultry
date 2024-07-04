@@ -130,6 +130,7 @@ export const FCRTable = pgTable(
     totalMortality: doublePrecision("total_mortality").default(22).notNull(),
     disease: varchar("disease", { length: 50 }).default("none"),
     medicine: varchar("medicine", { length: 50 }).default("none"),
+    cycleId: uuid("cycle_id"),
     //farmerID
     totalFeed: jsonb("total_feed").default([
       { name: "510", quantity: 0 },
@@ -236,14 +237,6 @@ export const farmerRelations = relations(farmer, ({ many, one }) => ({
   cycles: many(cycles),
 }));
 
-export const farmerCycle = pgTable("farmerCycles", {
-  farmerId: uuid("farmer_id").notNull(),
-  cycleId: uuid("cycle_id").notNull(),
-});
-
-export type FarmerCycle = typeof farmerCycle.$inferSelect;
-export type NewFamerCycle = typeof farmerCycle.$inferInsert;
-
 export const cycles = pgTable(
   "cycles",
   {
@@ -251,7 +244,7 @@ export const cycles = pgTable(
     totalDoc: doublePrecision("total_doc").default(0).notNull(),
     age: doublePrecision("age").default(0).notNull(),
     strain: varchar("strain", { length: 50 }).default("Ross A"),
-
+    totalMortality: doublePrecision("totalMortality").default(0).notNull(),
     farmerId: uuid("farmer_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
@@ -259,14 +252,17 @@ export const cycles = pgTable(
     endDate: timestamp("end_date"),
     organizationId: uuid("organization_id").notNull(),
     createdBy: varchar("created_by").notNull(),
+    lastFcrId: varchar("last_fcr_id", { length: 21 }).default(""),
   },
   (t) => ({
     cycleFarmerIdx: index("cycle_farmer_index").on(t.farmerId),
     cycleOrganizationIdx: index("cycle_org_index").on(t.organizationId),
+    cycleFCRIdx: index("cycle_fcr_index").on(t.lastFcrId),
   }),
 );
 export const cycleRelations = relations(cycles, ({ many, one }) => ({
   FCRStandards: many(FCRStandards),
-
+  organizations: one(organizations),
   farmers: one(farmer),
+  fcr: one(FCRTable),
 }));

@@ -8,17 +8,36 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { CircleAlert, MoreHorizontal, Plane } from "lucide-react";
 import { useState } from "react";
 import DeleteDialog from "./DeleteDialog";
+import { formatDate } from "@/lib/utils";
+import clipboardCopy from "clipboard-copy";
+import { toast } from "sonner";
+import Link from "next/link";
+import { SubmitButton } from "@/components/submit-button";
 
 const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
-  const { age, createdBy, endDate, ended, farmerLocation, farmerName, id, strain, totalDoc } =
-    cycle;
+  const [openUserInfoDropdown, setUserInfoDropdown] = useState<boolean>(false);
+  const {
+    age,
+    startDate,
+    createdBy,
+    endDate,
+    ended,
+    farmerLocation,
+    farmerName,
+    id,
+    strain,
+    totalDoc,
+    farmerId,
+    lastFCR,
+  } = cycle;
+  const { firstName, lastName, id: userId, email: userEmail } = createdBy;
   return (
     <Card
-      className="m-2 h-fit scale-100 cursor-pointer transition-all duration-500 "
+      className={`m-2 h-full scale-100 cursor-pointer transition-all duration-500 ${ended ? "border-2 border-red-500" : "border-2 border-green-500"}`}
       onClick={(e) => {
         e.preventDefault();
       }}
@@ -50,11 +69,89 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <CardHeader>
+      <CardHeader className="pt-8">
         <p className="text-xl">{farmerName}</p>
         <p className="text-sm">Location: {farmerLocation}</p>
+        <p className="text-xs">Started at {formatDate(startDate)}</p>
+        <hr />
       </CardHeader>
-      <CardContent></CardContent>
+      <CardContent className="flex flex-col gap-y-2 text-xs">
+        <div className="grid w-full grid-cols-2">
+          <p>Total DOC was {totalDoc} pcs</p>
+          <p>Strain is &apos;{strain}&apos;</p>
+        </div>
+        <hr />
+        {lastFCR ? (
+          <div className="flex flex-col gap-y-2">
+            <p>Last Updated {formatDate(lastFCR.createdAt)}</p>
+
+            <hr />
+            <div className="grid w-full grid-cols-2">
+              <p>Standard FCR: {lastFCR.stdFcr}</p>
+              <p>Current FCR: {lastFCR.fcr}</p>
+            </div>
+            <div className="grid w-full grid-cols-2">
+              <p>Standard Weight: {lastFCR.stdWeight}</p>
+              <p>Current Avg Weight: {lastFCR.avgWeight}</p>
+            </div>
+          </div>
+        ) : null}
+        <p>
+          Last Updated Age is {lastFCR ? lastFCR.age : age}{" "}
+          {(lastFCR ? lastFCR.age : age) > 1 ? "days" : "day"}
+        </p>
+        <hr />{" "}
+        {!lastFCR ? (
+          <div className="flex flex-col gap-y-4 text-xl">
+            <p>No FCR Calculated Yet</p>
+            <SubmitButton variant={"outlineLink"}>
+              <Link href={`/dashboard/fcr/new?cycleId=${id}`}>Calculate FCR Now!</Link>
+            </SubmitButton>
+          </div>
+        ) : null}
+        <div className="absolute bottom-0 left-0 mt-2 flex gap-x-2 p-6 pb-2 text-xs">
+          <p>
+            Started by {firstName} {lastName}
+          </p>
+          <DropdownMenu open={openUserInfoDropdown} onOpenChange={setUserInfoDropdown}>
+            <DropdownMenuTrigger asChild className="px-0 py-0">
+              <CircleAlert className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="left-0 flex flex-col gap-y-2">
+              <DropdownMenuItem
+                onClick={async (e) => {
+                  e.preventDefault();
+                  await clipboardCopy(userId);
+                  toast("User ID Copied to Clipboard");
+                  setUserInfoDropdown(false);
+                }}
+              >
+                ID: {userId}
+              </DropdownMenuItem>{" "}
+              <DropdownMenuItem
+                onClick={async (e) => {
+                  e.preventDefault();
+                  await clipboardCopy(userEmail);
+                  toast("User Email Copied to Clipboard");
+                  setUserInfoDropdown(false);
+                }}
+              >
+                Email: {userEmail}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </CardContent>
+      <div className="absolute left-0 top-0 p-6 pt-2">
+        {ended ? (
+          <p className="text-red-500">Ended at {formatDate(endDate ?? Date.now())}</p>
+        ) : (
+          <div className="flex gap-x-2 text-xs text-green-700">
+            <Plane className="h-4 w-4" />
+            <p>Running</p>
+          </div>
+        )}
+      </div>
     </Card>
   );
 };

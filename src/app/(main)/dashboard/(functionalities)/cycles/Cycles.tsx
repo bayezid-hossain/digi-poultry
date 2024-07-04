@@ -9,6 +9,7 @@ import AddDialog from "./_components/AddCycle";
 import useFarmerDataStore from "../../stores/farmerStore";
 import { CyclesData } from "@/app/(main)/_types";
 import useCycleDataStore from "../../stores/cycleStore";
+import AddCycle from "./_components/AddCycle";
 
 const Cycles = ({ cycles: serverCycle }: { cycles: CyclesData[] }) => {
   const { data: cycles, setData: setCycles } = useCycleDataStore();
@@ -79,21 +80,25 @@ const Cycles = ({ cycles: serverCycle }: { cycles: CyclesData[] }) => {
       </div>
       {filteredCycles?.length ? (
         <div className="h-auto w-full rounded-md bg-gradient-to-r from-[#3d3069] via-red-500 to-[#3f4b6d] p-1">
-          <div className="scroll-style grid h-auto max-h-[70vh] w-full grid-cols-2 overflow-y-auto border-0 bg-card md:max-h-[60vh] md:grid-cols-3 ">
+          <div className="scroll-style grid h-auto max-h-[25rem] w-full grid-cols-1 gap-x-4 gap-y-4 overflow-y-auto border-0 bg-card p-2 pb-4 sm:grid-cols-2 xl:grid-cols-3 ">
             {filteredCycles.map((data) => {
-              return <CycleCard cycle={data} />;
+              return <CycleCard cycle={data} key={data.id} />;
             })}
           </div>
         </div>
       ) : (
         <div className="flex w-full items-center justify-center">
-          <div className="my-8 flex flex-col items-center gap-2">
+          <div className="my-8 flex w-full flex-col items-center gap-2">
             <Ghost className="h-8 w-8 text-zinc-800" />
             <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
             {!isSearch && (
-              <div className="flex w-full flex-col items-center justify-center">
-                <div className="flex items-center justify-center gap-x-2">
-                  Let&apos;s <AddDialog /> and add to your organization.
+              <div className="flex  w-full flex-col items-center justify-center">
+                <div className="flex w-full items-center justify-center gap-x-2">
+                  Let&apos;s{" "}
+                  <span className="max-w-32">
+                    <AddCycle />
+                  </span>{" "}
+                  and add to your organization.
                 </div>
               </div>
             )}

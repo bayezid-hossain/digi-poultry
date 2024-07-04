@@ -1,1 +1,0 @@
-ALTER TABLE "dp_farmer" ADD COLUMN "location" varchar(30) NOT NULL;

@@ -16,8 +16,9 @@ import { Button } from "@/components/ui/button";
 import { useFormState } from "react-dom";
 
 import { CreateCycle } from "@/lib/actions/cycle/actions";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
 import { ChevronsUpDown } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -33,7 +34,7 @@ import useCycleDataStore from "../../../stores/cycleStore";
 import { farmer } from "@/server/db/schema";
 import { CyclesData } from "@/app/(main)/_types";
 
-const AddDialog = () => {
+const AddCycle = () => {
   const [state, formAction] = useFormState(CreateCycle, null);
   const [open, setOpen] = useState<boolean>(false);
   const [popOpen, setPopOpen] = useState<boolean>(false);
@@ -43,14 +44,17 @@ const AddDialog = () => {
   useEffect(() => {
     if (state?.success) {
       setOpen(false);
-      addCycle(JSON.parse(state?.success?.toString() ?? "{}") as CyclesData);
+      const obj = JSON.parse(state?.success?.toString() ?? "{}") as CyclesData;
+      addCycle(obj);
     }
   }, [state?.success]);
   return (
-    <div className="flex flex-row items-center justify-start">
+    <div className="flex w-full flex-row items-center justify-start">
       <Dialog open={open} onOpenChange={setOpen} modal>
         <DialogTrigger asChild>
-          <Button variant="outline">Create Cycle</Button>
+          <Button variant="outlineLink" className="w-full">
+            Create Cycle
+          </Button>
         </DialogTrigger>
         <DialogContent
           onClick={(e) => {
@@ -103,10 +107,10 @@ const AddDialog = () => {
                           </div>
                         </CommandItem>
                       ))}
-                      <CommandItem key={"create-new-farmer"}>
-                        <AddFarmerDialog />
-                      </CommandItem>
                     </CommandGroup>
+                    <CommandItem key={"create-new-farmer"}>
+                      <AddFarmerDialog />
+                    </CommandItem>
                   </CommandList>
                 </Command>
               </PopoverContent>
@@ -135,7 +139,7 @@ const AddDialog = () => {
                   type="text"
                   name="age"
                   required
-                  defaultValue={1}
+                  defaultValue={0}
                   placeholder="Age"
                   className="col-span-3"
                 />
@@ -192,4 +196,4 @@ const AddDialog = () => {
   );
 };
 
-export default AddDialog;
+export default AddCycle;

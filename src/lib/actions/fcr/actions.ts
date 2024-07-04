@@ -18,7 +18,7 @@ import {
   updateSingleRowSchema,
 } from "@/lib/validators/fcr";
 import { db } from "@/server/db";
-import { FCRStandards, FCRTable } from "@/server/db/schema";
+import { FCRStandards, FCRTable, cycles } from "@/server/db/schema";
 import { and, eq } from "drizzle-orm";
 import { generateId } from "lucia";
 import { redirect } from "next/navigation";
@@ -295,6 +295,7 @@ export async function createFCR(
     totalDoc,
     totalFeed,
     totalMortality,
+    cycleId,
   } = parsed.data;
   const id = generateId(21);
   let feedCalc = 1;
@@ -332,6 +333,7 @@ export async function createFCR(
         totalDoc,
         farmStock,
         totalFeed,
+        cycleId,
       })
       .returning({
         farmer: FCRTable.farmerName,
@@ -351,7 +353,12 @@ export async function createFCR(
         totalFeed: FCRTable.totalFeed,
         date: FCRTable.createdAt,
         totalFeedQuantity: FCRTable.age,
+        cycleId: FCRTable.cycleId,
+        id: FCRTable.id,
       });
+    if (result[0]) {
+      await db.update(cycles).set({ lastFcrId: result[0].id }).where(eq(cycles.id, cycleId));
+    }
     return { success: JSON.stringify(result[0]) };
   } catch (error) {
     return { formError: "Couldn't Calculate" };

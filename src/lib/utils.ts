@@ -37,9 +37,18 @@ export function formatDate(
     year: "numeric",
   },
 ) {
-  return new Intl.DateTimeFormat("en-US", {
-    ...options,
-  }).format(new Date(date));
+  try {
+    return new Intl.DateTimeFormat("en-US", {
+      ...options,
+    }).format(new Date(date));
+  } catch (e) {
+    console.log(e);
+    console.log(date);
+    return new Intl.DateTimeFormat("en-US", {
+      ...options,
+      month: "numeric",
+    }).format(Date.now());
+  }
 }
 
 export function formatPrice(price: number | string, options: Intl.NumberFormatOptions = {}) {

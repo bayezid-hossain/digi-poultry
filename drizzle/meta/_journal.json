@@ -5,57 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1719306403438,
-      "tag": "0000_fantastic_katie_power",
+      "when": 1720079662566,
+      "tag": "0000_unusual_yellowjacket",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1719306542472,
-      "tag": "0001_magenta_redwing",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1719306759311,
-      "tag": "0002_loving_goliath",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1719307008066,
-      "tag": "0003_late_jamie_braddock",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1719484941132,
-      "tag": "0004_thin_norman_osborn",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1719725456763,
-      "tag": "0005_strange_alex_wilder",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1719987366396,
-      "tag": "0006_aberrant_goblin_queen",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1719988932164,
-      "tag": "0007_spotty_bishop",
+      "when": 1720089087032,
+      "tag": "0001_youthful_wildside",
       "breakpoints": true
     }
   ]
