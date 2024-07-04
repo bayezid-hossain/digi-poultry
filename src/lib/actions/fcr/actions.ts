@@ -357,7 +357,10 @@ export async function createFCR(
         id: FCRTable.id,
       });
     if (result[0]) {
-      await db.update(cycles).set({ lastFcrId: result[0].id }).where(eq(cycles.id, cycleId));
+      await db
+        .update(cycles)
+        .set({ lastFcrId: result[0].id, age: result[0].age })
+        .where(eq(cycles.id, cycleId));
     }
     return { success: JSON.stringify(result[0]) };
   } catch (error) {

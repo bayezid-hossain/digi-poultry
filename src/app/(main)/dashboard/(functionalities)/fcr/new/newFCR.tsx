@@ -231,7 +231,7 @@ const FCR = () => {
                 </Popover>
               </div>
               <form action={formAction} className="space-y-4">
-                <Input name={"cycleId"} defaultValue={cycleId} className="hidden" />
+                <Input name={"cycleId"} defaultValue={cycle?.id} className="hidden" />
                 <div className="flex flex-col items-start justify-start space-y-4">
                   <div className="mb-2 mt-8 flex gap-x-8">
                     <div className="space-y-2">

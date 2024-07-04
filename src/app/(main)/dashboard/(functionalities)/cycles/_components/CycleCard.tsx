@@ -91,8 +91,12 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
               <p>Current FCR: {lastFCR.fcr}</p>
             </div>
             <div className="grid w-full grid-cols-2">
-              <p>Standard Weight: {lastFCR.stdWeight}</p>
-              <p>Current Avg Weight: {lastFCR.avgWeight}</p>
+              <p>Standard Weight: {lastFCR.stdWeight} gm</p>
+              <p>Current Avg Weight: {lastFCR.avgWeight} gm</p>
+            </div>
+            <div className="grid w-full grid-cols-2">
+              <p>Last Day Mortality: {lastFCR.lastDayMortality}</p>
+              <p>Total Mortality: {lastFCR.totalMortality}</p>
             </div>
           </div>
         ) : null}
