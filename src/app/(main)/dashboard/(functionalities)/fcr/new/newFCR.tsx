@@ -79,7 +79,7 @@ const FCR = () => {
       if (index !== undefined) {
         const updatedArray = fcrObj[field].map((item, i) =>
           i === index
-            ? { ...item, quantity: Number.isNaN(Number(value)) ? 0 : Number(value) }
+            ? { ...item, quantity: Number.isNaN(Number(value)) ? "" : Number(value) }
             : item,
         );
 
@@ -95,7 +95,7 @@ const FCR = () => {
       ) {
         const updatedData = {
           ...fcrObj,
-          [field]: Number.isNaN(Number(value)) ? 0 : Number(value),
+          [field]: Number.isNaN(Number(value)) ? "" : Number(value),
         };
         setFcrObj(updatedData);
       } else {
@@ -267,6 +267,7 @@ const FCR = () => {
                     autoComplete="totalDoc"
                     name="totalDoc"
                     type="string"
+                    inputMode="numeric"
                     value={fcrObj.totalDoc}
                     onChange={(e) => {
                       handleInputChange("totalDoc", e.target.value);
@@ -291,6 +292,7 @@ const FCR = () => {
                   <Input
                     placeholder="1"
                     autoComplete="age"
+                    inputMode="numeric"
                     name="age"
                     value={fcrObj.age}
                     onChange={(e) => {
@@ -309,6 +311,7 @@ const FCR = () => {
                         autoComplete="todayMortality"
                         name="todayMortality"
                         value={fcrObj.todayMortality}
+                        inputMode="numeric"
                         onChange={(e) => {
                           handleInputChange("todayMortality", e.target.value);
                         }}
@@ -322,6 +325,7 @@ const FCR = () => {
                         autoComplete="totalMortality"
                         name="totalMortality"
                         value={fcrObj.totalMortality}
+                        inputMode="numeric"
                         onChange={(e) => {
                           handleInputChange("totalMortality", e.target.value);
                         }}
@@ -336,6 +340,7 @@ const FCR = () => {
                     placeholder="1"
                     autoComplete="avgWeight"
                     name="avgWeight"
+                    inputMode="numeric"
                     type="string"
                     value={fcrObj.avgWeight}
                     onChange={(e) => {
@@ -369,6 +374,7 @@ const FCR = () => {
                         <Input
                           placeholder="0"
                           type="string"
+                          inputMode="numeric"
                           value={fcrObj.totalFeed[0]?.quantity}
                           onChange={(e: ChangeEvent<HTMLInputElement>) =>
                             handleInputChange("totalFeed", e.target.value, 0)
@@ -399,6 +405,7 @@ const FCR = () => {
                         <Label className="w-full">Quantity</Label>
                         <Input
                           placeholder="0"
+                          inputMode="numeric"
                           type="string"
                           value={fcrObj.totalFeed[1]?.quantity}
                           onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -416,6 +423,7 @@ const FCR = () => {
                       <Label>{fcrObj.totalFeed[0]?.name}</Label>
                       <Input
                         placeholder="0"
+                        inputMode="numeric"
                         type="string"
                         value={fcrObj.farmStock[0]?.quantity}
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -427,6 +435,7 @@ const FCR = () => {
                       <Label>{fcrObj.totalFeed[1]?.name}</Label>
                       <Input
                         placeholder="0"
+                        inputMode="numeric"
                         type="string"
                         value={fcrObj.farmStock[1]?.quantity}
                         onChange={(e: ChangeEvent<HTMLInputElement>) =>
