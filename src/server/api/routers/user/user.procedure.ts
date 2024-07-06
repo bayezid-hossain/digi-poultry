@@ -5,11 +5,12 @@ import {
   FCRTable,
   cycles,
   farmer,
+  notifications,
   organizations,
   userOrganizations,
   users,
 } from "@/server/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 export const userRouter = createTRPCRouter({
   get: protectedProcedure.query(({ ctx }) => ctx.user),
@@ -54,6 +55,31 @@ export const userRouter = createTRPCRouter({
           .from(FCRTable)
 
           .where(eq(FCRTable.userId, ctx.user.id)) // Correctly reference the users table
+
+          .execute();
+
+        console.log(result);
+        return result;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }),
+  getNotifications: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.session && ctx.user) {
+      try {
+        const result = await db
+          .select({
+            eventType: notifications.eventType,
+            message: notifications.message,
+            cycleId: notifications.cycleId,
+            invitationId: notifications.invitationId,
+          })
+          .from(notifications)
+
+          .where(eq(notifications.recipient, ctx.user.id))
+          .orderBy(desc(notifications.createdAt))
+          .limit(10) // Correctly reference the users table
 
           .execute();
 

@@ -5,10 +5,13 @@ import { UserDropdown } from "@/app/(main)/_components/user-dropdown";
 import { validateRequest } from "@/lib/actions/auth/validate-request";
 import OrganizationDropdown from "./organization-dropdown";
 import { OrganizationsType } from "../_types";
+import NotificationDropDown from "./notification-dropdown";
+import { api } from "@/trpc/server";
 
 export const Header = async ({ organizations, currentOrg }: OrganizationsType) => {
   const { user } = await validateRequest();
 
+  const notifications = await api.user.getNotifications.query();
   return (
     <header className="sticky top-0 z-10 border-b bg-background/80 p-0">
       <div className="container flex items-center gap-2 px-2 py-2 lg:px-4">
@@ -22,7 +25,10 @@ export const Header = async ({ organizations, currentOrg }: OrganizationsType) =
                 <OrganizationDropdown organizations={organizations} currentOrg={currentOrg} />
               </div>
             ) : null}
-            <UserDropdown firstName={user.firstName} avatar={user.avatar} />
+            <div className="flex gap-x-4">
+              <NotificationDropDown notifications={notifications} />
+              <UserDropdown firstName={user.firstName} avatar={user.avatar} />
+            </div>
           </div>
         ) : null}
       </div>

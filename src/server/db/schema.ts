@@ -10,12 +10,19 @@ import {
   pgTableCreator,
   primaryKey,
   serial,
+  text,
   timestamp,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
 export const userType = pgEnum("type", ["company", "farmer", "investor"]);
-
+export const notificationType = pgEnum("notification_type", [
+  "normal",
+  "cycle",
+  "farmerBilling",
+  "companyBilling",
+  "invitation",
+]);
 export const pgTable = pgTableCreator((name) => `${prefix}_${name}`);
 
 export const users = pgTable(
@@ -42,10 +49,8 @@ export const usersRelations = relations(users, ({ many }) => ({
   // organizations: many(farmerRecord),
   sessions: many(sessions),
   fcrs: many(FCRTable),
+  notifications: many(notifications),
 }));
-
-export type User = typeof users.$inferSelect;
-export type NewUser = typeof users.$inferInsert;
 
 export const sessions = pgTable(
   "sessions",
@@ -93,24 +98,6 @@ export const passwordResetTokens = pgTable(
   }),
 );
 
-// export const farmerRecord = pgTable("farmerRecord", {
-//   id: varchar("id").primaryKey(),
-//   text: text("text"),
-//   userId: varchar("user_id", { length: 255 }).notNull(),
-//   createdAt: timestamp("created_at").defaultNow().notNull(),
-//   updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
-// });
-
-// export const farmerRecordRelation = relations(farmerRecord, ({ one }) => ({
-//   user: one(users, {
-//     fields: [farmerRecord.userId],
-//     references: [users.id],
-//   }),
-// }));
-
-// export type Farmer = typeof farmerRecord.$inferSelect;
-// export type NewFarmerRecord = typeof farmerRecord.$inferInsert;
-
 export const FCRTable = pgTable(
   "fcrRecord",
   {
@@ -153,8 +140,6 @@ export const fcrRelations = relations(FCRTable, ({ one }) => ({
     references: [users.id],
   }),
 }));
-export type FCR = typeof FCRTable.$inferSelect;
-export type NewFCR = typeof FCRTable.$inferInsert;
 
 export const FCRStandards = pgTable(
   "fcrStandards",
@@ -177,9 +162,6 @@ export const fcrStdRelations = relations(FCRStandards, ({ one }) => ({
   }),
 }));
 
-export type FCRStandard = typeof FCRStandards.$inferSelect;
-export type NewFCRStandard = typeof FCRStandards.$inferInsert;
-
 export const organizations = pgTable("organizations", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
   name: varchar("name").notNull(),
@@ -187,8 +169,6 @@ export const organizations = pgTable("organizations", {
   updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
   createdBy: varchar("created_by").notNull(),
 });
-export type Organization = typeof organizations.$inferSelect;
-export type NewOrganization = typeof organizations.$inferInsert;
 
 export const organizationRelations = relations(users, ({ many }) => ({
   FCRStandards: many(FCRStandards),
@@ -209,16 +189,10 @@ export const userOrganizations = pgTable(
   }),
 );
 
-export type UserOrganizations = typeof userOrganizations.$inferSelect;
-export type NewUserOrganizations = typeof userOrganizations.$inferInsert;
-
 export const userCycle = pgTable("userCycles", {
   userId: varchar("user_id").notNull(),
   cycleId: uuid("cycle_id").notNull(),
 });
-
-export type UserCycles = typeof userCycle.$inferSelect;
-export type NewUserCycle = typeof userCycle.$inferInsert;
 
 export const farmer = pgTable("farmer", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
@@ -228,8 +202,6 @@ export const farmer = pgTable("farmer", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
 });
-export type Farmer = typeof farmer.$inferSelect;
-export type NewFarmer = typeof farmer.$inferInsert;
 
 export const farmerRelations = relations(farmer, ({ many, one }) => ({
   FCRs: many(FCRTable),
@@ -265,4 +237,24 @@ export const cycleRelations = relations(cycles, ({ many, one }) => ({
   organizations: one(organizations),
   farmers: one(farmer),
   fcr: one(FCRTable),
+}));
+
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: serial("id").primaryKey(),
+    recipient: varchar("recipient_id").notNull(),
+    eventType: notificationType("notification_type").default("normal").notNull(),
+    message: text("message").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    isRead: boolean("is_read").notNull().default(false),
+    cycleId: uuid("cycle_id"),
+    invitationId: uuid("invitation_id"),
+  },
+  (t) => ({
+    notificationRecipientIdx: index("notification_recipient_index").on(t.recipient),
+  }),
+);
+export const notificationsRelations = relations(notifications, ({ many, one }) => ({
+  recipients: one(users),
 }));

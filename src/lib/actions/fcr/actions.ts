@@ -18,7 +18,7 @@ import {
   updateSingleRowSchema,
 } from "@/lib/validators/fcr";
 import { db } from "@/server/db";
-import { FCRStandards, FCRTable, cycles } from "@/server/db/schema";
+import { FCRStandards, FCRTable, cycles, notifications } from "@/server/db/schema";
 import { and, eq } from "drizzle-orm";
 import { generateId } from "lucia";
 import { redirect } from "next/navigation";
@@ -362,6 +362,12 @@ export async function createFCR(
         .set({ lastFcrId: result[0].id, age: result[0].age })
         .where(eq(cycles.id, cycleId));
     }
+    await db.insert(notifications).values({
+      recipient: user?.id ?? "",
+      message: `New FCR Calculated for ${result[0]?.farmer}'s cycle!`,
+      eventType: "cycle",
+      cycleId: cycleId,
+    });
     return { success: JSON.stringify(result[0]) };
   } catch (error) {
     return { formError: "Couldn't Calculate" };

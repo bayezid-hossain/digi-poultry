@@ -16,8 +16,11 @@ import clipboardCopy from "clipboard-copy";
 import { toast } from "sonner";
 import Link from "next/link";
 import { SubmitButton } from "@/components/submit-button";
+import { router } from "@trpc/server";
+import { useRouter } from "next/navigation";
 
 const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
+  const router = useRouter();
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
   const [openUserInfoDropdown, setUserInfoDropdown] = useState<boolean>(false);
   const {
@@ -40,6 +43,7 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
       className={`m-2 h-full scale-100 cursor-pointer transition-all duration-500 ${ended ? "border-2 border-red-500" : "border-2 border-green-500"}`}
       onClick={(e) => {
         e.preventDefault();
+        router.push(`/dashboard/cycles/${id}`);
       }}
     >
       <div

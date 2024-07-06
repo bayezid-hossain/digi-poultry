@@ -15,6 +15,20 @@
       "when": 1720089087032,
       "tag": "0001_youthful_wildside",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1720246799178,
+      "tag": "0002_organic_archangel",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1720258719679,
+      "tag": "0003_black_timeslip",
+      "breakpoints": true
     }
   ]
 }

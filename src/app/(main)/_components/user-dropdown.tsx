@@ -42,7 +42,7 @@ export const UserDropdown = ({
     <DropdownMenu>
       <DropdownMenuTrigger className={className}>
         {/* eslint @next/next/no-img-element:off */}
-        <PersonIcon className="h-8 w-8 rounded-full border-2 border-primary p-1" />
+        <PersonIcon className="h-7 w-7 rounded-full border-2 border-primary p-1" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel className="text-muted-foreground">

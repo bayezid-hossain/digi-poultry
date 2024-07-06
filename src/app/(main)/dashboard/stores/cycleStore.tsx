@@ -10,6 +10,7 @@ type CycleDataStore = {
   removeData: (id: string) => void;
   updateData: (id: string, newData: CyclesData) => void;
   filterData: (id: string) => CyclesData[];
+  getItem: (id: string) => CyclesData | null;
   isFetching: boolean;
 };
 
@@ -35,6 +36,10 @@ const useCycleDataStore = create<CycleDataStore>(
         }),
       isFetching: false,
       filterData: (id) => get().data.filter((item) => item.id === id),
+      getItem: (id) => {
+        const item = get().data.find((item) => item.id === id);
+        return item ? item : null;
+      },
     }),
     {
       name: "cycle-data-store", // unique name for localStorage key
