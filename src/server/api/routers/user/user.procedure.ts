@@ -115,6 +115,8 @@ export const userRouter = createTRPCRouter({
             message: notifications.message,
             cycleId: notifications.cycleId,
             invitationId: notifications.invitationId,
+            time: notifications.createdAt,
+            id: notifications.id,
           })
           .from(notifications)
 

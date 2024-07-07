@@ -16,6 +16,8 @@ type NotificationProps = {
   eventType: "normal" | "cycle" | "farmerBilling" | "companyBilling" | "invitation";
   invitationId?: string | null;
   cycleId?: string | null;
+  id: number;
+  time: Date;
 }[];
 
 const NotificationDropDown = ({ notifications }: { notifications?: NotificationProps }) => {
@@ -35,11 +37,15 @@ const NotificationDropDown = ({ notifications }: { notifications?: NotificationP
           {notifications?.map(({ message, eventType, cycleId, invitationId }) => {
             return (
               <DropdownMenuItem className="cursor-pointer text-muted-foreground" asChild>
-                <Link
-                  href={`${eventType == "normal" ? "" : eventType === "cycle" ? `/dashboard/cycles/${cycleId}` : ""}`}
-                >
-                  {message}
-                </Link>
+                {eventType === "invitation" ? (
+                  <div>{message}</div>
+                ) : (
+                  <Link
+                    href={`${eventType == "normal" ? "" : eventType === "cycle" ? `/dashboard/cycles/${cycleId}` : ""}`}
+                  >
+                    {message}
+                  </Link>
+                )}
               </DropdownMenuItem>
             );
           })}
