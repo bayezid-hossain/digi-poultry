@@ -1,0 +1,1 @@
+ALTER TABLE "dp_unregistered_emails" ADD PRIMARY KEY ("email");

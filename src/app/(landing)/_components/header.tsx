@@ -90,7 +90,7 @@ export const Header = async () => {
             </Button>
           </div>
         )}
-        {user && <UserDropdown firstName={user.firstName} className="ml-auto mr-2" />}
+        {user && <UserDropdown firstName={user.firstName as string} className="ml-auto mr-2" />}
       </div>
     </header>
   );

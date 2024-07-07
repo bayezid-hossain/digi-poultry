@@ -10,24 +10,30 @@ import {
   userOrganizations,
   users,
 } from "@/server/db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
+import { z } from "zod";
+import { TRPCError } from "@trpc/server";
+import { feed } from "@/app/(main)/_types";
 
 export const userRouter = createTRPCRouter({
   get: protectedProcedure.query(({ ctx }) => ctx.user),
   getFcrStandards: protectedProcedure.query(async ({ ctx }) => {
-    const result = await db
-      .select({
-        age: FCRStandards.age,
-        stdWeight: FCRStandards.stdWeight,
-        stdFcr: FCRStandards.stdFcr,
-      })
-      .from(FCRStandards)
-      .where(
-        eq(FCRStandards.organization, ctx.session.organization ? ctx.session.organization : ""),
-      )
-      .orderBy(FCRStandards.age);
+    if (ctx.session.organization) {
+      const result = await db
+        .select({
+          age: FCRStandards.age,
+          stdWeight: FCRStandards.stdWeight,
+          stdFcr: FCRStandards.stdFcr,
+        })
+        .from(FCRStandards)
+        .where(eq(FCRStandards.organization, ctx.session.organization))
+        .orderBy(FCRStandards.age);
+      return result;
+    } else {
+      return [];
+    }
+
     // console.log(result);
-    return result;
   }),
   getOrganizations: protectedProcedure.query(async ({ ctx }) => {
     if (ctx.session && ctx.user) {
@@ -47,24 +53,59 @@ export const userRouter = createTRPCRouter({
       return result;
     }
   }),
-  getFCRHistory: protectedProcedure.query(async ({ ctx }) => {
-    if (ctx.session && ctx.user) {
-      try {
-        const result = await db
-          .select()
-          .from(FCRTable)
+  getFCRHistory: protectedProcedure
+    .input(
+      z
+        .object({
+          cycleId: z.string({ invalid_type_error: "invalid uuid" }).optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ input, ctx }) => {
+      if (ctx.session && ctx.user) {
+        if (input?.cycleId) {
+          try {
+            const result = await db
+              .select()
+              .from(FCRTable)
 
-          .where(eq(FCRTable.userId, ctx.user.id)) // Correctly reference the users table
+              .where(and(eq(FCRTable.userId, ctx.user.id), eq(FCRTable.cycleId, input.cycleId)))
+              .orderBy(desc(FCRTable.createdAt));
+            return result.map((singleResult) => {
+              return {
+                ...singleResult,
+                totalFeed: singleResult.totalFeed as feed[],
+                farmStock: singleResult.farmStock as feed[],
+              };
+            });
+          } catch (error: any) {
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: (error as Error).message,
+            });
+          }
+        }
+        try {
+          const result = await db
+            .select()
+            .from(FCRTable)
 
-          .execute();
+            .where(eq(FCRTable.userId, ctx.user.id))
+            .orderBy(desc(FCRTable.createdAt)) // Correctly reference the users table
 
-        console.log(result);
-        return result;
-      } catch (error) {
-        console.log(error);
+            .execute();
+          return result.map((singleResult) => {
+            return {
+              ...singleResult,
+              totalFeed: singleResult.totalFeed as feed[],
+              farmStock: singleResult.farmStock as feed[],
+            };
+          });
+        } catch (error: any) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: (error as Error).message });
+        }
       }
-    }
-  }),
+    }),
   getNotifications: protectedProcedure.query(async ({ ctx }) => {
     if (ctx.session && ctx.user) {
       try {
@@ -139,6 +180,8 @@ export const userRouter = createTRPCRouter({
               avgWeight: FCRTable.avgWeight,
               lastDayMortality: FCRTable.todayMortality,
               age: FCRTable.age,
+              totalFeed: FCRTable.totalFeed,
+              farmStock: FCRTable.farmStock,
             },
           })
           .from(cycles)
@@ -150,10 +193,21 @@ export const userRouter = createTRPCRouter({
           .execute();
 
         console.log(result);
-        return result.map((row) => ({
-          ...row,
-          lastFCR: row.lastFCR?.id ? row.lastFCR : null, // Ensure lastFCR is null if it has no id
-        }));
+
+        return result.map((row) => {
+          const totalFeed = row.lastFCR?.totalFeed;
+          console.log(totalFeed);
+          return {
+            ...row,
+            lastFCR: row.lastFCR?.id
+              ? {
+                  ...row.lastFCR,
+                  totalFeed: totalFeed as feed[],
+                  farmStock: row.lastFCR.farmStock as feed[],
+                }
+              : null,
+          };
+        });
       } catch (error) {
         console.log(error);
       }

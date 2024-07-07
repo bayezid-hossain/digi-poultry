@@ -40,7 +40,7 @@ export const VerifyCode = () => {
     <div className="flex flex-col gap-2">
       <form ref={codeFormRef} action={verifyEmailAction}>
         <Label htmlFor="code">Verification code</Label>
-        <Input className="mt-2" type="text" id="code" name="code" required />
+        <Input className="mt-2" type="text" id="code" inputMode="numeric" name="code" required />
         <SubmitButton className="mt-4 w-full">Verify</SubmitButton>
       </form>
       <form action={resendAction}>

@@ -25,6 +25,7 @@ import { CyclesData, StandardData } from "../../_types";
 import useFarmerDataStore from "../stores/farmerStore";
 import { FarmerData } from "../(functionalities)/farmers/Farmers";
 import useCycleDataStore from "../stores/cycleStore";
+import InvitePopup from "./InvitePopup";
 const items: MenuItemProps[] = [
   {
     title: "Daily FCR",
@@ -57,10 +58,6 @@ const items: MenuItemProps[] = [
       },
       { title: "Farmer", href: "/dashboard/billing/farmer", icon: HistoryIcon },
     ],
-  },
-  {
-    title: "Settings",
-    href: "/dashboard/settings",
   },
 ];
 
@@ -186,12 +183,12 @@ interface Props {
 }
 
 export function DashboardNav({ className, organization, standards, farmers, cycles }: Props) {
-  const path = usePathname();
   const [firstTime, setFirstTime] = useState<boolean>(true);
   const { setData: setFCRStandardData } = useStandardDataStore();
   const { setData: setFarmerData } = useFarmerDataStore();
   const { setData: setCycleData } = useCycleDataStore();
   useEffect(() => {
+    console.log(standards);
     if (firstTime) {
       setFCRStandardData(standards);
       setFarmerData(farmers);
@@ -199,11 +196,20 @@ export function DashboardNav({ className, organization, standards, farmers, cycl
       setFirstTime(false);
     }
   }, [standards, farmers]);
+  useEffect(() => {
+    if (!firstTime) {
+      setFCRStandardData(standards);
+      setFarmerData(farmers);
+      setCycleData(cycles);
+      setFirstTime(false);
+    }
+  }, [organization]);
   return organization ? (
     <nav className={cn(className, " border-primary-foreground md:border-r-2  md:pr-8 lg:pr-10")}>
       {items.map((item) => (
         <MenuItem key={item.href} subs={item.subs} title={item.title} href={item.href} />
       ))}
+      <InvitePopup />
     </nav>
   ) : null;
 }

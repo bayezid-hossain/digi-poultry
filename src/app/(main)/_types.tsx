@@ -11,7 +11,7 @@ export type feed = {
   quantity: number;
 };
 export interface FCRRecord {
-  farmer: string;
+  farmer?: string;
   age: number;
   avgWeight: number;
   disease: string;
@@ -26,7 +26,7 @@ export interface FCRRecord {
   totalDoc: number;
   farmStock: feed[];
   totalFeed: feed[];
-  date: string;
+  date?: string;
 }
 export type StandardData = {
   age: number;
@@ -58,5 +58,7 @@ export type CyclesData = {
     fcr: number;
     avgWeight: number;
     age: number;
+    farmStock: feed[];
+    totalFeed: feed[];
   } | null;
 };

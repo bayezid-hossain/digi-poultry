@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import useCycleDataStore from "../../../stores/cycleStore";
 import useStandardDataStore from "../../../stores/standardsStore";
 import AddCycle from "../../cycles/_components/AddCycle";
+import { BillingSkeleton } from "../../billing/_components/billing-skeleton";
 
 const FCR = () => {
   const {
@@ -47,10 +48,7 @@ const FCR = () => {
     avgWeight: 320,
     disease: "None",
     farmer: "",
-    farmStock: [
-      { name: feedNames?.[0] ?? "Bd1", quantity: 0 },
-      { name: feedNames?.[0] ?? "Bd1", quantity: 0 },
-    ],
+
     fcr: 0,
     location: "",
     medicine: "None",
@@ -62,6 +60,10 @@ const FCR = () => {
     totalFeed: [
       { name: feedNames?.[0] ?? "Bd1", quantity: 0 },
       { name: feedNames?.[1] ?? "Bd2", quantity: 0 },
+    ],
+    farmStock: [
+      { name: feedNames?.[0] ?? "Bd1", quantity: 0 },
+      { name: feedNames?.[0] ?? "Bd1", quantity: 0 },
     ],
     totalMortality: 0,
   };
@@ -105,6 +107,14 @@ const FCR = () => {
         };
         setFcrObj(updatedData);
       }
+      if (field === "todayMortality") {
+        const updatedData = {
+          ...fcrObj,
+          totalMortality: (cycle?.lastFCR?.totalMortality ?? 0) + Number(value),
+          [field]: Number(value),
+        };
+        setFcrObj(updatedData);
+      }
     }
   };
   useEffect(() => {
@@ -126,6 +136,26 @@ const FCR = () => {
         totalDoc: cycle.totalDoc,
         strain: cycle.strain ?? "Ross A",
         totalMortality: cycle.lastFCR?.totalMortality ?? 0,
+        totalFeed: [
+          {
+            name: cycle.lastFCR?.totalFeed[0] ? cycle.lastFCR?.totalFeed[0]?.name : "B1",
+            quantity: cycle.lastFCR?.totalFeed[0] ? cycle.lastFCR?.totalFeed[0]?.quantity : 0,
+          },
+          {
+            name: cycle.lastFCR?.totalFeed[1] ? cycle.lastFCR?.totalFeed[1]?.name : "B1",
+            quantity: cycle.lastFCR?.totalFeed[1] ? cycle.lastFCR?.totalFeed[1]?.quantity : 0,
+          },
+        ],
+        farmStock: [
+          {
+            name: cycle.lastFCR?.farmStock[0] ? cycle.lastFCR?.farmStock[0]?.name : "B1",
+            quantity: cycle.lastFCR?.farmStock[0] ? cycle.lastFCR?.farmStock[0]?.quantity : 0,
+          },
+          {
+            name: cycle.lastFCR?.farmStock[1] ? cycle.lastFCR?.farmStock[1]?.name : "B1",
+            quantity: cycle.lastFCR?.farmStock[1] ? cycle.lastFCR?.farmStock[1]?.quantity : 0,
+          },
+        ],
       });
     }
   }, [cycle]);
@@ -583,16 +613,12 @@ const FCR = () => {
       ) : (
         <div>
           {loading ? (
-            <div className="fixed left-1/2 top-0 flex h-full  w-full max-w-xl flex-col items-center justify-center backdrop-blur-3xl sm:h-full md:max-w-2xl xl:max-w-3xl ">
-              <div>
-                <Loader2 className="flex animate-spin items-center justify-center" />
-              </div>
-            </div>
+            <BillingSkeleton />
           ) : (
-            <div>
-              <div className="my-8 flex h-full w-full flex-col items-center justify-center gap-2">
+            <div className="w-full">
+              <div className="my-8 flex h-full w-full flex-col items-center justify-center gap-2 p-4">
                 <Ghost className="h-8 w-8 text-zinc-800" />
-                <h3 className="text-xl font-semibold">
+                <h3 className="text-center text-xl font-semibold">
                   You don&apos;t have any Standards Set to Calculate FCR
                 </h3>
                 <p>Please insert your standards Data</p>

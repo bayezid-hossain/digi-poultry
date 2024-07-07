@@ -123,6 +123,7 @@ const AddCycle = () => {
                 <Input
                   id="totalDoc"
                   name="totalDoc"
+                  inputMode="numeric"
                   required
                   type="text"
                   placeholder="Total DOC"
@@ -137,6 +138,7 @@ const AddCycle = () => {
                 <Input
                   id="age"
                   type="text"
+                  inputMode="numeric"
                   name="age"
                   required
                   defaultValue={0}
@@ -152,6 +154,7 @@ const AddCycle = () => {
                   id="totalMortality"
                   name="totalMortality"
                   required
+                  inputMode="numeric"
                   type="text"
                   defaultValue={0}
                   placeholder="Total Mortality"

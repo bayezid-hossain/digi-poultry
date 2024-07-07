@@ -109,7 +109,7 @@ export const standardData: StandardData[] = [
 ];
 
 export const generateFCRMessage = (fcrObj: FCRRecord) => {
-  const formattedDate = format(new Date(fcrObj.date), "dd-MM-yyyy");
+  const formattedDate = format(new Date(fcrObj.date ?? ""), "dd-MM-yyyy");
   const formattedObj = { ...fcrObj, date: formattedDate };
   let feedCount = 0;
   let stockCount = 0;

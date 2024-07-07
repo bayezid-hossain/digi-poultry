@@ -1,3 +1,4 @@
+import { feed } from "@/app/(main)/_types";
 import { DATABASE_PREFIX as prefix } from "@/lib/constants";
 import { relations } from "drizzle-orm";
 import {
@@ -16,6 +17,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 export const userType = pgEnum("type", ["company", "farmer", "investor"]);
+export const inviteAction = pgEnum("action", ["REJECTED", "ACCEPTED", "PENDING"]);
 export const notificationType = pgEnum("notification_type", [
   "normal",
   "cycle",
@@ -44,12 +46,15 @@ export const users = pgTable(
   }),
 );
 
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
 export const usersRelations = relations(users, ({ many }) => ({
   organizations: many(userOrganizations),
   // organizations: many(farmerRecord),
   sessions: many(sessions),
   fcrs: many(FCRTable),
   notifications: many(notifications),
+  invites: many(invites),
 }));
 
 export const sessions = pgTable(
@@ -107,7 +112,7 @@ export const FCRTable = pgTable(
     updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
     location: varchar("location", { length: 50 }).notNull().default("Bhaluka"),
     totalDoc: doublePrecision("total_doc").default(0).notNull(),
-    strain: varchar("strain", { length: 50 }).default("Ross A"),
+    strain: varchar("strain", { length: 50 }).default("Ross A").notNull(),
     fcr: doublePrecision("fcr").notNull().default(0),
     stdFcr: doublePrecision("std_fcr").notNull().default(0),
     stdWeight: integer("std_weight").notNull().default(500),
@@ -115,17 +120,21 @@ export const FCRTable = pgTable(
     age: doublePrecision("age").default(22).notNull(),
     todayMortality: doublePrecision("today_mortality").default(22).notNull(),
     totalMortality: doublePrecision("total_mortality").default(22).notNull(),
-    disease: varchar("disease", { length: 50 }).default("none"),
-    medicine: varchar("medicine", { length: 50 }).default("none"),
+    disease: varchar("disease", { length: 50 }).default("none").notNull(),
+    medicine: varchar("medicine", { length: 50 }).default("none").notNull(),
     cycleId: uuid("cycle_id"),
     //farmerID
-    totalFeed: jsonb("total_feed").default([
-      { name: "510", quantity: 0 },
-      { name: "511", quantity: 0 },
-    ]),
+    totalFeed: jsonb<string>("total_feed").default(
+      JSON.stringify([
+        { name: "510", quantity: 0 },
+        { name: "511", quantity: 0 },
+      ]),
+    ),
     farmStock: jsonb("farm_stock").default([
-      { name: "510", quantity: 0 },
-      { name: "511", quantity: 0 },
+      JSON.stringify([
+        { name: "510", quantity: 0 },
+        { name: "511", quantity: 0 },
+      ]),
     ]),
     userId: varchar("user_id", { length: 21 }).notNull(),
   },
@@ -249,7 +258,7 @@ export const notifications = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     isRead: boolean("is_read").notNull().default(false),
     cycleId: uuid("cycle_id"),
-    invitationId: uuid("invitation_id"),
+    invitationId: varchar("invitation_id"),
   },
   (t) => ({
     notificationRecipientIdx: index("notification_recipient_index").on(t.recipient),
@@ -258,3 +267,28 @@ export const notifications = pgTable(
 export const notificationsRelations = relations(notifications, ({ many, one }) => ({
   recipients: one(users),
 }));
+
+export const invites = pgTable(
+  "invites",
+  {
+    id: serial("id"),
+    email: varchar("email", { length: 255 }).notNull(),
+    action: inviteAction("notification_type").default("PENDING").notNull(),
+    message: text("message").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    cycleId: varchar("cycle_id"),
+    organizationId: uuid("organization_id").notNull(),
+  },
+  (t) => ({
+    inviteRecipientIdx: index("invite_recipient_index").on(t.email),
+    pk: primaryKey({ columns: [t.organizationId, t.cycleId, t.email] }),
+  }),
+);
+export const invitesRelations = relations(invites, ({ many, one }) => ({
+  recipient: one(users),
+}));
+
+export const unRegisteredEmails = pgTable("unregistered_emails", {
+  email: varchar("email", { length: 255 }).unique().notNull().primaryKey(),
+  createdAt: timestamp("created_at").defaultNow().notNull(), // Timestamp when the record is created
+});

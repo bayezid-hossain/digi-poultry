@@ -63,6 +63,7 @@ const EditDialog = ({
                   id="age"
                   name="age"
                   required
+                  inputMode="numeric"
                   type="string"
                   defaultValue={defaultAge}
                   className="col-span-3"
@@ -83,6 +84,7 @@ const EditDialog = ({
                   id="stdWeight"
                   type="string"
                   name="stdWeight"
+                  inputMode="numeric"
                   required
                   defaultValue={defaultWeight}
                   className="col-span-3"
@@ -96,6 +98,7 @@ const EditDialog = ({
                   id="stdFcr"
                   name="stdFcr"
                   type="string"
+                  inputMode="numeric"
                   required
                   defaultValue={defaultFcr}
                   className="col-span-3"

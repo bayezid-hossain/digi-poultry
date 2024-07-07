@@ -80,7 +80,7 @@ const Cycles = ({ cycles: serverCycle }: { cycles: CyclesData[] }) => {
       </div>
       {filteredCycles?.length ? (
         <div className="h-auto w-full rounded-md bg-gradient-to-r from-[#3d3069] via-red-500 to-[#3f4b6d] p-1">
-          <div className="scroll-style grid h-auto max-h-[25rem] w-full grid-cols-1 gap-x-4 gap-y-4 overflow-y-auto border-0 bg-card p-2 pb-4 sm:grid-cols-2 xl:grid-cols-3 ">
+          <div className="scroll-style grid h-auto max-h-[600px] w-full grid-cols-1 gap-x-4 gap-y-4 overflow-y-auto border-0 bg-card p-2 pb-4 sm:grid-cols-2 xl:grid-cols-3 ">
             {filteredCycles.map((data) => {
               return <CycleCard cycle={data} key={data.id} />;
             })}

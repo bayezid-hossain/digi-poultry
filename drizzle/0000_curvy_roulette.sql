@@ -1,4 +1,16 @@
 DO $$ BEGIN
+ CREATE TYPE "public"."action" AS ENUM('REJECTED', 'ACCEPTED', 'PENDING');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."notification_type" AS ENUM('normal', 'cycle', 'farmerBilling', 'companyBilling', 'invitation');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."type" AS ENUM('company', 'farmer', 'investor');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -19,7 +31,7 @@ CREATE TABLE IF NOT EXISTS "dp_fcrRecord" (
 	"updated_at" timestamp,
 	"location" varchar(50) DEFAULT 'Bhaluka' NOT NULL,
 	"total_doc" double precision DEFAULT 0 NOT NULL,
-	"strain" varchar(50) DEFAULT 'Ross A',
+	"strain" varchar(50) DEFAULT 'Ross A' NOT NULL,
 	"fcr" double precision DEFAULT 0 NOT NULL,
 	"std_fcr" double precision DEFAULT 0 NOT NULL,
 	"std_weight" integer DEFAULT 500 NOT NULL,
@@ -27,10 +39,11 @@ CREATE TABLE IF NOT EXISTS "dp_fcrRecord" (
 	"age" double precision DEFAULT 22 NOT NULL,
 	"today_mortality" double precision DEFAULT 22 NOT NULL,
 	"total_mortality" double precision DEFAULT 22 NOT NULL,
-	"disease" varchar(50) DEFAULT 'none',
-	"medicine" varchar(50) DEFAULT 'none',
-	"total_feed" jsonb DEFAULT '[{"name":"510","quantity":0},{"name":"511","quantity":0}]'::jsonb,
-	"farm_stock" jsonb DEFAULT '[{"name":"510","quantity":0},{"name":"511","quantity":0}]'::jsonb,
+	"disease" varchar(50) DEFAULT 'none' NOT NULL,
+	"medicine" varchar(50) DEFAULT 'none' NOT NULL,
+	"cycle_id" uuid,
+	"total_feed" jsonb DEFAULT '[{"name":"510","quantity":0},{"name":"511","quantity":0}]',
+	"farm_stock" jsonb DEFAULT '["[{\"name\":\"510\",\"quantity\":0},{\"name\":\"511\",\"quantity\":0}]"]'::jsonb,
 	"user_id" varchar(21) NOT NULL
 );
 --> statement-breakpoint
@@ -70,6 +83,28 @@ CREATE TABLE IF NOT EXISTS "dp_farmer" (
 	CONSTRAINT "dp_farmer_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "dp_invites" (
+	"id" serial NOT NULL,
+	"email" varchar(255) NOT NULL,
+	"notification_type" "action" DEFAULT 'PENDING' NOT NULL,
+	"message" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"cycle_id" varchar,
+	"organization_id" uuid NOT NULL,
+	CONSTRAINT "dp_invites_organization_id_cycle_id_email_pk" PRIMARY KEY("organization_id","cycle_id","email")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "dp_notifications" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"recipient_id" varchar NOT NULL,
+	"notification_type" "notification_type" DEFAULT 'normal' NOT NULL,
+	"message" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"is_read" boolean DEFAULT false NOT NULL,
+	"cycle_id" uuid,
+	"invitation_id" varchar
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "dp_organizations" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" varchar NOT NULL,
@@ -91,6 +126,12 @@ CREATE TABLE IF NOT EXISTS "dp_sessions" (
 	"expires_at" timestamp with time zone NOT NULL,
 	"isUserVerified" boolean DEFAULT false NOT NULL,
 	"organization_id" uuid
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "dp_unregistered_emails" (
+	"email" varchar(255) NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "dp_unregistered_emails_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "dp_userCycles" (
@@ -125,6 +166,8 @@ CREATE INDEX IF NOT EXISTS "cycle_org_index" ON "dp_cycles" USING btree ("organi
 CREATE INDEX IF NOT EXISTS "cycle_fcr_index" ON "dp_cycles" USING btree ("last_fcr_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "verification_code_user_idx" ON "dp_email_verification_codes" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "verification_code_email_idx" ON "dp_email_verification_codes" USING btree ("email");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "invite_recipient_index" ON "dp_invites" USING btree ("email");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "notification_recipient_index" ON "dp_notifications" USING btree ("recipient_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "password_token_user_idx" ON "dp_password_reset_tokens" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "session_user_idx" ON "dp_sessions" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "user_email_idx" ON "dp_users" USING btree ("email");

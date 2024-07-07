@@ -1,4 +1,5 @@
 import { CyclesData } from "@/app/(main)/_types";
+import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -8,16 +9,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CircleAlert, MoreHorizontal, Plane } from "lucide-react";
-import { useState } from "react";
-import DeleteDialog from "./DeleteDialog";
 import { formatDate } from "@/lib/utils";
 import clipboardCopy from "clipboard-copy";
-import { toast } from "sonner";
+import { CircleAlert, MoreHorizontal, Plane } from "lucide-react";
 import Link from "next/link";
-import { SubmitButton } from "@/components/submit-button";
-import { router } from "@trpc/server";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+import DeleteDialog from "./DeleteDialog";
 
 const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
   const router = useRouter();
@@ -110,7 +109,7 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
         </p>
         <hr />{" "}
         {!lastFCR ? (
-          <div className="flex flex-col gap-y-4 text-xl">
+          <div className="z-40 flex flex-col gap-y-4 text-xl">
             <p>No FCR Calculated Yet</p>
             <SubmitButton variant={"outlineLink"}>
               <Link href={`/dashboard/fcr/new?cycleId=${id}`}>Calculate FCR Now!</Link>

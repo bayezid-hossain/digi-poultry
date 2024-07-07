@@ -1,6 +1,6 @@
 {
-  "id": "13297197-527c-4f58-b0d2-69fab1821b5f",
-  "prevId": "6590c8a2-6eb1-458f-b3a4-4697dbbeabc9",
+  "id": "4fd29d7a-5689-49cd-8f32-0838bab320f7",
+  "prevId": "e483f69c-e95d-4c9c-a9dc-a2c3e4046a89",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -109,7 +109,7 @@
           "name": "strain",
           "type": "varchar(50)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "'Ross A'"
         },
         "fcr": {
@@ -165,14 +165,14 @@
           "name": "disease",
           "type": "varchar(50)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "'none'"
         },
         "medicine": {
           "name": "medicine",
           "type": "varchar(50)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "'none'"
         },
         "cycle_id": {
@@ -186,14 +186,14 @@
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
-          "default": "'[{\"name\":\"510\",\"quantity\":0},{\"name\":\"511\",\"quantity\":0}]'::jsonb"
+          "default": "'[{\"name\":\"510\",\"quantity\":0},{\"name\":\"511\",\"quantity\":0}]'"
         },
         "farm_stock": {
           "name": "farm_stock",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false,
-          "default": "'[{\"name\":\"510\",\"quantity\":0},{\"name\":\"511\",\"quantity\":0}]'::jsonb"
+          "default": "'[\"[{\\\"name\\\":\\\"510\\\",\\\"quantity\\\":0},{\\\"name\\\":\\\"511\\\",\\\"quantity\\\":0}]\"]'::jsonb"
         },
         "user_id": {
           "name": "user_id",
@@ -508,6 +508,164 @@
         }
       }
     },
+    "public.dp_invites": {
+      "name": "dp_invites",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notification_type": {
+          "name": "notification_type",
+          "type": "action",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "cycle_id": {
+          "name": "cycle_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "invite_recipient_index": {
+          "name": "invite_recipient_index",
+          "columns": [
+            {
+              "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "dp_invites_organization_id_cycle_id_email_pk": {
+          "name": "dp_invites_organization_id_cycle_id_email_pk",
+          "columns": [
+            "organization_id",
+            "cycle_id",
+            "email"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "public.dp_notifications": {
+      "name": "dp_notifications",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "recipient_id": {
+          "name": "recipient_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notification_type": {
+          "name": "notification_type",
+          "type": "notification_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'normal'"
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "is_read": {
+          "name": "is_read",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "cycle_id": {
+          "name": "cycle_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "invitation_id": {
+          "name": "invitation_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "notification_recipient_index": {
+          "name": "notification_recipient_index",
+          "columns": [
+            {
+              "expression": "recipient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.dp_organizations": {
       "name": "dp_organizations",
       "schema": "",
@@ -658,6 +816,37 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
+    },
+    "public.dp_unregistered_emails": {
+      "name": "dp_unregistered_emails",
+      "schema": "",
+      "columns": {
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "dp_unregistered_emails_email_unique": {
+          "name": "dp_unregistered_emails_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      }
     },
     "public.dp_userCycles": {
       "name": "dp_userCycles",
@@ -811,6 +1000,26 @@
     }
   },
   "enums": {
+    "public.action": {
+      "name": "action",
+      "schema": "public",
+      "values": [
+        "REJECTED",
+        "ACCEPTED",
+        "PENDING"
+      ]
+    },
+    "public.notification_type": {
+      "name": "notification_type",
+      "schema": "public",
+      "values": [
+        "normal",
+        "cycle",
+        "farmerBilling",
+        "companyBilling",
+        "invitation"
+      ]
+    },
     "public.type": {
       "name": "type",
       "schema": "public",
