@@ -31,7 +31,7 @@ const AddFarmerDialog = () => {
     }
   }, [state?.success]);
   return (
-    <div className="flex w-full flex-row items-center justify-start">
+    <div className="mx-2 flex flex-row items-center justify-start">
       <Dialog open={open} onOpenChange={setOpen} modal>
         <DialogTrigger asChild>
           <Button variant="outlineLink" className="w-full">

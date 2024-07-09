@@ -1,5 +1,5 @@
 {
-  "id": "0e181351-e572-4d45-b578-10266570d0e6",
+  "id": "03691104-206a-428b-9ba3-f5e3747cad5f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -255,13 +255,6 @@
           "notNull": false,
           "default": "'Ross A'"
         },
-        "totalMortality": {
-          "name": "totalMortality",
-          "type": "double precision",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
         "farmer_id": {
           "name": "farmer_id",
           "type": "uuid",
@@ -488,6 +481,12 @@
           "notNull": true,
           "default": "now()"
         },
+        "createdBy": {
+          "name": "createdBy",
+          "type": "varchar(21)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp",
@@ -516,7 +515,8 @@
           "name": "id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "gen_random_uuid()"
         },
         "email": {
           "name": "email",
@@ -864,11 +864,26 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
+        },
+        "organization_id": {
+          "name": "organization_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "dp_userCycles_user_id_cycle_id_organization_id_pk": {
+          "name": "dp_userCycles_user_id_cycle_id_organization_id_pk",
+          "columns": [
+            "user_id",
+            "cycle_id",
+            "organization_id"
+          ]
+        }
+      },
       "uniqueConstraints": {}
     },
     "public.dp_userOrganizations": {

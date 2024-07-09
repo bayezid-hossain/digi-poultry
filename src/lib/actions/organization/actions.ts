@@ -13,6 +13,8 @@ import {
 } from "@/lib/validators/organization";
 import { db } from "@/server/db";
 import {
+  cycles,
+  farmer,
   invites,
   notifications,
   organizations,
@@ -22,10 +24,11 @@ import {
   userOrganizations,
   users,
 } from "@/server/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { lucia } from "../auth";
 import { validateRequest } from "../auth/validate-request";
 import { PostgresError } from "postgres";
+import { EmailTemplate, sendMail } from "@/lib/email";
 
 export interface ActionResponse<T> {
   fieldError?: Partial<Record<keyof T, string | undefined>>;
@@ -167,6 +170,18 @@ export async function Invite(
         invitationId: inviteId[0]?.id?.toString() ?? null,
         message: "",
       });
+
+      const farmerName = await db
+        .select({ farmerName: farmer.name })
+        .from(cycles)
+        .leftJoin(farmer, eq(farmer.id, cycles.farmerId))
+        .where(eq(cycles.id, cycleId ?? ""));
+
+      await sendMail(to, EmailTemplate.Invitation, {
+        organizationName: session.organization,
+        senderName: user.firstName + " " + user.lastName,
+        farmerName: farmerName[0]?.farmerName ?? undefined,
+      });
       return { success: "Invitation Sent!" + to };
     } catch (error: any) {
       const convertedError = error as PostgresError;
@@ -241,10 +256,38 @@ export async function JoinOrganization(
                 userId: user.id,
               });
             }
-            await db
-              .update(invites)
-              .set({ action: "ACCEPTED" })
-              .where(eq(invites.id, invitationId));
+            if (cycleId) {
+              const checkAlreadyAMemberInCycle = await db
+                .select()
+                .from(userCycle)
+                .where(
+                  and(
+                    eq(userCycle.cycleId, cycleId),
+                    eq(userCycle.userId, user.id),
+                    eq(userCycle.orgId, orgId),
+                  ),
+                );
+              if (checkAlreadyAMemberInCycle.length === 0)
+                await db.insert(userCycle).values({
+                  userId: user.id,
+                  orgId: orgId,
+                  cycleId,
+                });
+              await db
+                .update(invites)
+                .set({ action: "ACCEPTED" })
+                .where(
+                  or(
+                    eq(invites.id, invitationId),
+                    and(eq(invites.email, user.email), eq(invites.organizationId, orgId)),
+                  ),
+                );
+            } else
+              await db
+                .update(invites)
+                .set({ action: "ACCEPTED" })
+                .where(eq(invites.id, invitationId));
+
             await db
               .update(notifications)
               .set({ isRead: true })
@@ -253,12 +296,7 @@ export async function JoinOrganization(
               .update(sessions)
               .set({ organization: orgId })
               .where(eq(sessions.id, session.id));
-            if (cycleId)
-              await db.insert(userCycle).values({
-                userId: user.id,
-                orgId: orgId,
-                cycleId,
-              });
+
             const sessionResult = await lucia.validateSession(session.id);
             return { success: "Current Organization Changed to " + session.organization };
           }

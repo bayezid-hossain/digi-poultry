@@ -15,10 +15,12 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { BillingSkeleton } from "../../../billing/_components/billing-skeleton";
+import useUserDataStore from "@/app/(main)/dashboard/stores/userStore";
 
 const SingleCycle = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const { id } = useParams();
+  const { data: userId } = useUserDataStore();
   const { data, isLoading, isRefetching, refetch } = api.user.getFCRHistory.useQuery(
     {
       cycleId: id?.toString() ?? undefined,
@@ -43,14 +45,16 @@ const SingleCycle = () => {
             <p className="text-3xl">{cycle.farmerName}</p>{" "}
             <p className="text-xl">{cycle.farmerLocation}</p>
           </div>
-          <div className="absolute  right-0 flex gap-x-4 px-2">
-            <div className="-mt-3">
-              <InvitePopup cycleId={cycleId} />
+          {userId === cycle.createdBy.id ? (
+            <div className="absolute  right-0 flex gap-x-4 px-2">
+              <div className="-mt-3">
+                <InvitePopup cycleId={cycleId} />
+              </div>
+              <SubmitButton variant={"destructive"}>
+                <Link href={`${Paths.NewFCR}?cycleId=${cycleId ?? ""}`}>Close Cycle</Link>
+              </SubmitButton>
             </div>
-            <SubmitButton variant={"destructive"}>
-              <Link href={`${Paths.NewFCR}?cycleId=${cycleId ?? ""}`}>Close Cycle</Link>
-            </SubmitButton>
-          </div>
+          ) : null}
           <div className="flex w-full items-center justify-between">
             <p className="p-1 underline underline-offset-4">Recent FCRS:</p>
             <div className="flex items-center gap-x-4">

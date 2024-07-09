@@ -52,7 +52,6 @@ CREATE TABLE IF NOT EXISTS "dp_cycles" (
 	"total_doc" double precision DEFAULT 0 NOT NULL,
 	"age" double precision DEFAULT 0 NOT NULL,
 	"strain" varchar(50) DEFAULT 'Ross A',
-	"totalMortality" double precision DEFAULT 0 NOT NULL,
 	"farmer_id" uuid NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp,
@@ -79,12 +78,13 @@ CREATE TABLE IF NOT EXISTS "dp_farmer" (
 	"location" varchar(30) NOT NULL,
 	"organization_id" uuid NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
+	"createdBy" varchar(21) NOT NULL,
 	"updated_at" timestamp,
 	CONSTRAINT "dp_farmer_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "dp_invites" (
-	"id" uuid,
+	"id" uuid DEFAULT gen_random_uuid(),
 	"email" varchar(255) NOT NULL,
 	"notification_type" "action" DEFAULT 'PENDING' NOT NULL,
 	"from" varchar NOT NULL,
@@ -136,7 +136,9 @@ CREATE TABLE IF NOT EXISTS "dp_unregistered_emails" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "dp_userCycles" (
 	"user_id" varchar NOT NULL,
-	"cycle_id" uuid NOT NULL
+	"cycle_id" uuid NOT NULL,
+	"organization_id" uuid NOT NULL,
+	CONSTRAINT "dp_userCycles_user_id_cycle_id_organization_id_pk" PRIMARY KEY("user_id","cycle_id","organization_id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "dp_userOrganizations" (

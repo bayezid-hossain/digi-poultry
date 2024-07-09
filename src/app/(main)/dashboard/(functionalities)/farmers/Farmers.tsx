@@ -13,6 +13,7 @@ export type FarmerData = {
   name: string;
   location: string;
   id: string;
+  createdBy: string;
 };
 const Farmers = ({ serverFarmers }: { serverFarmers: FarmerData[] }) => {
   const { isFetching, data: farmers, setData: setFarmers } = useFarmerDataStore();
@@ -95,6 +96,7 @@ const Farmers = ({ serverFarmers }: { serverFarmers: FarmerData[] }) => {
                   location={data.location}
                   name={data.name}
                   refetch={refetch}
+                  createdBy={data.createdBy}
                 />
               );
             })}
@@ -112,13 +114,13 @@ const Farmers = ({ serverFarmers }: { serverFarmers: FarmerData[] }) => {
               </section>
             </>
           ) : (
-            <div className="my-8 flex flex-col items-center gap-2">
+            <div className="my-8 flex w-full flex-col items-center gap-2">
               <Ghost className="h-8 w-8 text-zinc-800" />
               <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
               {!isSearch && (
                 <div className="flex w-full flex-col items-center justify-center">
-                  <div className="flex items-center justify-center gap-x-2">
-                    Let&apos;s <AddDialog /> and add to your organization.
+                  <div className="flex w-full items-center justify-center gap-x-2">
+                    Let&apos;s <AddDialog /> <p>and add to your organization.</p>
                   </div>
                 </div>
               )}

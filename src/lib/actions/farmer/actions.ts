@@ -59,6 +59,7 @@ export async function CreateFarmer(
           name: name,
           location: location,
           organizationId: session.organization ?? "",
+          createdBy: user.id,
         })
         .returning();
 

@@ -18,9 +18,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import DeleteDialog from "./DeleteDialog";
 import { Paths } from "@/lib/constants";
+import useUserDataStore from "../../../stores/userStore";
 
 const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
   const router = useRouter();
+  const { data: loggedInUser } = useUserDataStore();
   const [openDropdown, setOpenDropdown] = useState<boolean>(false);
   const [openUserInfoDropdown, setUserInfoDropdown] = useState<boolean>(false);
   const {
@@ -52,26 +54,28 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
           e.stopPropagation();
         }}
       >
-        <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
-          <DropdownMenuTrigger asChild className="px-0 py-0">
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="center" className=" flex flex-col gap-y-2">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        {loggedInUser === userId ? (
+          <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
+            <DropdownMenuTrigger asChild className="px-0 py-0">
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className=" flex flex-col gap-y-2">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-            <DropdownMenuItem
-              className="border-2 border-destructive"
-              onSelect={(e) => {
-                e.preventDefault();
-              }}
-            >
-              <DeleteDialog id={id} setOpenDropdown={setOpenDropdown} />
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuItem
+                className="border-2 border-destructive"
+                onSelect={(e) => {
+                  e.preventDefault();
+                }}
+              >
+                <DeleteDialog id={id} setOpenDropdown={setOpenDropdown} />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
       </div>
       <CardHeader className="pt-8">
         <p className="text-xl">{farmerName}</p>

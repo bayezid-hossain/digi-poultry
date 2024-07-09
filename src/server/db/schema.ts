@@ -216,6 +216,7 @@ export const farmer = pgTable("farmer", {
   location: varchar("location", { length: 30 }).notNull(),
   organizationId: uuid("organization_id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdBy: varchar("createdBy", { length: 21 }).notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
 });
 

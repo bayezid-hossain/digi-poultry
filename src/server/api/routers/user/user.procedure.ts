@@ -132,11 +132,14 @@ export const userRouter = createTRPCRouter({
               firstName: users.firstName,
               lastName: users.lastName,
             },
+            farmerName: farmer.name,
           })
           .from(notifications)
           .leftJoin(invites, eq(invites.id, notifications.invitationId))
-          .leftJoin(organizations, eq(organizations.id, invites.organizationId))
           .leftJoin(users, eq(users.id, invites.from))
+          .leftJoin(cycles, eq(cycles.id, notifications.cycleId))
+          .leftJoin(farmer, eq(farmer.id, cycles.farmerId))
+          .leftJoin(organizations, eq(organizations.id, invites.organizationId))
           .where(eq(notifications.recipient, ctx.user.id))
 
           .orderBy(desc(notifications.createdAt))
@@ -156,7 +159,12 @@ export const userRouter = createTRPCRouter({
     if (ctx.session.organization && ctx.user) {
       try {
         const result = await db
-          .select({ name: farmer.name, location: farmer.location, id: farmer.id })
+          .select({
+            name: farmer.name,
+            createdBy: farmer.createdBy,
+            location: farmer.location,
+            id: farmer.id,
+          })
           .from(farmer)
           // Correctly reference the users table
           .where(eq(farmer.organizationId, ctx.session.organization))

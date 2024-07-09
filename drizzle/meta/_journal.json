@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1720433671455,
-      "tag": "0000_living_lifeguard",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1720433900267,
-      "tag": "0001_brown_gargoyle",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1720518590728,
-      "tag": "0002_nappy_masque",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1720519846529,
-      "tag": "0003_fixed_guardian",
+      "when": 1720530834740,
+      "tag": "0000_simple_red_shift",
       "breakpoints": true
     }
   ]

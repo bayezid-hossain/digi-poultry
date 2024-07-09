@@ -14,6 +14,7 @@ const InviteNotification = ({
   from,
   org,
   cycle,
+  farmerName,
 }: {
   invite: {
     id: string | null;
@@ -29,6 +30,7 @@ const InviteNotification = ({
     orgName: string;
   };
   cycle?: boolean;
+  farmerName: string | null;
 }) => {
   const router = useRouter();
   const [inviteStatus, setStatus] = useState<"PENDING" | "ACCEPTED" | "REJECTED" | null>(
@@ -55,12 +57,19 @@ const InviteNotification = ({
   const { firstName, lastName } = from;
   const { orgId, orgName } = org;
   return (
-    <Card className="flex flex-col gap-y-4  p-2 text-foreground">
+    <Card className="flex w-full flex-col gap-y-4 p-2 text-foreground">
       <p>
         <span className="font-bold">
           {firstName} {lastName}
         </span>{" "}
-        has invited you to join {cycle ? "the cycle of " : "the "}
+        has invited you to join{" "}
+        {cycle ? (
+          <p>
+            the cycle of <span className="font-bold">{farmerName}</span> in the{" "}
+          </p>
+        ) : (
+          "the "
+        )}
         <span className="font-bold  underline">&apos;{orgName}&apos;</span> organization.{" "}
       </p>
       {inviteStatus === "PENDING" ? (

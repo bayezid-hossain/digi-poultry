@@ -1,1 +1,0 @@
-ALTER TABLE "dp_userCycles" ADD COLUMN "organization_id" uuid NOT NULL;

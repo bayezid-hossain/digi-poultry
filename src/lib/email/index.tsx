@@ -7,15 +7,18 @@ import { env } from "@/env";
 import { EMAIL_SENDER } from "@/lib/constants";
 import { createTransport, type TransportOptions } from "nodemailer";
 import type { ComponentProps } from "react";
+import InvitationEmailTemplate from "./templates/invitation";
 
 export enum EmailTemplate {
   EmailVerification = "EmailVerification",
   PasswordReset = "PasswordReset",
+  Invitation = "Invitation",
 }
 
 export type PropsMap = {
   [EmailTemplate.EmailVerification]: ComponentProps<typeof EmailVerificationTemplate>;
   [EmailTemplate.PasswordReset]: ComponentProps<typeof ResetPasswordTemplate>;
+  [EmailTemplate.Invitation]: ComponentProps<typeof InvitationEmailTemplate>;
 };
 
 const getEmailTemplate = <T extends EmailTemplate>(template: T, props: PropsMap[NoInfer<T>]) => {
@@ -25,6 +28,13 @@ const getEmailTemplate = <T extends EmailTemplate>(template: T, props: PropsMap[
         subject: "Verify your email address",
         body: render(
           <EmailVerificationTemplate {...(props as PropsMap[EmailTemplate.EmailVerification])} />,
+        ),
+      };
+    case EmailTemplate.Invitation:
+      return {
+        subject: "You got Invited",
+        body: render(
+          <InvitationEmailTemplate {...(props as PropsMap[EmailTemplate.Invitation])} />,
         ),
       };
     case EmailTemplate.PasswordReset:
