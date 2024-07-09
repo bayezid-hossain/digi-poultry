@@ -14,17 +14,19 @@ import { useFormState } from "react-dom";
 import { Input } from "@/components/ui/input";
 import { Invite } from "@/lib/actions/organization/actions";
 import { SubmitButton } from "@/components/submit-button";
+import { toast } from "sonner";
 const InvitePopup = ({ cycleId }: { cycleId?: string }) => {
   const [state, formAction] = useFormState(Invite, null);
   const [open, setOpen] = useState<boolean>(false);
   useEffect(() => {
     if (state?.success) {
       setOpen(false);
+      toast("Invite Sent!", { position: "top-center" });
     }
   }, [state?.success]);
 
   return (
-    <div>
+    <div className="pt-3">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="secondary" className="w-full">

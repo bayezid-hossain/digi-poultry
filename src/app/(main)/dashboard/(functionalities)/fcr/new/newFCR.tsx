@@ -570,7 +570,7 @@ const FCR = () => {
           </Card>
 
           <Card className={`${visible ? "block" : "hidden"} w-full max-w-xl`}>
-            <CardContent>
+            <CardContent className="flex h-full w-full flex-col gap-y-4">
               <div
                 ref={ref}
                 onClick={async () => {
@@ -582,13 +582,34 @@ const FCR = () => {
                     .join("\n");
                   // console.log(stringWithoutSpaces);
                   await copy(stringWithoutSpaces);
-                  toast("Message copied to clipboard");
+                  toast("Message copied to clipboard", {
+                    position: "top-center",
+                  });
                 }}
                 className={`m-4 mt-8 transform animate-color-change items-center justify-center whitespace-break-spaces rounded-lg bg-white p-4 pl-10 text-start leading-[.75] text-black shadow-2xl transition duration-300 hover:scale-105`}
               >
                 {msg}
               </div>
               <Button
+                className="w-full bg-teal-950 text-white"
+                onClick={async () => {
+                  const dataToCopy = msg;
+                  const stringWithoutConsecutiveNewlines = dataToCopy.replace(/\n(?!\n)/g, "");
+                  const stringWithoutSpaces = stringWithoutConsecutiveNewlines
+                    .split("\n")
+                    .map((line) => line.trim())
+                    .join("\n");
+                  // console.log(stringWithoutSpaces);
+                  await copy(stringWithoutSpaces);
+                  toast("Message copied to clipboard", {
+                    position: "top-center",
+                  });
+                }}
+              >
+                Copy Message
+              </Button>
+              <Button
+                variant={"secondary"}
                 className="w-full font-semibold"
                 onClick={() => {
                   setVisible(false);

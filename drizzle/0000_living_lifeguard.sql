@@ -84,10 +84,10 @@ CREATE TABLE IF NOT EXISTS "dp_farmer" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "dp_invites" (
-	"id" serial NOT NULL,
+	"id" uuid,
 	"email" varchar(255) NOT NULL,
 	"notification_type" "action" DEFAULT 'PENDING' NOT NULL,
-	"message" text NOT NULL,
+	"from" varchar NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"cycle_id" varchar,
 	"organization_id" uuid NOT NULL,
@@ -95,14 +95,14 @@ CREATE TABLE IF NOT EXISTS "dp_invites" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "dp_notifications" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"recipient_id" varchar NOT NULL,
 	"notification_type" "notification_type" DEFAULT 'normal' NOT NULL,
 	"message" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"is_read" boolean DEFAULT false NOT NULL,
 	"cycle_id" uuid,
-	"invitation_id" varchar
+	"invitation_id" uuid
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "dp_organizations" (
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS "dp_sessions" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "dp_unregistered_emails" (
-	"email" varchar(255) NOT NULL,
+	"email" varchar(255) PRIMARY KEY NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "dp_unregistered_emails_email_unique" UNIQUE("email")
 );

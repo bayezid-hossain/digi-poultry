@@ -19,22 +19,27 @@ export const VerifyCode = () => {
 
   useEffect(() => {
     if (resendState?.success) {
-      toast("Email sent!");
+      toast("Email sent!", {
+        position: "top-center",
+      });
     }
     if (resendState?.error) {
       toast(resendState.error, {
         icon: <ExclamationTriangleIcon className="h-5 w-5 text-destructive" />,
+        position: "top-center",
       });
     }
   }, [resendState?.error, resendState?.success]);
 
   useEffect(() => {
     if (verifyEmailState?.error) {
+      console.log(verifyEmailState.error);
       toast(verifyEmailState.error, {
         icon: <ExclamationTriangleIcon className="h-5 w-5 text-destructive" />,
+        position: "top-center",
       });
     }
-  }, [verifyEmailState?.error]);
+  }, [verifyEmailState]);
 
   return (
     <div className="flex flex-col gap-2">

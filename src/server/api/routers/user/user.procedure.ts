@@ -5,6 +5,7 @@ import {
   FCRTable,
   cycles,
   farmer,
+  invites,
   notifications,
   organizations,
   userOrganizations,
@@ -113,22 +114,39 @@ export const userRouter = createTRPCRouter({
           .select({
             eventType: notifications.eventType,
             message: notifications.message,
-            cycleId: notifications.cycleId,
-            invitationId: notifications.invitationId,
+            cycle: notifications.cycleId,
+
             time: notifications.createdAt,
             id: notifications.id,
+            invite: {
+              id: invites.id,
+              createdAt: invites.createdAt,
+              status: invites.action,
+            },
+            org: {
+              orgId: organizations.id,
+              orgName: organizations.name,
+            },
+            from: {
+              firstName: users.firstName,
+              lastName: users.lastName,
+            },
           })
           .from(notifications)
-
+          .leftJoin(invites, eq(invites.id, notifications.invitationId))
+          .leftJoin(organizations, eq(organizations.id, invites.organizationId))
+          .leftJoin(users, eq(users.id, invites.from))
           .where(eq(notifications.recipient, ctx.user.id))
-          .orderBy(desc(notifications.createdAt))
-          .limit(10) // Correctly reference the users table
 
+          .orderBy(desc(notifications.createdAt))
+          .limit(10)
           .execute();
 
         console.log(result);
         return result;
       } catch (error) {
+        const joinCondition = eq(users.id, invites.from);
+        console.log(joinCondition);
         console.log(error);
       }
     }

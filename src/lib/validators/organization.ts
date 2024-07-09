@@ -15,3 +15,9 @@ export const invitePeopleSchema = z.object({
 });
 
 export type InvitePeople = z.infer<typeof invitePeopleSchema>;
+
+export const joinOrgSchema = z.object({
+  invitationId: z.string().uuid("Please enter Invitation id"),
+});
+
+export type JoinOrg = z.infer<typeof joinOrgSchema>;

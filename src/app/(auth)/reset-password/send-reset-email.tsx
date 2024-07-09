@@ -19,7 +19,9 @@ export function SendResetEmail() {
 
   useEffect(() => {
     if (state?.success) {
-      toast("A password reset link has been sent to your email.");
+      toast("A password reset link has been sent to your email.", {
+        position: "top-center",
+      });
       router.push(Paths.Login);
     }
     if (state?.error) {

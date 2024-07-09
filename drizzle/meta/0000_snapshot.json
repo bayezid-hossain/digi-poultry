@@ -1,5 +1,5 @@
 {
-  "id": "e483f69c-e95d-4c9c-a9dc-a2c3e4046a89",
+  "id": "0e181351-e572-4d45-b578-10266570d0e6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -514,9 +514,9 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "email": {
           "name": "email",
@@ -532,9 +532,9 @@
           "notNull": true,
           "default": "'PENDING'"
         },
-        "message": {
-          "name": "message",
-          "type": "text",
+        "from": {
+          "name": "from",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": true
         },
@@ -594,9 +594,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "recipient_id": {
           "name": "recipient_id",
@@ -640,7 +641,7 @@
         },
         "invitation_id": {
           "name": "invitation_id",
-          "type": "varchar",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         }
@@ -824,7 +825,7 @@
         "email": {
           "name": "email",
           "type": "varchar(255)",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
         "created_at": {

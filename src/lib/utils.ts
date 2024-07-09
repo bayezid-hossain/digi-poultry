@@ -150,3 +150,27 @@ export const generateFCRMessage = (fcrObj: FCRRecord) => {
     `;
   return msg;
 };
+export const getTimeDifference = (startDate: Date): string => {
+  const msPerSecond = 1000;
+  const msPerMinute = msPerSecond * 60;
+  const msPerHour = msPerMinute * 60;
+  const msPerDay = msPerHour * 24;
+  const msPerWeek = msPerDay * 7;
+
+  const differenceInMs = Date.now() - startDate.getTime();
+
+  if (differenceInMs >= msPerWeek) {
+    const days = Math.floor(differenceInMs / msPerDay);
+    const weeks = Math.floor(days / 7);
+    return `${weeks} week${weeks > 1 ? "s" : ""} ago`;
+  } else if (differenceInMs >= msPerDay) {
+    const days = Math.floor(differenceInMs / msPerDay);
+    const hours = Math.floor((differenceInMs % msPerDay) / msPerHour);
+    return `${days} day${days > 1 ? "s" : ""}, ${hours} hour${hours > 1 ? "s" : ""} ago`;
+  } else {
+    const hours = Math.floor(differenceInMs / msPerHour);
+    const minutes = Math.floor((differenceInMs % msPerHour) / msPerMinute);
+    const seconds = Math.floor((differenceInMs % msPerMinute) / msPerSecond);
+    return `${hours} hour${hours > 1 ? "s" : ""}, ${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+  }
+};

@@ -251,14 +251,14 @@ export const cycleRelations = relations(cycles, ({ many, one }) => ({
 export const notifications = pgTable(
   "notifications",
   {
-    id: serial("id").primaryKey(),
+    id: uuid("id").defaultRandom().primaryKey(),
     recipient: varchar("recipient_id").notNull(),
     eventType: notificationType("notification_type").default("normal").notNull(),
     message: text("message").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     isRead: boolean("is_read").notNull().default(false),
     cycleId: uuid("cycle_id"),
-    invitationId: varchar("invitation_id"),
+    invitationId: uuid("invitation_id"),
   },
   (t) => ({
     notificationRecipientIdx: index("notification_recipient_index").on(t.recipient),
@@ -271,10 +271,10 @@ export const notificationsRelations = relations(notifications, ({ many, one }) =
 export const invites = pgTable(
   "invites",
   {
-    id: serial("id"),
+    id: uuid("id").defaultRandom(),
     email: varchar("email", { length: 255 }).notNull(),
     action: inviteAction("notification_type").default("PENDING").notNull(),
-    message: text("message").notNull(),
+    from: varchar("from").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     cycleId: varchar("cycle_id"),
     organizationId: uuid("organization_id").notNull(),

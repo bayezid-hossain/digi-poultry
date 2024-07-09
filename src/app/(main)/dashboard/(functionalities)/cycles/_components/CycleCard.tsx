@@ -39,10 +39,10 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
   const { firstName, lastName, id: userId, email: userEmail } = createdBy;
   return (
     <Card
-      className={`m-2 h-full scale-100 cursor-pointer transition-all duration-500 ${ended ? "border-2 border-red-500" : "border-2 border-green-500"}`}
+      className={`m-2 h-full scale-100 cursor-pointer transition-all duration-500 ${ended ? "border-2 border-red-500" : "border-2 border-muted-foreground"}`}
       onClick={(e) => {
         e.preventDefault();
-        router.push(`/dashboard/cycles/${id}`);
+        if (lastFCR) router.push(`/dashboard/cycles/${id}`);
       }}
     >
       <div
@@ -129,7 +129,9 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
                 onClick={async (e) => {
                   e.preventDefault();
                   await clipboardCopy(userId);
-                  toast("User ID Copied to Clipboard");
+                  toast("User ID Copied to Clipboard", {
+                    position: "top-center",
+                  });
                   setUserInfoDropdown(false);
                 }}
               >
@@ -139,7 +141,9 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
                 onClick={async (e) => {
                   e.preventDefault();
                   await clipboardCopy(userEmail);
-                  toast("User Email Copied to Clipboard");
+                  toast("User Email Copied to Clipboard", {
+                    position: "top-center",
+                  });
                   setUserInfoDropdown(false);
                 }}
               >
@@ -153,7 +157,7 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
         {ended ? (
           <p className="text-red-500">Ended at {formatDate(endDate ?? Date.now())}</p>
         ) : (
-          <div className="flex gap-x-2 text-xs text-green-700">
+          <div className="flex gap-x-2 text-xs text-muted-foreground">
             <Plane className="h-4 w-4" />
             <p>Running</p>
           </div>

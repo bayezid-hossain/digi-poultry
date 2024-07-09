@@ -24,7 +24,7 @@ const MultiAddDialog = ({ refetch }: { refetch: () => void }) => {
             <DialogTitle>Add Multiple Standard FCR Rows for your Organization</DialogTitle>
             <DialogDescription tabIndex={-1}>
               Please provide input for Standard Data, click "Add" to add it to the server.
-              <div className="mt-2 text-[10px] leading-4 text-blue-600">
+              <div className="mt-2 text-[10px] leading-4 text-secondary-foreground">
                 You can copy paste 'comma' or 'space' seperated data in the first field to auto fill
                 rest of the inputs.
                 <span>NB: The format should be 'Age', 'Std Weight', 'Std FCR'</span>

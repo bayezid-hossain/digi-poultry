@@ -78,11 +78,14 @@ const SignoutConfirmation = () => {
     setIsLoading(true);
     try {
       await logout();
-      toast("Signed out successfully");
+      toast("Signed out successfully", {
+        position: "top-center",
+      });
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message, {
           icon: <ExclamationTriangleIcon className="h-4 w-4 text-destructive" />,
+          position: "top-center",
         });
       }
     } finally {
