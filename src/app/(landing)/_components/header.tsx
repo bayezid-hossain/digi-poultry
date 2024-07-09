@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { RocketIcon } from "@/components/icons";
-import { APP_TITLE } from "@/lib/constants";
+import { APP_TITLE, Paths } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,9 +16,9 @@ import { UserDropdown } from "@/app/(main)/_components/user-dropdown";
 
 const routes = [
   { name: "Home", href: "/" },
-  { name: "Dashboard", href: "/dashboard" },
-  { name: "Login", href: "/login" },
-  { name: "Sign up", href: "/signup" },
+  { name: "Dashboard", href: Paths.Dashboard },
+  { name: "Login", href: Paths.Login },
+  { name: "Sign up", href: Paths.Signup },
 ] as const;
 
 export const Header = async () => {
@@ -75,7 +75,7 @@ export const Header = async () => {
         </Link>
         {user && (
           <Button asChild variant={"link"}>
-            <Link href="/dashboard" className="hidden text-base sm:flex sm:text-lg">
+            <Link href={Paths.Dashboard} className="hidden text-base sm:flex sm:text-lg">
               Dashboard
             </Link>
           </Button>
@@ -83,10 +83,10 @@ export const Header = async () => {
         {!user && (
           <div className="ml-auto hidden gap-x-4 sm:flex">
             <Button asChild variant={"outlineLink"}>
-              <Link href="/login">Login</Link>
+              <Link href={Paths.Login}>Login</Link>
             </Button>
             <Button asChild variant={"outlineLink"} className="mr-2">
-              <Link href="/signup">Sign Up</Link>
+              <Link href={Paths.Signup}>Sign Up</Link>
             </Button>
           </div>
         )}

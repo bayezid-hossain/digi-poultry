@@ -198,10 +198,17 @@ export const userOrganizations = pgTable(
   }),
 );
 
-export const userCycle = pgTable("userCycles", {
-  userId: varchar("user_id").notNull(),
-  cycleId: uuid("cycle_id").notNull(),
-});
+export const userCycle = pgTable(
+  "userCycles",
+  {
+    userId: varchar("user_id").notNull(),
+    cycleId: uuid("cycle_id").notNull(),
+    orgId: uuid("organization_id").notNull(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.userId, t.cycleId, t.orgId] }),
+  }),
+);
 
 export const farmer = pgTable("farmer", {
   id: uuid("id").defaultRandom().primaryKey().unique(),
@@ -225,7 +232,6 @@ export const cycles = pgTable(
     totalDoc: doublePrecision("total_doc").default(0).notNull(),
     age: doublePrecision("age").default(0).notNull(),
     strain: varchar("strain", { length: 50 }).default("Ross A"),
-    totalMortality: doublePrecision("totalMortality").default(0).notNull(),
     farmerId: uuid("farmer_id").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),

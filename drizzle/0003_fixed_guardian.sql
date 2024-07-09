@@ -1,0 +1,2 @@
+ALTER TABLE "dp_userCycles" ADD CONSTRAINT "dp_userCycles_user_id_cycle_id_organization_id_pk" PRIMARY KEY("user_id","cycle_id","organization_id");--> statement-breakpoint
+ALTER TABLE "dp_cycles" DROP COLUMN IF EXISTS "totalMortality";

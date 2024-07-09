@@ -1,10 +1,12 @@
 "use client";
 import { CyclesData, FCRRecord, feed } from "@/app/(main)/_types";
+import InvitePopup from "@/app/(main)/dashboard/_components/InvitePopup";
 import useCycleDataStore from "@/app/(main)/dashboard/stores/cycleStore";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Paths } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { isError } from "@tanstack/react-query";
@@ -12,17 +14,17 @@ import { Ghost, RefreshCcw } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { BillingSkeleton } from "../../../billing/_components/billing-skeleton";
 
 const SingleCycle = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const { id } = useParams();
-  const { data, isLoading, isRefetching, isError, error, refetch } =
-    api.user.getFCRHistory.useQuery(
-      {
-        cycleId: id?.toString() ?? undefined,
-      },
-      { refetchOnMount: true, refetchOnWindowFocus: false },
-    );
+  const { data, isLoading, isRefetching, refetch } = api.user.getFCRHistory.useQuery(
+    {
+      cycleId: id?.toString() ?? undefined,
+    },
+    { refetchOnMount: true, refetchOnWindowFocus: false },
+  );
   const { getItem, isFetching } = useCycleDataStore();
   const cycle = getItem(id?.toString() ?? "");
   const cycleId = Array.isArray(id) ? id[0] : id ?? "";
@@ -41,9 +43,12 @@ const SingleCycle = () => {
             <p className="text-3xl">{cycle.farmerName}</p>{" "}
             <p className="text-xl">{cycle.farmerLocation}</p>
           </div>
-          <div className="absolute  right-0 ">
+          <div className="absolute  right-0 flex gap-x-4 px-2">
+            <div className="-mt-3">
+              <InvitePopup cycleId={cycleId} />
+            </div>
             <SubmitButton variant={"destructive"}>
-              <Link href={`/dashboard/fcr/new?cycleId=${cycleId ?? ""}`}>Close Cycle</Link>
+              <Link href={`${Paths.NewFCR}?cycleId=${cycleId ?? ""}`}>Close Cycle</Link>
             </SubmitButton>
           </div>
           <div className="flex w-full items-center justify-between">
@@ -59,22 +64,17 @@ const SingleCycle = () => {
                 <RefreshCcw size={18} className={`${isRefetching ? "animate-spin" : ""}`} />
               </Button>{" "}
               <SubmitButton variant={"outlineLink"}>
-                <Link href={`/dashboard/fcr/new?cycleId=${cycleId ?? ""}`}>Calculate FCR Now!</Link>
-              </SubmitButton>{" "}
-              <SubmitButton variant={"secondary"}>
-                <Link href={`/dashboard/fcr/new?cycleId=${cycleId ?? ""}`}>Invite</Link>
+                {" "}
+                <Link href={`${Paths.NewFCR}?cycleId=${cycleId ?? ""}`}>Calculate FCR Now!</Link>
               </SubmitButton>{" "}
             </div>
           </div>
           {isLoading ? (
-            <div>
-              <Card className="space-y-2 p-8">
-                <Skeleton className="h-7 w-24" />
-                <Skeleton className="h-5 w-36" />
-              </Card>
-            </div>
+            <section className="flex h-full w-full flex-col items-center justify-center gap-y-8">
+              <BillingSkeleton />
+            </section>
           ) : (
-            <div>
+            <div className="h-full w-full">
               {fcrs && fcrs?.length > 0 ? (
                 <div
                   className={`scroll-style ${fcrs && fcrs?.length > 0 ? "grid" : "flex flex-row"} h-auto max-h-[600px] w-full grid-cols-1 gap-x-4 gap-y-4 overflow-y-auto border-0 bg-card p-2 pb-4 sm:grid-cols-2 xl:grid-cols-3 `}
@@ -145,18 +145,15 @@ const SingleCycle = () => {
                   })}
                 </div>
               ) : (
-                <div className="flex w-full items-center justify-center">
+                <div className="col-span-3 flex w-full items-center justify-center">
                   <div className="my-8 flex w-full flex-col items-center gap-2">
                     <Ghost className="h-8 w-8 text-zinc-800" />
                     <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
                     <div className="flex  w-full flex-col items-center justify-center">
                       <div className="flex w-full items-center justify-center gap-x-2">
                         Let&apos;s{" "}
-                        <SubmitButton
-                          variant={"default"}
-                          className=" border-0 border-b-2 p-1 outline-none"
-                        >
-                          <Link href={`/dashboard/fcr/new?cycleId=${cycleId ?? ""}`}>
+                        <SubmitButton variant={"link"} className=" border-[1px] p-2 outline-none">
+                          <Link href={`${Paths.NewFCR}?cycleId=${cycleId ?? ""}`}>
                             Calculate FCR Now!
                           </Link>
                         </SubmitButton>{" "}
@@ -172,18 +169,15 @@ const SingleCycle = () => {
         <div className="flex w-full items-center justify-center">
           {isLoading ? (
             <>
-              <section>
-                <Card className="space-y-2 p-8">
-                  <Skeleton className="h-7 w-24" />
-                  <Skeleton className="h-5 w-36" />
-                </Card>
+              <section className="flex h-full w-full flex-col items-center justify-center gap-y-8">
+                <BillingSkeleton />
               </section>
             </>
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center gap-y-8">
               No Cycle found for ID : {id}
               <Button variant={"outlineLink"}>
-                <Link href={"/dashboard/cycles"}>Go Back</Link>
+                <Link href={Paths.Cycles}>Go Back</Link>
               </Button>
             </div>
           )}

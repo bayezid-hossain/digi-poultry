@@ -15,13 +15,6 @@ export const createCycleSchema = z.object({
     .number({ required_error: "Age is required", invalid_type_error: "Age must be a number" })
     .gt(-1)
     .default(1),
-  totalMortality: z
-    .number({
-      required_error: "Total Mortality is required",
-      invalid_type_error: "Total Mortality must be a number",
-    })
-    .gt(-1)
-    .default(0),
   strain: z
     .string()
     .min(3, "Please enter minimum 3 letters for Strain name")

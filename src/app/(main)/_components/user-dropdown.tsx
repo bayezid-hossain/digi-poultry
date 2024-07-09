@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/loading-button";
 import { ExclamationTriangleIcon } from "@/components/icons";
 import { logout } from "@/lib/actions/auth/actions";
-import { APP_TITLE } from "@/lib/constants";
+import { APP_TITLE, Paths } from "@/lib/constants";
 import { toast } from "sonner";
 import { PersonIcon } from "@radix-ui/react-icons";
 
@@ -51,13 +51,13 @@ export const UserDropdown = ({
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem className="cursor-pointer text-muted-foreground" asChild>
-            <Link href="/dashboard">Dashboard</Link>
+            <Link href={Paths.Dashboard}>Dashboard</Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer text-muted-foreground" asChild>
-            <Link href="/dashboard/billing">Billing</Link>
+            <Link href={Paths.Billing}>Billing</Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer text-muted-foreground" asChild>
-            <Link href="/dashboard/settings">Settings</Link>
+            <Link href={Paths.Settings}>Settings</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

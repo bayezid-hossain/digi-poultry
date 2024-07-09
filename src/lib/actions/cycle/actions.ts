@@ -15,9 +15,10 @@ import {
   farmer,
   organizations,
   sessions,
+  userCycle,
   userOrganizations,
 } from "@/server/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { lucia } from "../auth";
 import { validateRequest } from "../auth/validate-request";
 import {
@@ -65,55 +66,68 @@ export async function CreateCycle(
           age: err.fieldErrors.age?.[0],
           strain: err.fieldErrors.strain?.[0],
           totalDoc: err.fieldErrors.totalDoc?.[0],
-          totalMortality: err.fieldErrors.totalMortality?.[0],
           farmerId: err.fieldErrors.farmerId?.[0],
         },
       };
     }
-    const { age, strain, totalDoc, totalMortality, farmerId } = parsed.data;
+    const { age, strain, totalDoc, farmerId } = parsed.data;
     if (user) {
-      const newCycle = await db
-        .insert(cycles)
-        .values({
-          createdBy: user.id,
-          age,
-          farmerId,
-          strain,
-          totalDoc,
-          organizationId: session.organization ?? "",
-        })
-        .returning();
-      if (newCycle[0]) {
-        const withFarmerFCRInfo = await db
-          .select({
-            farmerName: farmer.name,
-            farmerLocation: farmer.location,
-            farmerId: farmer.id,
-
-            lastFCR: {
-              id: FCRTable.id,
-              createdAt: FCRTable.createdAt,
-              totalMortality: FCRTable.totalMortality,
-              stdFcr: FCRTable.stdFcr,
-              stdWeight: FCRTable.stdWeight,
-              fcr: FCRTable.fcr,
-              avgWeight: FCRTable.avgWeight,
-              lastDayMortality: FCRTable.todayMortality,
-            },
+      const checkFarmerAvailability = await db
+        .select()
+        .from(cycles)
+        .where(and(eq(cycles.farmerId, farmerId), ne(cycles.ended, true)));
+      if (checkFarmerAvailability.length === 0) {
+        const newCycle = await db
+          .insert(cycles)
+          .values({
+            createdBy: user.id,
+            age,
+            farmerId,
+            strain,
+            totalDoc,
+            organizationId: session.organization ?? "",
           })
-          .from(farmer)
-          .leftJoin(FCRTable, eq(FCRTable.id, ""))
-          .where(eq(farmer.id, newCycle[0].farmerId))
-          .execute();
-        const newObj = {
-          ...newCycle[0],
-          startDate: newCycle[0].createdAt,
-          ...withFarmerFCRInfo[0],
-          createdBy: user,
-        };
-        return { success: JSON.stringify(newObj) };
+          .returning();
+
+        if (newCycle[0]) {
+          await db.insert(userCycle).values({
+            userId: user.id,
+            cycleId: newCycle[0]?.id,
+            orgId: session.organization ?? "",
+          });
+          const withFarmerFCRInfo = await db
+            .select({
+              farmerName: farmer.name,
+              farmerLocation: farmer.location,
+              farmerId: farmer.id,
+
+              lastFCR: {
+                id: FCRTable.id,
+                createdAt: FCRTable.createdAt,
+                totalMortality: FCRTable.totalMortality,
+                stdFcr: FCRTable.stdFcr,
+                stdWeight: FCRTable.stdWeight,
+                fcr: FCRTable.fcr,
+                avgWeight: FCRTable.avgWeight,
+                lastDayMortality: FCRTable.todayMortality,
+              },
+            })
+            .from(farmer)
+            .leftJoin(FCRTable, eq(FCRTable.id, ""))
+            .where(eq(farmer.id, newCycle[0].farmerId))
+            .execute();
+          const newObj = {
+            ...newCycle[0],
+            startDate: newCycle[0].createdAt,
+            ...withFarmerFCRInfo[0],
+            createdBy: user,
+          };
+          return { success: JSON.stringify(newObj) };
+        } else {
+          return { error: "Something went wrong" };
+        }
       } else {
-        return { error: "Something went wrong" };
+        return { error: "Farmer's previous cycle has not ended yet" };
       }
     } else return { error: "Something went wrong" };
   } catch (error: any) {
@@ -126,7 +140,7 @@ export async function deleteSingleCycle(
   formData: FormData,
   apiCall?: boolean,
 ): Promise<ActionResponse<DeleteSingleCycle>> {
-  const { user } = await validateRequest();
+  const { user, session } = await validateRequest();
   if (apiCall && !user) return { error: "No session found" };
   const obj = Object.fromEntries(formData.entries());
   const newObj = {
@@ -143,8 +157,20 @@ export async function deleteSingleCycle(
     };
   }
   const { id } = newObj;
-  const result = await db.delete(cycles).where(eq(cycles.id, id?.toString() ?? "nothing"));
-  return { success: result.toString() + Date.now() };
+  if (
+    (await db.delete(cycles).where(eq(cycles.id, id?.toString() ?? "nothing"))) &&
+    (await db
+      .delete(userCycle)
+      .where(
+        and(
+          eq(userCycle.cycleId, id?.toString() ?? "nothing"),
+          eq(userCycle.userId, user?.id ?? "nothing"),
+          eq(userCycle.orgId, session?.organization ?? "nothing"),
+        ),
+      ))
+  )
+    return { success: "Successfully Deleted" + Date.now() };
+  else return { error: " Something went wrong" };
 }
 
 // export async function updateSingleCycle(

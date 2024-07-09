@@ -26,37 +26,38 @@ import useFarmerDataStore from "../stores/farmerStore";
 import { FarmerData } from "../(functionalities)/farmers/Farmers";
 import useCycleDataStore from "../stores/cycleStore";
 import InvitePopup from "./InvitePopup";
+import { Paths } from "@/lib/constants";
 const items: MenuItemProps[] = [
   {
     title: "Daily FCR",
-    href: "/dashboard/fcr",
+    href: Paths.Dashboard,
     subs: [
       {
         title: "New",
-        href: "/dashboard/fcr/new",
+        href: Paths.NewFCR,
       },
-      { title: "History", href: "/dashboard/fcr/history", icon: HistoryIcon },
-      { title: "Standards", href: "/dashboard/fcr/standards", icon: HistoryIcon },
+      { title: "History", href: Paths.History, icon: HistoryIcon },
+      { title: "Standards", href: Paths.Standards, icon: HistoryIcon },
     ],
   },
   {
     title: "Cycles",
-    href: "/dashboard/cycles",
+    href: Paths.Cycles,
   },
   {
     title: "Farmers",
-    href: "/dashboard/farmers",
+    href: Paths.Farmers,
   },
   {
     title: "Billing",
-    href: "/dashboard/billing",
+    href: Paths.Billing,
     icon: CreditCard,
     subs: [
       {
         title: "Company",
-        href: "/dashboard/billing/company",
+        href: Paths.CompanyBilling,
       },
-      { title: "Farmer", href: "/dashboard/billing/farmer", icon: HistoryIcon },
+      { title: "Farmer", href: Paths.FarmerBilling, icon: HistoryIcon },
     ],
   },
 ];

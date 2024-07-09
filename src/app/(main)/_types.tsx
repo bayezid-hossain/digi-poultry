@@ -38,27 +38,26 @@ export type StandardData = {
 export type CyclesData = {
   farmerName: string;
   farmerLocation: string;
+  farmerId: string;
   id: string;
-  totalDoc: number;
+  totalDoc: number | null;
   strain: string | null;
-  age: number;
+  age: number | null;
   ended: boolean | null;
   endDate: Date | null;
-  startDate: Date;
-  farmerId: string;
-
+  startDate: Date | null;
   createdBy: { firstName: string; lastName: string; email: string; id: string };
   lastFCR: {
+    totalFeed: feed[];
+    farmStock: feed[];
     id: string;
     createdAt: Date;
-    totalMortality: number;
+    fcr: number;
     stdFcr: number;
     stdWeight: number;
-    lastDayMortality: number;
-    fcr: number;
     avgWeight: number;
     age: number;
-    farmStock: feed[];
-    totalFeed: feed[];
+    totalMortality: number;
+    lastDayMortality: number;
   } | null;
 };

@@ -18,6 +18,7 @@ import {
   organizations,
   sessions,
   unRegisteredEmails,
+  userCycle,
   userOrganizations,
   users,
 } from "@/server/db/schema";
@@ -252,6 +253,12 @@ export async function JoinOrganization(
               .update(sessions)
               .set({ organization: orgId })
               .where(eq(sessions.id, session.id));
+            if (cycleId)
+              await db.insert(userCycle).values({
+                userId: user.id,
+                orgId: orgId,
+                cycleId,
+              });
             const sessionResult = await lucia.validateSession(session.id);
             return { success: "Current Organization Changed to " + session.organization };
           }

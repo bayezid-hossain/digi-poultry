@@ -130,10 +130,10 @@ const FCR = () => {
     if (cycle) {
       setFcrObj({
         ...fcrObj,
-        age: cycle.age + 1,
+        age: cycle.age ?? 1 + 1,
         farmer: cycle.farmerName,
         location: cycle.farmerLocation,
-        totalDoc: cycle.totalDoc,
+        totalDoc: cycle.totalDoc ?? 0,
         strain: cycle.strain ?? "Ross A",
         totalMortality: cycle.lastFCR?.totalMortality ?? 0,
         totalFeed: [
@@ -616,10 +616,10 @@ const FCR = () => {
                   if (cycle) {
                     setFcrObj({
                       ...initialFcrObj,
-                      age: cycle.age + 1,
+                      age: cycle.age ?? 0 + 1,
                       farmer: cycle.farmerName,
                       location: cycle.farmerLocation,
-                      totalDoc: cycle.totalDoc,
+                      totalDoc: cycle.totalDoc ?? 1000,
                       strain: cycle.strain ?? "Ross A",
                       totalMortality: cycle.lastFCR?.totalMortality ?? 0,
                     });
@@ -634,7 +634,9 @@ const FCR = () => {
       ) : (
         <div>
           {loading ? (
-            <BillingSkeleton />
+            <section className="flex h-full w-full flex-col items-center justify-center gap-y-8">
+              <BillingSkeleton />
+            </section>
           ) : (
             <div className="w-full">
               <div className="my-8 flex h-full w-full flex-col items-center justify-center gap-2 p-4">

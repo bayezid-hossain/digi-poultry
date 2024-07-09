@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import DeleteDialog from "./DeleteDialog";
+import { Paths } from "@/lib/constants";
 
 const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
   const router = useRouter();
@@ -41,8 +42,8 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
     <Card
       className={`m-2 h-full scale-100 cursor-pointer transition-all duration-500 ${ended ? "border-2 border-red-500" : "border-2 border-muted-foreground"}`}
       onClick={(e) => {
-        e.preventDefault();
-        if (lastFCR) router.push(`/dashboard/cycles/${id}`);
+        e.stopPropagation();
+        router.push(`${Paths.Cycles}/${id}`);
       }}
     >
       <div
@@ -103,16 +104,27 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
             </div>
           </div>
         ) : null}
-        <p>
-          Last Updated Age is {lastFCR ? lastFCR.age : age}{" "}
-          {(lastFCR ? lastFCR.age : age) > 1 ? "days" : "day"}
-        </p>
+        {lastFCR ? (
+          <p>
+            Last Updated Age is {lastFCR.age} {lastFCR.age > 1 ? "days" : "day"}
+          </p>
+        ) : (
+          <p>
+            Last Updated Age is {age} {(age ?? 1) > 1 ? "days" : "day"}
+          </p>
+        )}
         <hr />{" "}
         {!lastFCR ? (
           <div className="z-40 flex flex-col gap-y-4 text-xl">
             <p>No FCR Calculated Yet</p>
-            <SubmitButton variant={"outlineLink"}>
-              <Link href={`/dashboard/fcr/new?cycleId=${id}`}>Calculate FCR Now!</Link>
+            <SubmitButton
+              variant={"outlineLink"}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+            >
+              <Link href={`${Paths.NewFCR}?cycleId=${id ?? ""}`}>Calculate FCR Now!</Link>
             </SubmitButton>
           </div>
         ) : null}

@@ -30,7 +30,7 @@ const InvitePopup = ({ cycleId }: { cycleId?: string }) => {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant="secondary" className="w-full">
-            Invite
+            Invite {cycleId ? " to this cycle" : " "}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
@@ -38,7 +38,8 @@ const InvitePopup = ({ cycleId }: { cycleId?: string }) => {
             <DialogHeader>
               <DialogTitle>Invite</DialogTitle>
               <DialogDescription>
-                Invite people to contribute or observe your organization and cycles.
+                Invite people to contribute or observe your organization{" "}
+                {cycleId ? "and cycles" : ""}.
               </DialogDescription>
               <div className="grid place-items-start gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -50,6 +51,12 @@ const InvitePopup = ({ cycleId }: { cycleId?: string }) => {
                     name="to"
                     placeholder="Enter email address"
                     className="col-span-3"
+                  />{" "}
+                  <Input
+                    id="cycleId"
+                    name="cycleId"
+                    defaultValue={cycleId}
+                    className="col-span-3 hidden"
                   />
                 </div>
               </div>

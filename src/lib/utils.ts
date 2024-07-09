@@ -30,7 +30,7 @@ export const getExceptionType = (error: unknown) => {
 };
 
 export function formatDate(
-  date: Date | string | number,
+  date: Date | string | number | null,
   options: Intl.DateTimeFormatOptions = {
     month: "long",
     day: "numeric",
@@ -40,7 +40,7 @@ export function formatDate(
   try {
     return new Intl.DateTimeFormat("en-US", {
       ...options,
-    }).format(new Date(date));
+    }).format(new Date(date ?? Date.now()));
   } catch (e) {
     console.log(e);
     console.log(date);
@@ -171,6 +171,6 @@ export const getTimeDifference = (startDate: Date): string => {
     const hours = Math.floor(differenceInMs / msPerHour);
     const minutes = Math.floor((differenceInMs % msPerHour) / msPerMinute);
     const seconds = Math.floor((differenceInMs % msPerMinute) / msPerSecond);
-    return `${hours} hour${hours > 1 ? "s" : ""}, ${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+    return `${hours > 0 ? `${hours} ${hours > 1 ? "s" : ""}` : ""} ${minutes} minute${minutes > 1 ? "s" : ""} ago`;
   }
 };

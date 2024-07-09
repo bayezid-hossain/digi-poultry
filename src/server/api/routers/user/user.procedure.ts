@@ -8,6 +8,7 @@ import {
   invites,
   notifications,
   organizations,
+  userCycle,
   userOrganizations,
   users,
 } from "@/server/db/schema";
@@ -114,7 +115,7 @@ export const userRouter = createTRPCRouter({
           .select({
             eventType: notifications.eventType,
             message: notifications.message,
-            cycle: notifications.cycleId,
+            linkId: notifications.cycleId,
 
             time: notifications.createdAt,
             id: notifications.id,
@@ -176,7 +177,7 @@ export const userRouter = createTRPCRouter({
             farmerName: farmer.name,
             farmerLocation: farmer.location,
             farmerId: farmer.id,
-            id: cycles.id,
+            id: userCycle.cycleId,
             totalDoc: cycles.totalDoc,
             strain: cycles.strain,
             age: cycles.age,
@@ -204,12 +205,21 @@ export const userRouter = createTRPCRouter({
               farmStock: FCRTable.farmStock,
             },
           })
-          .from(cycles)
+          .from(userCycle)
+          .leftJoin(
+            cycles,
+            and(eq(cycles.id, userCycle.cycleId), eq(cycles.organizationId, userCycle.orgId)),
+          )
           .innerJoin(farmer, eq(cycles.farmerId, farmer.id))
           .innerJoin(users, eq(users.id, cycles.createdBy))
           .leftJoin(FCRTable, eq(FCRTable.id, cycles.lastFcrId))
           // Correctly reference the users table
-          .where(and(eq(cycles.organizationId, ctx.session.organization), eq(cycles.ended, false)))
+          .where(
+            and(
+              eq(userCycle.orgId, ctx.session.organization),
+              eq(userCycle.userId, ctx.session.userId),
+            ),
+          )
           .execute();
 
         console.log(result);

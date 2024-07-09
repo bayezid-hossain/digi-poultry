@@ -1,3 +1,4 @@
+import { Paths } from "@/lib/constants";
 import Link from "next/link";
 
 const HomePage = () => {
@@ -88,7 +89,7 @@ const HomePage = () => {
         </ul>
       </section>
       <section className="text-center">
-        <Link href="/dashboard/fcr/new">
+        <Link href={Paths.NewFCR}>
           <p className="rounded bg-primary px-6 py-3 font-bold text-white hover:bg-blue-500">
             Calculate Your Daily FCR Now
           </p>

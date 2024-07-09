@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 const Page = async () => {
   const { user } = await validateRequest();
   if (!user) redirect(Paths.Login);
-  redirect("/dashboard/fcr");
+  redirect(Paths.Dashboard);
   return <div></div>;
 };
 export default Page;

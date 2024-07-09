@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { JoinOrganization, RejectInvitation } from "@/lib/actions/organization/actions";
 import { formatDate, getTimeDifference } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { toast } from "sonner";
@@ -29,6 +30,7 @@ const InviteNotification = ({
   };
   cycle?: boolean;
 }) => {
+  const router = useRouter();
   const [inviteStatus, setStatus] = useState<"PENDING" | "ACCEPTED" | "REJECTED" | null>(
     invite.status,
   );
@@ -37,6 +39,7 @@ const InviteNotification = ({
   useEffect(() => {
     if (acceptState?.success) {
       setStatus("ACCEPTED");
+      router.refresh();
     }
   }, [acceptState?.success]);
   useEffect(() => {
@@ -52,12 +55,12 @@ const InviteNotification = ({
   const { firstName, lastName } = from;
   const { orgId, orgName } = org;
   return (
-    <Card className="flex flex-col gap-y-4 bg-slate-900 p-2 text-white">
+    <Card className="flex flex-col gap-y-4  p-2 text-foreground">
       <p>
         <span className="font-bold">
           {firstName} {lastName}
         </span>{" "}
-        has invited you to join {cycle ? "the cycle of" : "the "}
+        has invited you to join {cycle ? "the cycle of " : "the "}
         <span className="font-bold  underline">&apos;{orgName}&apos;</span> organization.{" "}
       </p>
       {inviteStatus === "PENDING" ? (
@@ -100,7 +103,7 @@ const InviteNotification = ({
           )}
         </div>
       )}
-      {time && <p>{getTimeDifference(time)}</p>}
+      {time && <p className="text-xs">{getTimeDifference(time)}</p>}
     </Card>
   );
 };

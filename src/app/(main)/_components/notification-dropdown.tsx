@@ -1,3 +1,4 @@
+"use client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +11,10 @@ import {
 import { Bell, BellDotIcon } from "lucide-react";
 import Link from "next/link";
 import InviteNotification from "./InviteNotification";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Paths } from "@/lib/constants";
+import { getTimeDifference } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 
 type NotificationProps = {
@@ -28,14 +33,15 @@ type NotificationProps = {
     orgId: string;
     orgName: string;
   } | null;
-  cycleId?: string | null;
+  linkId?: string | null;
   id: string;
   time: Date;
 }[];
 
 const NotificationDropDown = ({ notifications }: { notifications?: NotificationProps }) => {
+  const [open, setOpen] = useState<boolean>(false);
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger>
         {notifications ? (
           <BellDotIcon className="border-2border-red-800 h-7 w-7 rounded-full p-1" />
@@ -46,33 +52,56 @@ const NotificationDropDown = ({ notifications }: { notifications?: NotificationP
       <DropdownMenuContent align="end" className="mt-2 w-60 sm:w-96">
         <DropdownMenuLabel className="text-xl text-foreground">Notifications</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          {notifications?.map(({ message, eventType, cycleId, invite, from, org, time }) => {
-            return (
-              <div className="flex flex-col gap-y-1">
-                <DropdownMenuItem className="cursor-pointer px-0 py-1 text-muted-foreground">
-                  {eventType === "invitation" && invite && from && org ? (
-                    <InviteNotification
-                      invite={invite}
-                      from={from}
-                      org={org}
-                      cycle={cycleId ? true : false}
-                    />
-                  ) : (
-                    <Card className="w-full rounded-none border-0 p-2">
-                      <Link
-                        className="flex w-full flex-col items-start justify-start"
-                        href={`${eventType == "normal" ? "" : eventType === "cycle" ? `/dashboard/cycles/${cycleId}` : ""}`}
-                      >
-                        <p className="w-full text-start">{message}</p>
-                      </Link>
-                    </Card>
-                  )}{" "}
-                </DropdownMenuItem>
-                <hr className="w-full border-[1px] border-primary"></hr>
-              </div>
-            );
-          })}
+        <DropdownMenuGroup className="gap-y-4">
+          {notifications && notifications?.length > 0 ? (
+            <div>
+              {notifications?.map(({ message, eventType, linkId, invite, from, org, time }) => {
+                return (
+                  <div className="scroll-style flex max-h-screen flex-col gap-y-1 overflow-y-auto pt-1">
+                    <DropdownMenuItem className="cursor-pointer text-muted-foreground">
+                      {eventType === "invitation" && invite && from && org ? (
+                        <InviteNotification
+                          invite={invite}
+                          from={from}
+                          org={org}
+                          cycle={linkId ? true : false}
+                        />
+                      ) : (
+                        <form className="w-full">
+                          <Card>
+                            <Button
+                              type="submit"
+                              className="flex h-full w-full flex-col items-start justify-start bg-transparent p-2 text-foreground hover:bg-transparent"
+                              onClick={(e) => {
+                                setOpen(false);
+                              }}
+                            >
+                              <Link
+                                className="flex h-full flex-col gap-y-2"
+                                href={`${eventType == "normal" ? "" : eventType === "cycle" ? `${Paths.Cycles}/${linkId}` : eventType === "companyBilling" ? `${Paths.CompanyBilling}/${linkId}` : eventType === "farmerBilling" ? `${Paths.FarmerBilling}/${linkId}` : ""}`}
+                              >
+                                <p className="w-full text-start font-bold">{message}</p>
+                                {time && (
+                                  <p className="w-full text-start text-xs">
+                                    {getTimeDifference(time)}
+                                  </p>
+                                )}
+                              </Link>
+                            </Button>{" "}
+                          </Card>
+                        </form>
+                      )}{" "}
+                    </DropdownMenuItem>
+                    <hr className="w-full border-[1px] border-primary"></hr>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex h-96 items-center justify-center">
+              <p>Nothing to show </p>
+            </div>
+          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
 

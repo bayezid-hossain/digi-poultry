@@ -1,5 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
+import { SubmitButton } from "@/components/submit-button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,16 +11,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { SubmitButton } from "@/components/submit-button";
-import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { useFormState } from "react-dom";
 
 import { CreateCycle } from "@/lib/actions/cycle/actions";
 
-import { ChevronsUpDown } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CyclesData } from "@/app/(main)/_types";
 import {
   Command,
   CommandEmpty,
@@ -27,12 +26,12 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import AddFarmerDialog from "../../farmers/_components/AddFarmer";
-import { FarmerData } from "../../farmers/Farmers";
-import useFarmerDataStore from "../../../stores/farmerStore";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ChevronsUpDown } from "lucide-react";
 import useCycleDataStore from "../../../stores/cycleStore";
-import { farmer } from "@/server/db/schema";
-import { CyclesData } from "@/app/(main)/_types";
+import useFarmerDataStore from "../../../stores/farmerStore";
+import { FarmerData } from "../../farmers/Farmers";
+import AddFarmerDialog from "../../farmers/_components/AddFarmer";
 
 const AddCycle = () => {
   const [state, formAction] = useFormState(CreateCycle, null);
@@ -147,21 +146,6 @@ const AddCycle = () => {
                 />
               </div>{" "}
               <div className="grid grid-rows-2 items-center gap-4">
-                <Label htmlFor="totalMortality" className="text-left">
-                  Total Mortality
-                </Label>
-                <Input
-                  id="totalMortality"
-                  name="totalMortality"
-                  required
-                  inputMode="numeric"
-                  type="text"
-                  defaultValue={0}
-                  placeholder="Total Mortality"
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-rows-2 items-center gap-4">
                 <Label htmlFor="Strain" className="text-left">
                   Strain
                 </Label>
@@ -184,6 +168,10 @@ const AddCycle = () => {
                   </li>
                 ))}
               </ul>
+            ) : state?.error ? (
+              <p className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
+                {state?.error}
+              </p>
             ) : state?.formError ? (
               <p className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
                 {state?.formError}
