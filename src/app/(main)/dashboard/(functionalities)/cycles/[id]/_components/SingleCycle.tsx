@@ -123,7 +123,7 @@ const SingleCycle = () => {
 
                         <div className="grid w-full grid-cols-2">
                           <p>
-                            {fcr.totalFeed[0]?.name} :
+                            {fcr.totalFeed[0]?.name} : 
                             {fcr.totalFeed[0]?.quantity}
                           </p>
                           <p>
