@@ -20,9 +20,11 @@ import {
 } from "@/lib/validators/auth";
 import {
   emailVerificationCodes,
+  notifications,
   organizations,
   passwordResetTokens,
   sessions,
+  unRegisteredEmails,
   userOrganizations,
   users,
 } from "@/server/db/schema";
@@ -158,7 +160,17 @@ export async function signup(
     firstName,
     lastName,
   });
-
+  const isInvited = await db
+    .select({ ivitedAt: unRegisteredEmails.createdAt })
+    .from(unRegisteredEmails)
+    .where(eq(unRegisteredEmails.email, email));
+  if (isInvited[0]) {
+    await db.delete(unRegisteredEmails).where(eq(unRegisteredEmails.email, email));
+    await db
+      .update(notifications)
+      .set({ recipient: userId })
+      .where(eq(notifications.recipient, email));
+  }
   const session = await lucia.createSession(userId, { isUserVerified: false });
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);

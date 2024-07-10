@@ -139,6 +139,7 @@ export async function Invite(
         return {
           fieldError: {
             to: err.fieldErrors.to?.[0],
+            cycleId: err.fieldErrors.cycleId?.[0],
           },
         };
       }
@@ -146,43 +147,58 @@ export async function Invite(
       if (to === user.email) {
         return { error: "You can't invite yourself" };
       }
+      const isAuthorizedToInvite = await db
+        .select({ id: organizations.id, name: organizations.name })
+        .from(organizations)
+        .where(
+          and(eq(organizations.createdBy, user.id), eq(organizations.id, session.organization)),
+        );
+      if (isAuthorizedToInvite[0]?.id === session.organization) {
+        const inviteId = await db
+          .insert(invites)
+          .values({
+            email: to,
+            organizationId: session.organization,
+            cycleId: cycleId ?? "",
+            from: user.id,
+          })
+          .returning({ id: invites.id });
+        const recipientUser = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(eq(users.email, to));
+        try {
+          if (!recipientUser[0]?.id) await db.insert(unRegisteredEmails).values({ email: to });
+        } catch (error) {}
+        await db.insert(notifications).values({
+          recipient: recipientUser[0]?.id?.toString() ?? to,
+          eventType: "invitation",
+          cycleId: cycleId,
+          invitationId: inviteId[0]?.id?.toString() ?? null,
+          message: "",
+        });
 
-      const inviteId = await db
-        .insert(invites)
-        .values({
-          email: to,
-          organizationId: session.organization,
-          cycleId: cycleId ?? "",
-          from: user.id,
-        })
-        .returning({ id: invites.id });
-      const recipientUser = await db
-        .select({ id: users.id })
-        .from(users)
-        .where(eq(users.email, to));
-      try {
-        if (!recipientUser[0]?.id) await db.insert(unRegisteredEmails).values({ email: to });
-      } catch (error) {}
-      await db.insert(notifications).values({
-        recipient: recipientUser[0]?.id?.toString() ?? to,
-        eventType: "invitation",
-        cycleId: cycleId,
-        invitationId: inviteId[0]?.id?.toString() ?? null,
-        message: "",
-      });
+        if (cycleId) {
+          const farmerName = await db
+            .select({ farmerName: farmer.name })
+            .from(cycles)
+            .leftJoin(farmer, eq(farmer.id, cycles.farmerId))
+            .where(eq(cycles.id, cycleId ?? ""));
+          await sendMail(to, EmailTemplate.Invitation, {
+            organizationName: isAuthorizedToInvite[0]?.name,
+            senderName: user.firstName + " " + user.lastName,
+            farmerName: farmerName[0]?.farmerName ?? undefined,
+          });
+        } else
+          await sendMail(to, EmailTemplate.Invitation, {
+            organizationName: isAuthorizedToInvite[0]?.name,
+            senderName: user.firstName + " " + user.lastName,
+          });
 
-      const farmerName = await db
-        .select({ farmerName: farmer.name })
-        .from(cycles)
-        .leftJoin(farmer, eq(farmer.id, cycles.farmerId))
-        .where(eq(cycles.id, cycleId ?? ""));
-
-      await sendMail(to, EmailTemplate.Invitation, {
-        organizationName: session.organization,
-        senderName: user.firstName + " " + user.lastName,
-        farmerName: farmerName[0]?.farmerName ?? undefined,
-      });
-      return { success: "Invitation Sent!" + to };
+        return { success: "Invitation Sent!" + to };
+      } else {
+        return { error: "You are not authorized to send invite from this organization" };
+      }
     } catch (error: any) {
       const convertedError = error as PostgresError;
       if (convertedError.code == "23505") {

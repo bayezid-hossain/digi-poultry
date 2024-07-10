@@ -30,7 +30,7 @@ const InviteNotification = ({
     orgName: string;
   };
   cycle?: boolean;
-  farmerName: string | null;
+  farmerName?: string | null;
 }) => {
   const router = useRouter();
   const [inviteStatus, setStatus] = useState<"PENDING" | "ACCEPTED" | "REJECTED" | null>(
@@ -63,7 +63,7 @@ const InviteNotification = ({
           {firstName} {lastName}
         </span>{" "}
         has invited you to join{" "}
-        {cycle ? (
+        {cycle && farmerName ? (
           <p>
             the cycle of <span className="font-bold">{farmerName}</span> in the{" "}
           </p>

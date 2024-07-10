@@ -6,6 +6,7 @@ import {
   Row,
   RowSelectionState,
   SortingState,
+  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -47,7 +48,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { StandardData } from "@/app/(main)/_types";
 import useStandardDataStore from "@/app/(main)/dashboard/stores/standardsStore";
 
-export const DataTable = () => {
+export const DataTable = ({ isOwner }: { isOwner: boolean }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [ages, setAges] = useState<number[]>([0]);
   const {
@@ -58,6 +59,8 @@ export const DataTable = () => {
   } = useStandardDataStore();
   const [data, setData] = useState<StandardData[]>(standardsData);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [hideColumns, setHideColumns] = useState<boolean>(!isOwner);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({}); //manage your own row selection state
   const [state, formAction] = useFormState(deleteMultipleRecords, null);
   const [open, setOpen] = useState<boolean>(false);
@@ -94,12 +97,24 @@ export const DataTable = () => {
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
 
+    onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
       columnFilters,
+      columnVisibility,
       rowSelection,
     },
   });
+  useEffect(() => {
+    if (hideColumns) {
+      table
+        .getAllColumns()
+        .filter((column) => column.getCanHide())
+        .map((column) => {
+          column.toggleVisibility(false);
+        });
+    }
+  }, [hideColumns]);
   useEffect(() => {
     if (importState?.success) {
       if (data.length < 1)
@@ -118,9 +133,9 @@ export const DataTable = () => {
     setAges(ages);
     setOpen(false);
   }, [table.getFilteredSelectedRowModel().rows.length]);
+
   return (
-    <div className=" max-w-7xl">
-      {" "}
+    <div className="max-w-7xl">
       <div className="flex w-full flex-row items-center justify-start pb-4">
         <Input
           placeholder="Search by Age"
@@ -140,21 +155,23 @@ export const DataTable = () => {
           {" "}
           <RefreshCcw size={18} className={`${isRefetching ? "animate-spin" : ""}`} />
         </Button>
-        <AddDialog
-          newRequest={true}
-          refetch={async () => {
-            const data = await refetch();
-            if (data.data) {
-              setData(data.data);
-            }
-          }}
-          defaultAge={(data ? data.length + 1 : 1).toString()}
-          defaultFcr="1.3"
-          defaultWeight="900"
-        />
+        {isOwner ? (
+          <AddDialog
+            newRequest={true}
+            refetch={async () => {
+              const data = await refetch();
+              if (data.data) {
+                setData(data.data);
+              }
+            }}
+            defaultAge={(data ? data.length + 1 : 1).toString()}
+            defaultFcr="1.3"
+            defaultWeight="900"
+          />
+        ) : null}
       </div>{" "}
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md  border">
+        <Table className="scroll-style max-h-[50vh]  overflow-y-auto ">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -226,7 +243,7 @@ export const DataTable = () => {
               </TableCell>
             </TableRow>
           ) : (
-            <TableBody>
+            <TableBody className="">
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
@@ -301,12 +318,18 @@ export const DataTable = () => {
                       <div className="my-8 flex flex-col items-center gap-2">
                         <Ghost className="h-8 w-8 text-zinc-800" />
                         <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
-                        <p>Let&apos;s create your first standard data.</p>
-                        <p className="text-xs font-semibold">Or</p>
-                        <form action={importStandardAction}>
-                          {" "}
-                          <SubmitButton> Import our standard values!</SubmitButton>
-                        </form>
+                        {isOwner ? (
+                          <div>
+                            <p>Let&apos;s create your first standard data.</p>
+                            <p className="text-xs font-semibold">Or</p>
+                            <form action={importStandardAction}>
+                              {" "}
+                              <SubmitButton> Import our standard values!</SubmitButton>
+                            </form>
+                          </div>
+                        ) : (
+                          <p>Ask your organization admin to import or create Standard Data</p>
+                        )}
                       </div>
                     </TableCell>
                   )}
@@ -318,57 +341,64 @@ export const DataTable = () => {
         <div className="flex flex-col gap-2.5 p-4">
           <DataTablePagination table={table} />
         </div>
-        <div className="m-2 flex flex-col gap-y-4">
-          <div>
-            <MultiAddDialog
-              refetch={async () => {
-                const data = await refetch();
-                if (data.data) {
-                  setData(data.data);
-                }
-              }}
-            />
+        {isOwner ? (
+          <div className="m-2 flex flex-col gap-y-4">
+            <div>
+              <MultiAddDialog
+                refetch={async () => {
+                  const data = await refetch();
+                  if (data.data) {
+                    setData(data.data);
+                  }
+                }}
+              />
+            </div>
+            <Dialog modal open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild className="w-fit">
+                <Button variant={"destructive"}>Delete Selected Rows</Button>
+              </DialogTrigger>{" "}
+              <DialogContent className="mb-auto sm:max-w-[425px] ">
+                <DialogHeader>
+                  <DialogTitle>Are you sure you want to delete?</DialogTitle>
+                  <DialogDescription>
+                    Please confirm that you want to delete this information, it cannot be recovered
+                    once deleted!
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="">
+                  <form
+                    ref={ref}
+                    action={formAction}
+                    className="flex flex-row justify-center gap-x-8"
+                    onSubmit={() => {
+                      setRowSelection({});
+
+                      {
+                        ages.map((age) => {
+                          removeData(age);
+                        });
+                      }
+                    }}
+                  >
+                    <Input
+                      name="ages"
+                      className="hidden"
+                      defaultValue={ages?.toString()}
+                      required
+                    />
+
+                    <DialogClose className="flex flex-row items-center justify-center rounded-md bg-primary px-2 font-semibold text-primary-foreground hover:text-white">
+                      No
+                    </DialogClose>
+                    <SubmitButton className="m-0 bg-destructive text-destructive-foreground">
+                      Yes
+                    </SubmitButton>
+                  </form>
+                </div>
+              </DialogContent>
+            </Dialog>{" "}
           </div>
-          <Dialog modal open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild className="w-fit">
-              <Button variant={"destructive"}>Delete Selected Rows</Button>
-            </DialogTrigger>{" "}
-            <DialogContent className="mb-auto sm:max-w-[425px] ">
-              <DialogHeader>
-                <DialogTitle>Are you sure you want to delete?</DialogTitle>
-                <DialogDescription>
-                  Please confirm that you want to delete this information, it cannot be recovered
-                  once deleted!
-                </DialogDescription>
-              </DialogHeader>
-              <div className="">
-                <form
-                  ref={ref}
-                  action={formAction}
-                  className="flex flex-row justify-center gap-x-8"
-                  onSubmit={() => {
-                    setRowSelection({});
-
-                    {
-                      ages.map((age) => {
-                        removeData(age);
-                      });
-                    }
-                  }}
-                >
-                  <Input name="ages" className="hidden" defaultValue={ages?.toString()} required />
-
-                  <DialogClose className="flex flex-row items-center justify-center rounded-md bg-primary px-2 font-semibold text-primary-foreground hover:text-white">
-                    No
-                  </DialogClose>
-                  <SubmitButton className="m-0 bg-destructive text-destructive-foreground">
-                    Yes
-                  </SubmitButton>
-                </form>
-              </div>
-            </DialogContent>
-          </Dialog>{" "}
-        </div>
+        ) : null}
       </div>
     </div>
   );

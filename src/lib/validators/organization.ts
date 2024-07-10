@@ -10,7 +10,7 @@ export const changeCurrentOrgSchema = z.object({
 
 export type ChangeCurrentOrg = z.infer<typeof changeCurrentOrgSchema>;
 export const invitePeopleSchema = z.object({
-  cycleId: z.string().uuid("Please enter cycle id").optional(),
+  cycleId: z.string().optional(),
   to: z.string({ required_error: "Please provide Email" }).email("Please enter a valid email"),
 });
 

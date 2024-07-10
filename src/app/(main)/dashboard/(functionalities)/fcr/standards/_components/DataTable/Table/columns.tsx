@@ -18,6 +18,7 @@ import { StandardData } from "@/app/(main)/_types";
 export const columns = (): ColumnDef<StandardData>[] => [
   {
     id: "select",
+
     header: ({ table }) => (
       <div className="flex w-full items-center justify-center">
         <Checkbox
@@ -41,9 +42,10 @@ export const columns = (): ColumnDef<StandardData>[] => [
       </div>
     ),
     enableSorting: false,
-    enableHiding: false,
+    enableHiding: true,
   },
   {
+    enableHiding: false,
     accessorKey: "age",
     header: ({ column }) => {
       return (
@@ -134,6 +136,7 @@ export const columns = (): ColumnDef<StandardData>[] => [
   {
     id: "actions",
 
+    enableHiding: true,
     cell: ({ row }) => {
       const standard = row.original;
       return (

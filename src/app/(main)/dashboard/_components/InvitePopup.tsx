@@ -52,12 +52,14 @@ const InvitePopup = ({ cycleId }: { cycleId?: string }) => {
                     placeholder="Enter email address"
                     className="col-span-3"
                   />{" "}
-                  <Input
-                    id="cycleId"
-                    name="cycleId"
-                    defaultValue={cycleId}
-                    className="col-span-3 hidden"
-                  />
+                  {cycleId && (
+                    <Input
+                      id="cycleId"
+                      name="cycleId"
+                      defaultValue={cycleId}
+                      className="col-span-3 hidden"
+                    />
+                  )}
                 </div>
               </div>
               {state?.fieldError ? (

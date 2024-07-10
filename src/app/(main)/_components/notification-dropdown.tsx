@@ -76,13 +76,13 @@ const NotificationDropDown = ({
                       className="scroll-style flex max-h-screen flex-col gap-y-1 overflow-y-auto pt-1"
                     >
                       <DropdownMenuItem className="cursor-pointer text-muted-foreground">
-                        {eventType === "invitation" && invite && from && org && farmerName ? (
+                        {eventType === "invitation" && invite && from && org ? (
                           <InviteNotification
                             key={invite.id}
                             invite={invite}
                             from={from}
                             org={org}
-                            farmerName={farmerName}
+                            farmerName={farmerName ?? ""}
                             cycle={linkId ? true : false}
                           />
                         ) : (

@@ -14,6 +14,7 @@ export default async function DashboardLayout({ children }: Props) {
   const data = await api.user.getFcrStandards.query();
   const farmers = await api.user.getFarmers.query();
   const cycles = await api.user.getCycles.query();
+  const isOwner = await api.user.isOwner.query();
   if (!user) redirect(Paths.Login);
   return (
     <div className=" container min-h-[calc(100vh-180px)] overflow-y-hidden px-2 pt-6 sm:px-4 md:px-10">
@@ -23,6 +24,7 @@ export default async function DashboardLayout({ children }: Props) {
           standards={data}
           farmers={farmers ?? []}
           cycles={cycles ?? []}
+          isOwner={isOwner ?? false}
           className="flex flex-shrink-0 gap-4 md:w-48 md:flex-col lg:w-80"
         />
         <main className="w-full space-y-4">

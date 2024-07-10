@@ -93,7 +93,7 @@ const SingleCycle = () => {
                       <div className="flex flex-col gap-y-2 rounded-md border-2 border-primary p-2">
                         <p>
                           Date -{" "}
-                          {formatDate(fcr.date ?? "", {
+                          {formatDate(fcr.createdAt ?? "", {
                             day: "2-digit",
                             month: "2-digit",
                             year: "numeric",
@@ -123,8 +123,7 @@ const SingleCycle = () => {
 
                         <div className="grid w-full grid-cols-2">
                           <p>
-                            {fcr.totalFeed[0]?.name} : 
-                            {fcr.totalFeed[0]?.quantity}
+                            {fcr.totalFeed[0]?.name} : {fcr.totalFeed[0]?.quantity}
                           </p>
                           <p>
                             {fcr.totalFeed[1]?.name} : {fcr.totalFeed[1]?.quantity}

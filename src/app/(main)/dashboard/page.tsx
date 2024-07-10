@@ -1,23 +1,13 @@
-import { redirect } from "next/navigation";
 import { env } from "@/env";
-import { api } from "@/trpc/server";
 import { type Metadata } from "next";
-import * as React from "react";
-import { validateRequest } from "@/lib/actions/auth/validate-request";
-import { Paths } from "@/lib/constants";
+import { redirect } from "next/navigation";
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
   title: "Daily FCR",
   description: "Manage your DailyFCR here",
 };
 
-interface Props {
-  searchParams: Record<string, string | string[] | undefined>;
-}
-
-const Page = async ({ searchParams }: Props) => {
-  const { user, session } = await validateRequest();
-
-  return <div></div>;
+const Page = async () => {
+  redirect("/dashboard/fcr");
 };
 export default Page;

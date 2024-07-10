@@ -38,13 +38,13 @@ export function formatDate(
   },
 ) {
   try {
-    return new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat(["ban"], {
       ...options,
     }).format(new Date(date ?? Date.now()));
   } catch (e) {
     console.log(e);
     console.log(date);
-    return new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat(["ban"], {
       ...options,
       month: "numeric",
     }).format(Date.now());
@@ -109,7 +109,7 @@ export const standardData: StandardData[] = [
 ];
 
 export const generateFCRMessage = (fcrObj: FCRRecord) => {
-  const formattedDate = format(new Date(fcrObj.date ?? ""), "dd-MM-yyyy");
+  const formattedDate = format(new Date(fcrObj.createdAt ?? ""), "dd-MM-yyyy");
   const formattedObj = { ...fcrObj, date: formattedDate };
   let feedCount = 0;
   let stockCount = 0;

@@ -181,9 +181,17 @@ interface Props {
   standards: StandardData[];
   farmers: FarmerData[];
   cycles: CyclesData[];
+  isOwner: boolean;
 }
 
-export function DashboardNav({ className, organization, standards, farmers, cycles }: Props) {
+export function DashboardNav({
+  className,
+  isOwner,
+  organization,
+  standards,
+  farmers,
+  cycles,
+}: Props) {
   const [firstTime, setFirstTime] = useState<boolean>(true);
   const { setData: setFCRStandardData } = useStandardDataStore();
   const { setData: setFarmerData } = useFarmerDataStore();
@@ -210,7 +218,7 @@ export function DashboardNav({ className, organization, standards, farmers, cycl
       {items.map((item) => (
         <MenuItem key={item.href} subs={item.subs} title={item.title} href={item.href} />
       ))}
-      <InvitePopup />
+      {isOwner ? <InvitePopup /> : null}
     </nav>
   ) : null;
 }

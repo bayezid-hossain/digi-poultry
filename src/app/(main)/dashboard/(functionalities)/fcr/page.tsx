@@ -90,7 +90,7 @@ const HomePage = () => {
       </section>
       <section className="text-center">
         <Link href={Paths.NewFCR}>
-          <p className="rounded bg-primary px-6 py-3 font-bold text-white hover:bg-blue-500">
+          <p className="rounded bg-primary px-6 py-3 font-bold text-primary-foreground hover:bg-accent hover:text-accent-foreground">
             Calculate Your Daily FCR Now
           </p>
         </Link>

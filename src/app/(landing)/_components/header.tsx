@@ -70,17 +70,20 @@ export const Header = async () => {
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-        <Link className="flex items-center justify-center pl-2 text-lg font-medium" href="/">
+        <Link className="flex items-center justify-center pl-2 text-xl font-medium" href="/">
           <MagicWandIcon className="mr-2 h-5 w-5" /> <p className=" block">{APP_TITLE}</p>{" "}
         </Link>
-        {user && (
-          <Button asChild variant={"link"}>
-            <Link href={Paths.Dashboard} className="hidden text-base sm:flex sm:text-lg">
+        {user ? (
+          <Button
+            asChild
+            variant={"link"}
+            className="flex flex-col items-center justify-center px-2 text-lg underline"
+          >
+            <Link href={Paths.Dashboard} className="">
               Dashboard
             </Link>
           </Button>
-        )}
-        {!user && (
+        ) : (
           <div className="ml-auto hidden gap-x-4 sm:flex">
             <Button asChild variant={"outlineLink"}>
               <Link href={Paths.Login}>Login</Link>

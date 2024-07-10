@@ -26,7 +26,7 @@ export interface FCRRecord {
   totalDoc: number;
   farmStock: feed[];
   totalFeed: feed[];
-  date?: string;
+  createdAt?: Date;
 }
 export type StandardData = {
   age: number;

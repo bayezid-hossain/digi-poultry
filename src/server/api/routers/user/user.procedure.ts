@@ -37,6 +37,30 @@ export const userRouter = createTRPCRouter({
 
     // console.log(result);
   }),
+  isOwner: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      if (ctx.session && ctx.user) {
+        const result = await db
+          .select()
+          .from(organizations)
+          .where(
+            and(
+              eq(organizations.createdBy, ctx.user.id),
+              eq(organizations.id, ctx.session?.organization ?? ""),
+            ),
+          )
+          .execute();
+
+        if (result.length > 0) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }),
   getOrganizations: protectedProcedure.query(async ({ ctx }) => {
     if (ctx.session && ctx.user) {
       const result = await db

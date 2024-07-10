@@ -1,21 +1,16 @@
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function BillingSkeleton() {
   return (
-    <>
+    <div className="flex flex-col gap-y-4">
       <section>
         <Card className="space-y-2 p-8">
           <Skeleton className="h-7 w-24" />
           <Skeleton className="h-5 w-36" />
         </Card>
       </section>
-      <section className="grid gap-6 lg:grid-cols-2">
+      <section className="grid grid-cols-2 gap-6">
         {Array.from({ length: 2 }).map((_, i) => (
           <Card key={i} className="flex flex-col p-2">
             <CardHeader className="h-full">
@@ -39,6 +34,6 @@ export function BillingSkeleton() {
           </Card>
         ))}
       </section>
-    </>
+    </div>
   );
 }

@@ -1,12 +1,10 @@
 import { api } from "@/trpc/server";
 import { DataTable } from "./_components/DataTable/Table/DataTable";
-import { StandardData } from "@/app/(main)/_types";
 const StandardsTable = async () => {
-  const data: StandardData[] = await api.user.getFcrStandards.query();
-
+  const isOwner = await api.user.isOwner.query();
   return (
     <div className="flex w-full flex-col items-center justify-center">
-      <DataTable />
+      <DataTable isOwner={isOwner ?? false} />
     </div>
   );
 };

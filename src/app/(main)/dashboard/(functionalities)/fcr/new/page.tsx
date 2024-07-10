@@ -5,7 +5,7 @@ import { api } from "@/trpc/server";
 const Page = async () => {
   const standards = await api.user.getFcrStandards.query();
   return (
-    <div className="flex h-full w-full items-center justify-center">
+    <div className="flex h-full max-h-svh w-full items-center justify-center ">
       <FCR />
     </div>
   );
