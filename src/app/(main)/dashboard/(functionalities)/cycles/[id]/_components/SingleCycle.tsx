@@ -67,10 +67,12 @@ const SingleCycle = () => {
                 {" "}
                 <RefreshCcw size={18} className={`${isRefetching ? "animate-spin" : ""}`} />
               </Button>{" "}
-              <SubmitButton variant={"outlineLink"}>
-                {" "}
-                <Link href={`${Paths.NewFCR}?cycleId=${cycleId ?? ""}`}>Calculate FCR Now!</Link>
-              </SubmitButton>{" "}
+              {userId === cycle.createdBy.id ? (
+                <SubmitButton variant={"outlineLink"}>
+                  {" "}
+                  <Link href={`${Paths.NewFCR}?cycleId=${cycleId ?? ""}`}>Calculate FCR Now!</Link>
+                </SubmitButton>
+              ) : null}
             </div>
           </div>
           {isLoading ? (
@@ -154,12 +156,15 @@ const SingleCycle = () => {
                     <h3 className="text-xl font-semibold">Pretty empty around here...</h3>
                     <div className="flex  w-full flex-col items-center justify-center">
                       <div className="flex w-full items-center justify-center gap-x-2">
-                        Let&apos;s{" "}
-                        <SubmitButton variant={"link"} className=" border-[1px] p-2 outline-none">
-                          <Link href={`${Paths.NewFCR}?cycleId=${cycleId ?? ""}`}>
-                            Calculate FCR Now!
-                          </Link>
-                        </SubmitButton>{" "}
+                        {userId === cycle.createdBy.id ? (
+                          <SubmitButton variant={"link"} className=" border-[1px] p-2 outline-none">
+                            <Link href={`${Paths.NewFCR}?cycleId=${cycleId ?? ""}`}>
+                              Let's Calculate FCR Now!
+                            </Link>
+                          </SubmitButton>
+                        ) : (
+                          <div>Ask your cycle creator to add some FCR!</div>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -202,68 +202,65 @@ const FCR = () => {
       {standardsFromStore.length != 0 ? (
         <div className="flex w-full flex-col items-start justify-center gap-y-8 md:gap-x-8 xl:flex-row">
           <Card className="w-full max-w-xl">
-            <form action={formAction} className="flex flex-col items-center justify-center gap-y-1">
-              <CardContent className="h-full overflow-hidden  border-b-2 border-secondary ">
-                {" "}
-                <div className="flex w-full items-center justify-center gap-x-4 pt-4">
-                  <p>Cycle: </p>{" "}
-                  <Popover open={popOpen} onOpenChange={setPopOpen}>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" role="combobox" className="w-auto justify-between">
-                        {cycle ? (
-                          <div className="flex gap-x-2">
-                            <p>{cycle.farmerName} -</p>
-                            <p>{formatDate(cycle.startDate)}-</p>
-                            <p>{cycle.totalDoc}pcs</p>
-                          </div>
-                        ) : (
-                          "Select Cycle..."
-                        )}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search Cycle..." />
-                        <CommandList>
-                          <CommandEmpty>No Cycle found.</CommandEmpty>
-                          <CommandGroup>
-                            {cycles.map((cycle) => (
-                              <CommandItem
-                                key={cycle.id}
-                                value={
-                                  cycle.farmerName +
-                                  cycle.farmerLocation +
-                                  cycle.totalDoc +
-                                  cycle.id
-                                }
-                                onSelect={async () => {
-                                  setCycle(cycle);
-                                  setPopOpen(false);
-                                }}
-                              >
-                                <div
-                                  className="grid w-full grid-cols-3 place-items-start 
-                          "
-                                >
-                                  <span>{cycle.farmerName}</span>
-                                  <span>{cycle.totalDoc}</span>
-                                  <span>{cycle.farmerLocation}</span>
-                                </div>
-                              </CommandItem>
-                            ))}
+            <CardContent>
+              {" "}
+              <div className="flex w-full items-center justify-center gap-x-4 pt-4">
+                <p>Cycle: </p>{" "}
+                <Popover open={popOpen} onOpenChange={setPopOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" role="combobox" className="w-auto justify-between">
+                      {cycle ? (
+                        <div className="flex gap-x-2">
+                          <p>{cycle.farmerName} -</p>
+                          <p>{formatDate(cycle.startDate)}-</p>
+                          <p>{cycle.totalDoc}pcs</p>
+                        </div>
+                      ) : (
+                        "Select Cycle..."
+                      )}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search Cycle..." />
+                      <CommandList>
+                        <CommandEmpty>No Cycle found.</CommandEmpty>
+                        <CommandGroup>
+                          {cycles.map((cycle) => (
                             <CommandItem
-                              key={"create-new-farmer"}
-                              className="flex w-full items-center"
+                              key={cycle.id}
+                              value={
+                                cycle.farmerName + cycle.farmerLocation + cycle.totalDoc + cycle.id
+                              }
+                              onSelect={async () => {
+                                setCycle(cycle);
+                                setPopOpen(false);
+                              }}
                             >
-                              <AddCycle />
+                              <div
+                                className="grid w-full grid-cols-3 place-items-start 
+                          "
+                              >
+                                <span>{cycle.farmerName}</span>
+                                <span>{cycle.totalDoc}</span>
+                                <span>{cycle.farmerLocation}</span>
+                              </div>
                             </CommandItem>
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </div>
+                          ))}
+                          <CommandItem
+                            key={"create-new-farmer"}
+                            className="flex w-full items-center"
+                          >
+                            <AddCycle />
+                          </CommandItem>
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <form action={formAction} className="space-y-4">
                 <Input name={"cycleId"} defaultValue={cycle?.id} className="hidden" />
                 <div className="flex flex-col items-start justify-start space-y-4">
                   <div className="mb-2 mt-8 flex gap-x-8">
@@ -529,46 +526,47 @@ const FCR = () => {
                     {state?.formError}
                   </p>
                 ) : null}
-              </CardContent>
-              {cycle ? (
-                <SubmitButton
-                  className="m-2 w-3/4 "
-                  onClick={() => {
-                    const stdFcrWt = standardsFromStore.find(
-                      (standard) => standard.age === fcrObj.age,
-                    );
-                    if (stdFcrWt?.stdFcr && stdFcrWt.stdWeight) {
-                      let feedCalc = 1;
-                      fcrObj.totalFeed.map((feed) => {
-                        feedCalc += feed.quantity;
-                      });
-                      const fcr = Number(
-                        (
-                          (feedCalc * 50) /
-                          ((fcrObj.totalDoc - fcrObj.totalMortality) * (fcrObj.avgWeight / 1000))
-                        ).toFixed(4),
+
+                {cycle ? (
+                  <SubmitButton
+                    className="w-full"
+                    onClick={() => {
+                      const stdFcrWt = standardsFromStore.find(
+                        (standard) => standard.age === fcrObj.age,
                       );
-                      const updatedData = {
-                        ...fcrObj,
-                        stdFcr: stdFcrWt.stdFcr,
-                        stdWeight: stdFcrWt.stdWeight,
-                        fcr: fcr,
-                      };
-                      const message = generateFCRMessage(updatedData);
-                      setMsg(message);
-                      setVisible(true);
-                      setFcrObj(updatedData);
-                      setTimeout(() => {
-                        ref.current?.scrollIntoView({ behavior: "smooth" });
-                      }, 200);
-                    }
-                  }}
-                >
-                  {" "}
-                  Calculate
-                </SubmitButton>
-              ) : null}
-            </form>
+                      if (stdFcrWt?.stdFcr && stdFcrWt.stdWeight) {
+                        let feedCalc = 1;
+                        fcrObj.totalFeed.map((feed) => {
+                          feedCalc += feed.quantity;
+                        });
+                        const fcr = Number(
+                          (
+                            (feedCalc * 50) /
+                            ((fcrObj.totalDoc - fcrObj.totalMortality) * (fcrObj.avgWeight / 1000))
+                          ).toFixed(4),
+                        );
+                        const updatedData = {
+                          ...fcrObj,
+                          stdFcr: stdFcrWt.stdFcr,
+                          stdWeight: stdFcrWt.stdWeight,
+                          fcr: fcr,
+                        };
+                        const message = generateFCRMessage(updatedData);
+                        setMsg(message);
+                        setVisible(true);
+                        setFcrObj(updatedData);
+                        setTimeout(() => {
+                          ref.current?.scrollIntoView({ behavior: "smooth" });
+                        }, 200);
+                      }
+                    }}
+                  >
+                    {" "}
+                    Calculate
+                  </SubmitButton>
+                ) : null}
+              </form>
+            </CardContent>
           </Card>
 
           <Card className={`${visible ? "block" : "hidden"} w-full max-w-xl`}>
@@ -636,7 +634,7 @@ const FCR = () => {
       ) : (
         <div>
           {loading ? (
-            <section>
+            <section className="flex h-full w-full flex-col items-center justify-center gap-y-8">
               <BillingSkeleton />
             </section>
           ) : (

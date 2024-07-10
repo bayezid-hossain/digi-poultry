@@ -91,19 +91,36 @@ export const userRouter = createTRPCRouter({
       if (ctx.session && ctx.user) {
         if (input?.cycleId) {
           try {
-            const result = await db
+            const isEligible = await db
               .select()
-              .from(FCRTable)
+              .from(userCycle)
+              .where(
+                and(
+                  eq(userCycle.userId, ctx.user.id),
+                  eq(userCycle.cycleId, input.cycleId),
+                  eq(userCycle.orgId, ctx.session.organization ?? ""),
+                ),
+              );
+            if (isEligible[0]) {
+              const result = await db
+                .select()
+                .from(FCRTable)
 
-              .where(and(eq(FCRTable.userId, ctx.user.id), eq(FCRTable.cycleId, input.cycleId)))
-              .orderBy(desc(FCRTable.createdAt));
-            return result.map((singleResult) => {
-              return {
-                ...singleResult,
-                totalFeed: singleResult.totalFeed as feed[],
-                farmStock: singleResult.farmStock as feed[],
-              };
-            });
+                .where(eq(FCRTable.cycleId, input.cycleId))
+                .orderBy(desc(FCRTable.createdAt));
+              return result.map((singleResult) => {
+                return {
+                  ...singleResult,
+                  totalFeed: singleResult.totalFeed as feed[],
+                  farmStock: singleResult.farmStock as feed[],
+                };
+              });
+            } else {
+              throw new TRPCError({
+                code: "UNAUTHORIZED",
+                message: "You don't belong to this cycle",
+              });
+            }
           } catch (error: any) {
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
