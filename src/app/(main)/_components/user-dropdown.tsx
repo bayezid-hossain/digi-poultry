@@ -58,7 +58,7 @@ export const UserDropdown = ({
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem className="cursor-pointer text-muted-foreground" asChild>
-            <Link href={Paths.Dashboard}>Dashboard</Link>
+            <Link href={Paths.FCR}>Dashboard</Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer text-muted-foreground" asChild>
             <Link href={Paths.Billing}>Billing</Link>

@@ -119,7 +119,7 @@ const Page = async () => {
             variant={"outlineLink"}
             className="flex h-full w-fit flex-col items-center justify-center p-4 text-xl underline"
           >
-            <Link href={Paths.Dashboard} className="p-4">
+            <Link href={Paths.FCR} className="p-4">
               Dashboard
             </Link>
           </Button>

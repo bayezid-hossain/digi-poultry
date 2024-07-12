@@ -12,7 +12,7 @@ export const metadata = {
 export default async function ForgotPasswordPage() {
   const { user } = await validateRequest();
 
-  if (user) redirect(Paths.Dashboard);
+  if (user) redirect(Paths.FCR);
 
   return (
     <Card className="w-full max-w-md">

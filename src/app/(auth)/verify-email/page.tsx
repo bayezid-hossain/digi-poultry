@@ -13,7 +13,7 @@ export default async function VerifyEmailPage() {
   const { user, session } = await validateRequest();
 
   if (!user) redirect(Paths.Login);
-  if (user.emailVerified && session.isUserVerified) redirect(Paths.Dashboard);
+  if (user.emailVerified && session.isUserVerified) redirect(Paths.FCR);
 
   return (
     <Card className="w-full max-w-md">

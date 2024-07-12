@@ -16,7 +16,7 @@ import { UserDropdown } from "@/app/(main)/_components/user-dropdown";
 
 const routes = [
   { name: "Home", href: "/" },
-  { name: "Dashboard", href: Paths.Dashboard },
+  { name: "Dashboard", href: Paths.FCR },
   { name: "Login", href: Paths.Login },
   { name: "Sign up", href: Paths.Signup },
 ] as const;
@@ -79,7 +79,7 @@ export const Header = async () => {
             variant={"link"}
             className="flex flex-col items-center justify-center px-2 text-lg underline"
           >
-            <Link href={Paths.Dashboard} className="">
+            <Link href={Paths.FCR} className="">
               Dashboard
             </Link>
           </Button>
@@ -93,7 +93,9 @@ export const Header = async () => {
             </Button>
           </div>
         )}
-        {user && <UserDropdown firstName={user.firstName} className="ml-auto mr-2" />}
+        {user && (
+          <UserDropdown userId={user.id} firstName={user.firstName} className="ml-auto mr-2" />
+        )}
       </div>
     </header>
   );

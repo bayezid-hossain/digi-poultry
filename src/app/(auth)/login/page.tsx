@@ -11,7 +11,7 @@ export const metadata = {
 export default async function LoginPage() {
   const { user } = await validateRequest();
 
-  if (user) redirect(Paths.Dashboard);
+  if (user) redirect(Paths.FCR);
 
   return <Login />;
 }

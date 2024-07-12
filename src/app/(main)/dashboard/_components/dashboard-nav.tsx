@@ -30,7 +30,7 @@ import { Paths } from "@/lib/constants";
 const items: MenuItemProps[] = [
   {
     title: "Daily FCR",
-    href: Paths.Dashboard,
+    href: Paths.FCR,
     subs: [
       {
         title: "New",

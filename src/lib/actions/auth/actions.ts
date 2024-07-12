@@ -269,7 +269,7 @@ export async function verifyEmail(
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
   if (apiCall) return { success: true };
-  redirect(Paths.Dashboard);
+  redirect(Paths.FCR);
 }
 
 export async function sendPasswordResetLink(
@@ -336,7 +336,7 @@ export async function resetPassword(
   const session = await lucia.createSession(dbToken.userId, { isUserVerified: false });
   const sessionCookie = lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-  redirect(Paths.Dashboard);
+  redirect(Paths.FCR);
 }
 
 const timeFromNow = (time: Date) => {

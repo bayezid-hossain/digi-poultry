@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { Paths } from "@/lib/constants";
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 export const metadata: Metadata = {
@@ -8,6 +9,6 @@ export const metadata: Metadata = {
 };
 
 const Page = async () => {
-  redirect("/dashboard/fcr");
+  redirect(Paths.FCR);
 };
 export default Page;
