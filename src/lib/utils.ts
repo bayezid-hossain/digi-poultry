@@ -38,13 +38,13 @@ export function formatDate(
   },
 ) {
   try {
-    return new Intl.DateTimeFormat(["ban"], {
+    return new Intl.DateTimeFormat("en-GB", {
       ...options,
     }).format(new Date(date ?? Date.now()));
   } catch (e) {
     console.log(e);
     console.log(date);
-    return new Intl.DateTimeFormat(["ban"], {
+    return new Intl.DateTimeFormat(["ban", "id"], {
       ...options,
       month: "numeric",
     }).format(Date.now());

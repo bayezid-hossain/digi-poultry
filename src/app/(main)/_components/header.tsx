@@ -26,8 +26,8 @@ export const Header = async ({ organizations, currentOrg }: OrganizationsType) =
               </div>
             ) : null}
             <div className="flex gap-x-4">
-              <NotificationDropDown userId={user.id} notifications={notifications ?? []} />
-              <UserDropdown firstName={user.firstName} avatar={user.avatar} />
+              <NotificationDropDown notifications={notifications ?? []} />
+              <UserDropdown firstName={user.firstName} avatar={user.avatar} userId={user.id} />
             </div>
           </div>
         ) : null}

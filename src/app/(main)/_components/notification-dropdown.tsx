@@ -41,17 +41,7 @@ type NotificationProps = {
   farmerName: string | null;
 }[];
 
-const NotificationDropDown = ({
-  notifications,
-  userId,
-}: {
-  notifications?: NotificationProps;
-  userId: string;
-}) => {
-  const { setData, data } = useUserDataStore();
-  useEffect(() => {
-    if (data !== userId) setData(userId);
-  }, [userId]);
+const NotificationDropDown = ({ notifications }: { notifications?: NotificationProps }) => {
   const [open, setOpen] = useState<boolean>(false);
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>

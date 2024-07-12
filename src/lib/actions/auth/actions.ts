@@ -199,8 +199,7 @@ export async function logout(
   await lucia.invalidateSession(session.id);
   const sessionCookie = lucia.createBlankSessionCookie();
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-  if (apiCall) return { success: true };
-  return redirect("/");
+  return { success: true };
 }
 
 export async function resendVerificationEmail(): Promise<{
@@ -366,7 +365,7 @@ async function generatePasswordResetToken(userId: string): Promise<string> {
   await db.insert(passwordResetTokens).values({
     id: tokenId,
     userId,
-    expiresAt: createDate(new TimeSpan(2, "h")),
+    expiresAt: createDate(new TimeSpan(5, "m")),
   });
   return tokenId;
 }

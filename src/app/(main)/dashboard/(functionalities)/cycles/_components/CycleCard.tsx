@@ -121,15 +121,21 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
         {!lastFCR ? (
           <div className="z-40 flex flex-col gap-y-4 text-xl">
             <p>No FCR Calculated Yet</p>
-            <SubmitButton
-              variant={"outlineLink"}
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-              }}
-            >
-              <Link href={`${Paths.NewFCR}?cycleId=${id ?? ""}`}>Calculate FCR Now!</Link>
-            </SubmitButton>
+            {loggedInUser === cycle.createdBy.id ? (
+              <SubmitButton
+                variant={"outlineLink"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+              >
+                <Link href={`${Paths.NewFCR}?cycleId=${id ?? ""}`}>Calculate FCR Now!</Link>
+              </SubmitButton>
+            ) : (
+              <div className="text-xs">
+                FCR history will be shown as soon as cycle creator/mod creates any FCR
+              </div>
+            )}
           </div>
         ) : null}
         <div className="absolute bottom-0 left-0 mt-2 flex gap-x-2 p-6 pb-2 text-xs">

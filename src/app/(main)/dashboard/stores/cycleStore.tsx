@@ -14,38 +14,25 @@ type CycleDataStore = {
   isFetching: boolean;
 };
 
-type MyPersist = (
-  config: StateCreator<CycleDataStore>,
-  options: PersistOptions<CycleDataStore>,
-) => StateCreator<CycleDataStore>;
-
-const useCycleDataStore = create<CycleDataStore>(
-  (persist as MyPersist)(
-    (set, get) => ({
-      data: [],
-      addData: (newData) => set((state) => ({ data: [...state.data, newData] })),
-      setData: (newData) => set((state) => ({ data: newData })),
-      updateData: (id, newData) =>
-        set((state) => ({
-          data: state.data.map((item) => (item.id === id ? newData : item)),
-        })),
-      removeData: (id) =>
-        set((state) => {
-          const newData = state.data.filter((item) => item.id !== id);
-          return { data: newData };
-        }),
-      isFetching: false,
-      filterData: (id) => get().data.filter((item) => item.id === id),
-      getItem: (id) => {
-        const item = get().data.find((item) => item.id === id);
-        return item ? item : null;
-      },
+const useCycleDataStore = create<CycleDataStore>((set, get) => ({
+  data: [],
+  addData: (newData) => set((state) => ({ data: [...state.data, newData] })),
+  setData: (newData) => set((state) => ({ data: newData })),
+  updateData: (id, newData) =>
+    set((state) => ({
+      data: state.data.map((item) => (item.id === id ? newData : item)),
+    })),
+  removeData: (id) =>
+    set((state) => {
+      const newData = state.data.filter((item) => item.id !== id);
+      return { data: newData };
     }),
-    {
-      name: "cycle-data-store", // unique name for localStorage key
-      storage: createJSONStorage(() => localStorage),
-    },
-  ),
-);
+  isFetching: false,
+  filterData: (id) => get().data.filter((item) => item.id === id),
+  getItem: (id) => {
+    const item = get().data.find((item) => item.id === id);
+    return item ? item : null;
+  },
+}));
 
 export default useCycleDataStore;

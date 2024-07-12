@@ -13,31 +13,17 @@ type StandardDataStore = {
   isFetching: boolean;
 };
 
-type MyPersist = (
-  config: StateCreator<StandardDataStore>,
-  options: PersistOptions<StandardDataStore>,
-) => StateCreator<StandardDataStore>;
-
-const useStandardDataStore = create<StandardDataStore>(
-  (persist as MyPersist)(
-    (set, get) => ({
-      data: [],
-      addData: (newData) => set((state) => ({ data: [...state.data, newData] })),
-      setData: (newData) => set((state) => ({ data: newData })),
-      updateData: (age, newData) =>
-        set((state) => ({
-          data: state.data.map((item) => (item.age === age ? newData : item)),
-        })),
-      removeData: (age) =>
-        set((state) => ({ data: state.data.filter((item) => item.age !== age) })),
-      isFetching: false,
-      filterData: (age) => get().data.filter((item) => item.age === age),
-    }),
-    {
-      name: "standard-data-storage", // unique name for localStorage key
-      storage: createJSONStorage(() => localStorage),
-    },
-  ),
-);
+const useStandardDataStore = create<StandardDataStore>((set, get) => ({
+  data: [],
+  addData: (newData) => set((state) => ({ data: [...state.data, newData] })),
+  setData: (newData) => set((state) => ({ data: newData })),
+  updateData: (age, newData) =>
+    set((state) => ({
+      data: state.data.map((item) => (item.age === age ? newData : item)),
+    })),
+  removeData: (age) => set((state) => ({ data: state.data.filter((item) => item.age !== age) })),
+  isFetching: false,
+  filterData: (age) => get().data.filter((item) => item.age === age),
+}));
 
 export default useStandardDataStore;

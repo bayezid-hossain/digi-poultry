@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -28,16 +28,23 @@ import { logout } from "@/lib/actions/auth/actions";
 import { APP_TITLE, Paths } from "@/lib/constants";
 import { toast } from "sonner";
 import { PersonIcon } from "@radix-ui/react-icons";
+import useUserDataStore from "../dashboard/stores/userStore";
 
 export const UserDropdown = ({
   firstName,
   avatar,
   className,
+  userId,
 }: {
   firstName: string;
   avatar?: string | null;
   className?: string;
+  userId: string;
 }) => {
+  const { setData, data } = useUserDataStore();
+  useEffect(() => {
+    if (data !== userId) setData(userId);
+  }, [data]);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className={className}>
