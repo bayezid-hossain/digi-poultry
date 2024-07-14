@@ -41,6 +41,7 @@ const OrganizationDropdown = ({ organizations, currentOrg }: OrganizationsType) 
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
+            aria-label="Organization Dropdown"
             variant="outline"
             role="combobox"
             aria-expanded={open}

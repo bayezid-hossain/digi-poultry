@@ -73,7 +73,11 @@ const Cycles = ({ cycles: serverCycle }: { cycles: CyclesData[] }) => {
             }}
           >
             {" "}
-            <RefreshCcw size={18} className={`${isRefetching ? "animate-spin" : ""}`} />
+            <RefreshCcw
+              aria-label="refresh table"
+              size={18}
+              className={`${isRefetching ? "animate-spin" : ""}`}
+            />
           </Button>
           <AddDialog />
         </div>

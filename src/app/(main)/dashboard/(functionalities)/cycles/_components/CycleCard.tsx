@@ -56,14 +56,14 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
       >
         {loggedInUser === userId ? (
           <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
-            <DropdownMenuTrigger asChild className="px-0 py-0">
+            <DropdownMenuTrigger aria-label="creator" asChild className="px-0 py-0">
               <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Open menu</span>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center" className=" flex flex-col gap-y-2">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuLabel aria-label="actions">Actions</DropdownMenuLabel>
 
               <DropdownMenuItem
                 className="border-2 border-destructive"
@@ -143,11 +143,14 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
             Started by {firstName} {lastName}
           </p>
           <DropdownMenu open={openUserInfoDropdown} onOpenChange={setUserInfoDropdown}>
-            <DropdownMenuTrigger asChild className="px-0 py-0">
-              <CircleAlert className="h-4 w-4" />
+            <DropdownMenuTrigger asChild>
+              <button aria-label="Open creator info" className="px-0 py-0">
+                <CircleAlert className="h-4 w-4" />
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="left-0 flex flex-col gap-y-2">
               <DropdownMenuItem
+                aria-label="Creator ID"
                 onClick={async (e) => {
                   e.preventDefault();
                   await clipboardCopy(userId);
@@ -158,8 +161,9 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
                 }}
               >
                 ID: {userId}
-              </DropdownMenuItem>{" "}
+              </DropdownMenuItem>
               <DropdownMenuItem
+                aria-label="Creator Email"
                 onClick={async (e) => {
                   e.preventDefault();
                   await clipboardCopy(userEmail);

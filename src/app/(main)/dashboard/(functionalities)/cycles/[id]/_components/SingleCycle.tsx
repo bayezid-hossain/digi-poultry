@@ -65,7 +65,11 @@ const SingleCycle = () => {
                 }}
               >
                 {" "}
-                <RefreshCcw size={18} className={`${isRefetching ? "animate-spin" : ""}`} />
+                <RefreshCcw
+                  aria-label="refresh table"
+                  size={18}
+                  className={`${isRefetching ? "animate-spin" : ""}`}
+                />
               </Button>{" "}
               {userId === cycle.createdBy.id ? (
                 <SubmitButton variant={"outlineLink"}>

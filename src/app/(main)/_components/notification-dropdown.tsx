@@ -47,9 +47,15 @@ const NotificationDropDown = ({ notifications }: { notifications?: NotificationP
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger>
         {notifications ? (
-          <BellDotIcon className="border-2border-red-800 h-7 w-7 rounded-full p-1" />
+          <BellDotIcon
+            aria-label="notifications"
+            className="border-2border-red-800 h-7 w-7 rounded-full p-1"
+          />
         ) : (
-          <Bell className="h-7 w-7 rounded-full border-2 border-primary  p-1" />
+          <Bell
+            aria-label="notifications"
+            className="h-7 w-7 rounded-full border-2 border-primary  p-1"
+          />
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="mt-2 w-60 sm:w-96">

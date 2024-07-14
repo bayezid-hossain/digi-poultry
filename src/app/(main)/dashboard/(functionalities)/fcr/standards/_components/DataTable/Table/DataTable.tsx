@@ -153,7 +153,11 @@ export const DataTable = ({ isOwner }: { isOwner: boolean }) => {
           }}
         >
           {" "}
-          <RefreshCcw size={18} className={`${isRefetching ? "animate-spin" : ""}`} />
+          <RefreshCcw
+            aria-label="refresh table"
+            size={18}
+            className={`${isRefetching ? "animate-spin" : ""}`}
+          />
         </Button>
         {isOwner ? (
           <AddDialog

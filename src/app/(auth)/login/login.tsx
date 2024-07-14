@@ -30,6 +30,7 @@ export function Login() {
           quality={100}
           className="rounded-md bg-white shadow-2xl ring-1 ring-gray-900/10"
           alt="logo"
+          loading="eager"
         />
       </CardHeader>
       <CardContent>
