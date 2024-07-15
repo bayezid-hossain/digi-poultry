@@ -173,6 +173,34 @@ export async function deleteSingleCycle(
   else return { error: " Something went wrong" };
 }
 
+export async function closeCycle(
+  _: any,
+  formData: FormData,
+  apiCall?: boolean,
+): Promise<ActionResponse<DeleteSingleCycle>> {
+  const { user, session } = await validateRequest();
+  if (apiCall && !user) return { error: "No session found" };
+  const obj = Object.fromEntries(formData.entries());
+  const newObj = {
+    id: obj.id,
+  };
+  const parsed = await deleteSingleCycleValidator.safeParseAsync(newObj);
+  if (!parsed.success) {
+    if (apiCall) return { error: processFieldErrors(parsed.error) };
+    const err = parsed.error.flatten();
+    return {
+      fieldError: {
+        id: err.fieldErrors.id?.[0],
+      },
+    };
+  }
+  const { id } = parsed.data;
+  if (id) {
+    await db.update(cycles).set({ endDate: new Date(), ended: true }).where(eq(cycles.id, id));
+    return { success: "Successfully Deleted" + Date.now() };
+  } else return { error: " Something went wrong" };
+}
+
 // export async function updateSingleCycle(
 //   _: any,
 //   formData: FormData,

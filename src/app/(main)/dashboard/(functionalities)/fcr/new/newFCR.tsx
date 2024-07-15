@@ -27,6 +27,7 @@ import useCycleDataStore from "../../../stores/cycleStore";
 import useStandardDataStore from "../../../stores/standardsStore";
 import AddCycle from "../../cycles/_components/AddCycle";
 import { BillingSkeleton } from "../../billing/_components/billing-skeleton";
+import useUserDataStore from "../../../stores/userStore";
 
 const FCR = () => {
   const {
@@ -73,6 +74,7 @@ const FCR = () => {
   const fieldErrors = useRef<HTMLUListElement>(null);
   const [popOpen, setPopOpen] = useState<boolean>(false);
   const formErrors = useRef<HTMLParagraphElement>(null);
+  const { data: userId } = useUserDataStore();
   const [msg, setMsg] = useState<string>("");
   const [visible, setVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -227,29 +229,32 @@ const FCR = () => {
                       <CommandList>
                         <CommandEmpty>No Cycle found.</CommandEmpty>
                         <CommandGroup>
-                          {cycles.map((cycle) => (
-                            <CommandItem
-                              key={cycle.id}
-                              value={
-                                cycle.farmerName + cycle.farmerLocation + cycle.totalDoc + cycle.id
-                              }
-                              onSelect={async () => {
-                                setCycle(cycle);
-                                setPopOpen(false);
-                              }}
-                            >
-                              <div
-                                className="grid w-full grid-cols-3 place-items-start 
-                          "
-                              >
-                                <span>{cycle.farmerName}</span>
-                                <span>{cycle.totalDoc}</span>
-                                <span>{cycle.farmerLocation}</span>
-                              </div>
-                            </CommandItem>
-                          ))}
+                          {cycles.map((cycle) => {
+                            if (userId === cycle.createdBy.id)
+                              return (
+                                <CommandItem
+                                  key={cycle.id}
+                                  value={
+                                    cycle.farmerName +
+                                    cycle.farmerLocation +
+                                    cycle.totalDoc +
+                                    cycle.id
+                                  }
+                                  onSelect={async () => {
+                                    setCycle(cycle);
+                                    setPopOpen(false);
+                                  }}
+                                >
+                                  <div className="grid w-full grid-cols-3 place-items-start ">
+                                    <span>{cycle.farmerName}</span>
+                                    <span>{cycle.totalDoc}</span>
+                                    <span>{cycle.farmerLocation}</span>
+                                  </div>
+                                </CommandItem>
+                              );
+                          })}
                           <CommandItem
-                            key={"create-new-farmer"}
+                            key={"create-new-cycle"}
                             className="flex w-full items-center"
                           >
                             <AddCycle />

@@ -47,6 +47,9 @@ const AddCycle = () => {
       addCycle(obj);
     }
   }, [state?.success]);
+  useEffect(() => {
+    if (!open) selectFarmer(undefined);
+  }, [open]);
   return (
     <div className="flex w-full flex-row items-center justify-start">
       <Dialog open={open} onOpenChange={setOpen} modal>
@@ -94,6 +97,7 @@ const AddCycle = () => {
                             const farmerId = currentValue.replace(farmer.name, "");
                             selectFarmer(farmer);
                             setPopOpen(false);
+                            console.log(selectedFarmer);
                           }}
                         >
                           <div

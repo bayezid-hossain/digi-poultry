@@ -49,7 +49,7 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
       }}
     >
       <div
-        className="absolute right-0 top-0 cursor-pointer p-2"
+        className={`absolute right-0 top-0 flex cursor-pointer flex-col items-center justify-end gap-y-2 ${loggedInUser === userId ? "px-2" : "mt-8 p-2"}`}
         onClick={(e) => {
           e.stopPropagation();
         }}
@@ -78,6 +78,14 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
         ) : null}
       </div>
       <CardHeader className="pt-8">
+        <div className="flex items-center justify-start">
+          <div
+            className={` -mt-4 flex w-fit flex-col items-center justify-center rounded-full  rounded-bl-none border-2 px-5 py-2 ${ended ? "border-red-900" : "border-b-green-600 border-l-green-700 border-r-green-500 border-t-green-600"}`}
+          >
+            <p className="text-xs">Day</p>
+            <p className="text-2xl">{lastFCR ? lastFCR.age : age}</p>
+          </div>
+        </div>
         <p className="text-xl">{farmerName}</p>
         <p className="text-sm">Location: {farmerLocation}</p>
         <p className="text-xs">Started at {formatDate(startDate)}</p>
@@ -108,20 +116,11 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
             </div>
           </div>
         ) : null}
-        {lastFCR ? (
-          <p>
-            Last Updated Age is {lastFCR.age} {lastFCR.age > 1 ? "days" : "day"}
-          </p>
-        ) : (
-          <p>
-            Last Updated Age is {age} {(age ?? 1) > 1 ? "days" : "day"}
-          </p>
-        )}
         <hr />{" "}
         {!lastFCR ? (
           <div className="z-40 flex flex-col gap-y-4 text-xl">
             <p>No FCR Calculated Yet</p>
-            {loggedInUser === cycle.createdBy.id ? (
+            {loggedInUser === cycle.createdBy.id && !cycle.ended && !cycle.endDate ? (
               <SubmitButton
                 variant={"outlineLink"}
                 onClick={(e) => {
@@ -179,16 +178,6 @@ const CycleCard = ({ cycle }: { cycle: CyclesData }) => {
           </DropdownMenu>
         </div>
       </CardContent>
-      <div className="absolute left-0 top-0 p-6 pt-2">
-        {ended ? (
-          <p className="text-red-500">Ended at {formatDate(endDate ?? Date.now())}</p>
-        ) : (
-          <div className="flex gap-x-2 text-xs text-muted-foreground">
-            <Plane className="h-4 w-4" />
-            <p>Running</p>
-          </div>
-        )}
-      </div>
     </Card>
   );
 };

@@ -26,17 +26,17 @@ const DeleteDialog = ({
   const ref = useRef<HTMLFormElement>(null);
   ref.current?.reset();
   const { pending } = useFormStatus();
-  const [deleteFarmerState, deleteFormAction] = useFormState(deleteSingleCycle, null);
+  const [deleteCycleState, deleteCycleAction] = useFormState(deleteSingleCycle, null);
   const { removeData } = useCycleDataStore();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   useEffect(() => {
-    if (deleteFarmerState?.success) {
+    if (deleteCycleState?.success) {
       setOpenDialog(false);
       setOpenDropdown(false);
       removeData(id);
     }
-  }, [deleteFarmerState?.success]);
+  }, [deleteCycleState?.success]);
   return (
     <div className="flex w-full flex-row items-center justify-start">
       <Dialog open={openDialog} onOpenChange={setOpenDialog} modal>
@@ -59,7 +59,7 @@ const DeleteDialog = ({
           </DialogHeader>
           <div className="flex flex-row justify-center gap-x-8">
             <DialogClose className="flex flex-col items-center justify-center">No</DialogClose>
-            <form action={deleteFormAction}>
+            <form action={deleteCycleAction}>
               <Input name="id" defaultValue={id} type="string" className="hidden" />
               <SubmitButton className="m-0 w-full bg-destructive text-destructive-foreground">
                 Yes
